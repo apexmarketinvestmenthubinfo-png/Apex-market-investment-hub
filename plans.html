@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apex Market Investment Hub - Plans</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif}
+body{background:#050816;color:#fff;padding-bottom:90px;overflow-x:hidden}
+body::before{content:'';position:fixed;width:400px;height:400px;background:linear-gradient(45deg,#00f7ff,#0066ff);border-radius:50%;filter:blur(150px);top:-120px;left:-120px;opacity:.3;z-index:-1}
+body::after{content:'';position:fixed;width:400px;height:400px;background:linear-gradient(45deg,#ff00ff,#6a00ff);border-radius:50%;filter:blur(150px);bottom:-120px;right:-120px;opacity:.3;z-index:-1}
+.header{padding:20px;text-align:center;font-size:24px;font-weight:700;background:rgba(255,255,255,.05);backdrop-filter:blur(15px);border-bottom:1px solid rgba(255,255,255,.08)}
+.subtitle{text-align:center;color:#00f7ff;margin:10px 0 20px;font-size:15px}
+.container{padding:15px}
+.plan{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:20px;margin-bottom:20px;text-align:left;backdrop-filter:blur(15px)}
+.plan h3{color:#00f7ff;font-size:26px;margin-bottom:15px;text-align:center}
+.plan p{color:#ccc;margin:10px 0;font-size:15px;line-height:1.8;text-align:left}
+.status{margin-top:12px;font-size:14px;color:#00ff88;font-weight:600;text-align:left}
+.timer{margin-top:12px;padding:10px;background:rgba(0,247,255,.08);border:1px solid rgba(0,247,255,.15);border-radius:10px;font-size:13px;color:#ffcc00;font-weight:600;text-align:left}
+button{width:100%;margin-top:15px;padding:14px;border:none;border-radius:12px;background:linear-gradient(90deg,#00f7ff,#0066ff);color:#fff;font-size:16px;font-weight:600;cursor:pointer}
+button:disabled{background:#444;cursor:not-allowed}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:70px;background:#08111f;display:flex;justify-content:space-around;align-items:center;border-top:1px solid rgba(255,255,255,.08)}
+.nav-btn{text-decoration:none;color:#fff;font-size:12px;display:flex;flex-direction:column;align-items:center}
+.nav-icon{font-size:22px;margin-bottom:3px}.active{color:#00f7ff}
+</style>
+</head>
+<body>
+<div class="header">APEX MARKET INVESTMENT HUB</div>
+<div class="subtitle">Investment Plans</div>
+<div class="container" id="plans"></div>
+
+<div class="bottom-nav">
+<a href="index.html" class="nav-btn"><div class="nav-icon">🏠</div>Home</a>
+<a href="deposit.html" class="nav-btn"><div class="nav-icon">💰</div>Deposit</a>
+<a href="plans.html" class="nav-btn active"><div class="nav-icon">📊</div>Plans</a>
+<a href="withdraw.html" class="nav-btn"><div class="nav-icon">💳</div>Withdraw</a>
+<a href="profile.html" class="nav-btn"><div class="nav-icon">👤</div>Profile</a>
+</div>
+
+<script>
+const plans = [
+{name:"Starter Plan",amount:1000,roi:50},
+{name:"Bronze Plan",amount:2500,roi:50},
+{name:"Silver Plan",amount:5000,roi:50},
+{name:"Gold Plan",amount:10000,roi:50},
+{name:"Premium Plan",amount:20000,roi:50},
+{name:"Elite Plan",amount:30000,roi:50},
+{name:"Diamond Plan",amount:50000,roi:50},
+{name:"VIP Plan",amount:75000,roi:50},
+{name:"Executive Plan",amount:100000,roi:50},
+{name:"Ultimate Plan",amount:200000,roi:50}
+];
+const container=document.getElementById("plans");
+
+plans.forEach((plan,index)=>{
+let invested=JSON.parse(localStorage.getItem("plan"+index));
+let profit72=Math.round(plan.amount*(plan.roi/100));
+let total21=plan.amount+(profit72*7);
+
+container.innerHTML+=`
+<div class="plan">
+<h3>${plan.name}</h3>
+<p><strong>Investment:</strong> KES ${plan.amount.toLocaleString()}</p>
+<p><strong>Active Investment:</strong> ${invested?"KES "+plan.amount.toLocaleString():"KES 0"}</p>
+<p><strong>Profit per 72 Hours:</strong> KES ${profit72.toLocaleString()}</p>
+<p><strong>Total After 21 Days:</strong> KES ${total21.toLocaleString()}</p>
+<p id="payout${index}"><strong>Next Payout:</strong> ${invested?"Pending...":"Not invested KES 0"}</p>
+<p id="maturity${index}"><strong>Maturity:</strong> ${invested?"Running...":"No active investment"}</p>
+<div class="status" id="status${index}">${invested?"Running Investment":""}</div>
+<div class="timer" id="timer${index}">No active countdown</div>
+<button id="btn${index}" ${invested?"disabled":""}>${invested?"Invested":"Invest Now"}</button>
+</div>`;
+
+setTimeout(()=>{
+document.getElementById("btn"+index).onclick=()=>invest(index);
+if(invested) startTimer(index);
+},100);
+});
+
+function invest(index){
+const start=Date.now();
+localStorage.setItem("plan"+index,JSON.stringify({start:start}));
+document.getElementById("btn"+index).disabled=true;
+document.getElementById("btn"+index).innerHTML="Invested";
+document.getElementById("status"+index).innerHTML="Running Investment";
+startTimer(index);
+}
+
+function startTimer(index){
+const data=JSON.parse(localStorage.getItem("plan"+index));
+if(!data) return;
+
+const timer=document.getElementById("timer"+index);
+const btn=document.getElementById("btn"+index);
+
+const interval=setInterval(()=>{
+
+const now=Date.now();
+
+const payoutTime=data.start+(72*60*60*1000);
+const maturityTime=data.start+(21*24*60*60*1000);
+
+if(now < payoutTime){
+
+const diff=payoutTime-now;
+const hrs=Math.floor(diff/1000/60/60);
+const mins=Math.floor((diff/1000/60)%60);
+const secs=Math.floor((diff/1000)%60);
+
+document.getElementById("payout"+index).innerHTML=
+"<strong>Next Payout:</strong> "+hrs+"h "+mins+"m "+secs+"s";
+
+timer.innerHTML=
+"⏳ First Profit Countdown: "+hrs+"h "+mins+"m "+secs+"s";
+
+}
+
+else if(now < maturityTime){
+
+btn.disabled=false;
+btn.innerHTML="Reinvest";
+
+const diff=maturityTime-now;
+
+const days=Math.floor(diff/1000/60/60/24);
+const hrs=Math.floor((diff/1000/60/60)%24);
+const mins=Math.floor((diff/1000/60)%60);
+
+document.getElementById("status"+index).innerHTML=
+"💰 Profit Available";
+
+document.getElementById("maturity"+index).innerHTML=
+"<strong>Maturity:</strong> "+days+"d "+hrs+"h Remaining";
+
+document.getElementById("payout"+index).innerHTML=
+"<strong>Next Payout:</strong> Profit Ready";
+
+timer.innerHTML=
+"📈 Maturity Countdown: "+days+"d "+hrs+"h "+mins+"m";
+
+}
+
+else{
+
+clearInterval(interval);
+
+document.getElementById("status"+index).innerHTML=
+"✅ Investment Completed";
+
+document.getElementById("maturity"+index).innerHTML=
+"<strong>Maturity:</strong> Matured";
+
+document.getElementById("payout"+index).innerHTML=
+"<strong>Next Payout:</strong> Final Profit Received";
+
+timer.innerHTML=
+"🎉 Investment Matured Successfully";
+
+btn.disabled=false;
+btn.innerHTML="Invest Again";
+
+localStorage.removeItem("plan"+index);
+
+}
+
+},1000);
+}
+</script>
+</body>
+</html>
