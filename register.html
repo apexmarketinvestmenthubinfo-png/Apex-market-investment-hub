@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- ✔ UPDATED TITLE -->
+<title>Apex Market Investment Hub</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: radial-gradient(circle at top, #050816, #000);
+    color: white;
+    overflow-x: hidden;
+}
+
+/* 🌌 BACKGROUND */
+.stars {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: url('https://www.transparenttextures.com/patterns/stardust.png');
+    opacity: 0.2;
+    z-index: -2;
+}
+
+/* ✨ GLOW */
+.glow1, .glow2 {
+    position: fixed;
+    width: 450px;
+    height: 450px;
+    filter: blur(120px);
+    border-radius: 50%;
+    z-index: -1;
+}
+
+.glow1 {
+    background: radial-gradient(circle, rgba(0,255,213,0.3), transparent 70%);
+    top: -120px;
+    left: -120px;
+}
+
+.glow2 {
+    background: radial-gradient(circle, rgba(255,0,200,0.25), transparent 70%);
+    bottom: -120px;
+    right: -120px;
+}
+
+/* CONTAINER */
+.container {
+    max-width: 420px;
+    margin: 60px auto;
+    padding: 25px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(0,255,213,0.2);
+    border-radius: 18px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 0 25px rgba(0,255,213,0.15);
+}
+
+/* TITLE */
+h2 {
+    text-align: center;
+    color: #00ffd5;
+    margin-bottom: 20px;
+}
+
+/* INPUTS */
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 10px;
+    border: 1px solid rgba(0,255,213,0.3);
+    background: rgba(0,0,0,0.4);
+    color: white;
+    outline: none;
+}
+
+/* PASSWORD BOX */
+.password-box {
+    position: relative;
+}
+
+.toggle {
+    position: absolute;
+    right: 10px;
+    top: 12px;
+    cursor: pointer;
+    font-size: 12px;
+    color: #00ffd5;
+}
+
+/* CHECKBOX */
+label {
+    font-size: 12px;
+    display: block;
+    margin: 8px 0;
+    color: rgba(255,255,255,0.8);
+}
+
+/* BUTTON */
+button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 25px;
+    margin-top: 10px;
+    background: linear-gradient(90deg, #00ffd5, #ff00cc, #ffd700);
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    transform: scale(1.03);
+}
+
+/* LOGIN LINK */
+.login {
+    text-align: center;
+    margin-top: 12px;
+    font-size: 13px;
+}
+
+.login a {
+    color: #00ffd5;
+    text-decoration: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="stars"></div>
+<div class="glow1"></div>
+<div class="glow2"></div>
+
+<div class="container">
+
+    <!-- ✔ PROFILE NAME TITLE (already correct, kept as requested) -->
+    <h2>Apex Market Investment Hub</h2>
+
+    <input type="text" id="name" placeholder="Full Name" required>
+    <input type="email" id="email" placeholder="Gmail Address" required>
+    <input type="tel" id="phone" placeholder="Phone Number (+254...)" value="+254" required>
+
+    <div class="password-box">
+        <input type="password" id="password" placeholder="Password" required>
+        <span class="toggle" onclick="togglePassword('password')">Show</span>
+    </div>
+
+    <div class="password-box">
+        <input type="password" id="confirm" placeholder="Confirm Password" required>
+        <span class="toggle" onclick="togglePassword('confirm')">Show</span>
+    </div>
+
+    <label>
+        <input type="checkbox"> Remember Me
+    </label>
+
+    <label>
+        <input type="checkbox" id="terms"> I agree to Terms & Conditions
+    </label>
+
+    <button onclick="register()">Create Account</button>
+
+    <div class="login">
+        Already have an account? <a href="#">Login</a>
+    </div>
+</div>
+
+<!-- FIREBASE INTEGRATION (UNCHANGED) -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
+  authDomain: "apex-market-investment-h-643fc.firebaseapp.com",
+  databaseURL: "https://apex-market-investment-h-643fc-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "apex-market-investment-h-643fc",
+  storageBucket: "apex-market-investment-h-643fc.firebasestorage.app",
+  messagingSenderId: "96469134780",
+  appId: "1:96469134780:web:b1b443b0467083f843cfb9",
+  measurementId: "G-NB3LXMPGTV"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+window.register = function () {
+
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const phone = document.getElementById("phone").value;
+    const password = document.getElementById("password").value;
+    const confirm = document.getElementById("confirm").value;
+    const terms = document.getElementById("terms").checked;
+
+    if (!terms) {
+        alert("You must accept Terms & Conditions");
+        return;
+    }
+
+    if (password !== confirm) {
+        alert("Passwords do not match");
+        return;
+    }
+
+    const userRef = push(ref(db, "users"));
+
+    set(userRef, {
+        name,
+        email,
+        phone,
+        password,
+        balance: 0,
+        investment: 0,
+        profit: 0,
+        createdAt: Date.now()
+    });
+
+    alert("Account created successfully 🚀");
+};
+
+window.togglePassword = function (id) {
+    const input = document.getElementById(id);
+    const toggle = input.nextElementSibling;
+
+    if (input.type === "password") {
+        input.type = "text";
+        toggle.innerText = "Hide";
+    } else {
+        input.type = "password";
+        toggle.innerText = "Show";
+    }
+};
+</script>
+
+</body>
+</html>
