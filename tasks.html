@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tasks - APEX MARKET INVESTMENT HUB</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+background:#020d24;
+background-image:
+radial-gradient(circle at top left,#00c6ff22,transparent 35%),
+radial-gradient(circle at bottom right,#0066ff22,transparent 35%);
+color:#fff;
+min-height:100vh;
+padding-bottom:90px;
+}
+
+.header{
+text-align:center;
+padding:25px 15px;
+}
+
+.platform-name{
+font-size:28px;
+font-weight:700;
+color:#00cfff;
+letter-spacing:1px;
+text-shadow:0 0 15px #00cfff;
+}
+
+.container{
+padding:15px;
+}
+
+.card{
+background:linear-gradient(
+135deg,
+rgba(21,39,74,.95),
+rgba(14,30,58,.95)
+);
+border:1px solid rgba(0,200,255,.15);
+border-radius:24px;
+padding:20px;
+box-shadow:
+0 0 20px rgba(0,200,255,.08),
+inset 0 0 15px rgba(255,255,255,.02);
+margin-bottom:18px;
+}
+
+.stats-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:15px;
+}
+
+.stat-box{
+background:rgba(0,180,255,.08);
+border:1px solid rgba(0,200,255,.15);
+border-radius:18px;
+padding:18px;
+}
+
+.stat-title{
+font-size:15px;
+color:#c7d8ef;
+margin-bottom:10px;
+}
+
+.stat-value{
+font-size:34px;
+font-weight:700;
+color:#00cfff;
+}
+
+.maturity{
+font-size:32px;
+}
+
+.status-row{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:18px 0;
+font-size:18px;
+color:#dbe8ff;
+}
+
+.status-row:not(:last-child){
+border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.status-value{
+font-size:32px;
+font-weight:700;
+color:#00cfff;
+}
+
+.table-card{
+overflow:hidden;
+}
+
+.table-header{
+display:grid;
+grid-template-columns:1.3fr 1fr 1fr;
+padding:15px 0;
+font-weight:600;
+font-size:16px;
+color:#bde6ff;
+border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.plan-row{
+display:grid;
+grid-template-columns:1.3fr 1fr 1fr;
+padding:15px 0;
+border-bottom:1px solid rgba(255,255,255,.06);
+align-items:center;
+font-size:14px;
+}
+
+.plan-row:last-child{
+border-bottom:none;
+}
+
+.empty-space{
+height:80px;
+display:flex;
+justify-content:center;
+align-items:center;
+color:#9cb6d9;
+}
+
+.bottom-nav{
+position:fixed;
+bottom:0;
+left:0;
+right:0;
+height:78px;
+background:#03152f;
+border-top:1px solid rgba(255,255,255,.08);
+display:flex;
+justify-content:space-around;
+align-items:center;
+backdrop-filter:blur(20px);
+}
+
+.nav-item{
+display:flex;
+flex-direction:column;
+align-items:center;
+text-decoration:none;
+color:#c7d8ef;
+font-size:13px;
+}
+
+.nav-item.active{
+color:#00cfff;
+}
+
+.nav-icon{
+font-size:24px;
+margin-bottom:4px;
+}
+
+@media(max-width:480px){
+
+.platform-name{
+font-size:22px;
+}
+
+.stat-value{
+font-size:28px;
+}
+
+.status-value{
+font-size:28px;
+}
+
+.table-header{
+font-size:13px;
+}
+
+.plan-row{
+font-size:12px;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+<div class="platform-name">
+APEX MARKET INVESTMENT HUB
+</div>
+</div>
+
+<div class="container">
+
+<div class="card">
+
+<div class="stats-grid">
+
+<div class="stat-box">
+<div class="stat-title">Total Plans</div>
+<div class="stat-value" id="totalPlans">0</div>
+</div>
+
+<div class="stat-box">
+<div class="stat-title">Days to Maturity</div>
+<div class="stat-value maturity" id="daysToMaturity">21 Days</div>
+</div>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<div class="status-row">
+<span>In Progress</span>
+<span class="status-value" id="inProgress">0</span>
+</div>
+
+<div class="status-row">
+<span>Matured Plans</span>
+<span class="status-value" id="maturedPlans">0</span>
+</div>
+
+</div>
+
+<div class="card table-card">
+
+<div class="table-header">
+<div>Type</div>
+<div>Days Earned</div>
+<div>Total Earnings</div>
+</div>
+
+<div id="plansContainer">
+<div class="empty-space">
+No active plans
+</div>
+</div>
+
+</div>
+
+</div>
+
+<div class="bottom-nav">
+
+<a href="dashboard.html" class="nav-item">
+<div class="nav-icon">🏠</div>
+Home
+</a>
+
+<a href="tasks.html" class="nav-item active">
+<div class="nav-icon">✔️</div>
+Task
+</a>
+
+<a href="team.html" class="nav-item">
+<div class="nav-icon">👥</div>
+Team
+</a>
+
+<a href="plans.html" class="nav-item">
+<div class="nav-icon">📋</div>
+Plans
+</a>
+
+<a href="profile.html" class="nav-item">
+<div class="nav-icon">👤</div>
+Profile
+</a>
+
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+<script>
+
+// Firebase Configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
+  authDomain: "apex-market-investment-h-643fc.firebaseapp.com",
+  databaseURL: "https://apex-market-investment-h-643fc-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "apex-market-investment-h-643fc",
+  storageBucket: "apex-market-investment-h-643fc.firebasestorage.app",
+  messagingSenderId: "96469134780",
+  appId: "1:96469134780:web:b1b443b0467083f843cfb9",
+  measurementId: "G-NB3LXMPGTV"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.database();
+
+// Real-time sync
+db.ref("tasks").on("value", (snapshot) => {
+
+    const data = snapshot.val() || {};
+
+    document.getElementById("totalPlans").innerText =
+        data.totalPlans || 0;
+
+    document.getElementById("daysToMaturity").innerText =
+        (data.daysToMaturity || 21) + " Days";
+
+    document.getElementById("inProgress").innerText =
+        data.inProgress || 0;
+
+    document.getElementById("maturedPlans").innerText =
+        data.maturedPlans || 0;
+
+    const plansContainer =
+        document.getElementById("plansContainer");
+
+    plansContainer.innerHTML = "";
+
+    if(data.plans){
+
+        Object.keys(data.plans).forEach(key => {
+
+            const plan = data.plans[key];
+
+            plansContainer.innerHTML += `
+                <div class="plan-row">
+                    <div>${plan.type || "-"}</div>
+                    <div>${plan.daysEarned || 0}</div>
+                    <div>$${plan.totalEarnings || 0}</div>
+                </div>
+            `;
+
+        });
+
+    }else{
+
+        plansContainer.innerHTML = `
+            <div class="empty-space">
+                No active plans
+            </div>
+        `;
+
+    }
+
+});
+
+// Connection status
+firebase.database().ref(".info/connected")
+.on("value", (snap) => {
+
+    if(snap.val() === true){
+        console.log("Connected to Firebase");
+    }else{
+        console.log("Disconnected from Firebase");
+    }
+
+});
+
+</script>
+
+</body>
+  </html>
