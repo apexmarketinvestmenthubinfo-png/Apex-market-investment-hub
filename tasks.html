@@ -294,8 +294,7 @@ Profile
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
 <script>
-
-// Firebase Configuration
+/* 🔥 FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
   authDomain: "apex-market-investment-h-643fc.firebaseapp.com",
@@ -307,74 +306,57 @@ const firebaseConfig = {
   measurementId: "G-NB3LXMPGTV"
 };
 
-// Initialize Firebase
+/* ✅ INIT FIREBASE (MUST BE FIRST) */
 firebase.initializeApp(firebaseConfig);
-
 const db = firebase.database();
 
-// Real-time sync
-db.ref("tasks").on("value", (snapshot) => {
+/* 🔁 REALTIME LISTENER */
+function loadTasks() {
+
+  db.ref("tasks").on("value", (snapshot) => {
 
     const data = snapshot.val() || {};
 
-    document.getElementById("totalPlans").innerText =
-        data.totalPlans || 0;
+    document.getElementById("totalPlans").textContent =
+      data.totalPlans || 0;
 
-    document.getElementById("daysToMaturity").innerText =
-        (data.daysToMaturity || 21) + " Days";
+    document.getElementById("daysToMaturity").textContent =
+      (data.daysToMaturity || 21) + " Days";
 
-    document.getElementById("inProgress").innerText =
-        data.inProgress || 0;
+    document.getElementById("inProgress").textContent =
+      data.inProgress || 0;
 
-    document.getElementById("maturedPlans").innerText =
-        data.maturedPlans || 0;
+    document.getElementById("maturedPlans").textContent =
+      data.maturedPlans || 0;
 
-    const plansContainer =
-        document.getElementById("plansContainer");
-
+    const plansContainer = document.getElementById("plansContainer");
     plansContainer.innerHTML = "";
 
-    if(data.plans){
-
-        Object.keys(data.plans).forEach(key => {
-
-            const plan = data.plans[key];
-
-            plansContainer.innerHTML += `
-                <div class="plan-row">
-                    <div>${plan.type || "-"}</div>
-                    <div>${plan.daysEarned || 0}</div>
-                    <div>$${plan.totalEarnings || 0}</div>
-                </div>
-            `;
-
-        });
-
-    }else{
-
-        plansContainer.innerHTML = `
-            <div class="empty-space">
-                No active plans
-            </div>
+    if (data.plans) {
+      Object.values(data.plans).forEach(plan => {
+        plansContainer.innerHTML += `
+          <div class="plan-row">
+            <div>${plan.type || "-"}</div>
+            <div>${plan.daysEarned || 0}</div>
+            <div>$${plan.totalEarnings || 0}</div>
+          </div>
         `;
-
+      });
+    } else {
+      plansContainer.innerHTML = `
+        <div class="empty-space">No active plans</div>
+      `;
     }
+  });
+}
 
+/* 🚀 START AFTER LOAD */
+document.addEventListener("DOMContentLoaded", loadTasks);
+
+/* 🔌 CONNECTION STATUS */
+firebase.database().ref(".info/connected").on("value", (snap) => {
+  console.log(snap.val() ? "Connected to Firebase" : "Disconnected");
 });
-
-// Connection status
-firebase.database().ref(".info/connected")
-.on("value", (snap) => {
-
-    if(snap.val() === true){
-        console.log("Connected to Firebase");
-    }else{
-        console.log("Disconnected from Firebase");
-    }
-
-});
-
 </script>
-
 </body>
-  </html>
+</html>
