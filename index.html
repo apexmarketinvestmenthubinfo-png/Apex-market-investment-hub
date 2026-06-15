@@ -289,6 +289,43 @@ footer {
 <footer>
     © 2026 Apex Market Investment Hub. All Rights Reserved.
 </footer>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
+/* 🔥 FIREBASE CONFIG (INJECTED) */
+const firebaseConfig = {
+  apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
+  authDomain: "apex-market-investment-h-643fc.firebaseapp.com",
+  databaseURL: "https://apex-market-investment-h-643fc-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "apex-market-investment-h-643fc",
+  storageBucket: "apex-market-investment-h-643fc.firebasestorage.app",
+  messagingSenderId: "96469134780",
+  appId: "1:96469134780:web:b1b443b0467083f843cfb9",
+  measurementId: "G-NB3LXMPGTV"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+/* 🔁 CHANGE THIS PATH IF YOU USE AUTH */
+const userRef = ref(db, "users/demo");
+
+/* 🔴 REAL TIME SYNC */
+onValue(userRef, (snapshot) => {
+  const data = snapshot.val() || {};
+
+  console.log("LIVE FIREBASE DATA:", data);
+
+  /* OPTIONAL UI HOOKS (ADD IDS IF YOU WANT DISPLAY) */
+  const balance = document.getElementById("balance");
+  const profit = document.getElementById("profit");
+  const deposit = document.getElementById("deposit");
+
+  if (balance) balance.innerText = "KSh " + (data.balance || 0).toLocaleString();
+  if (profit) profit.innerText = "KSh " + (data.profit || 0).toLocaleString();
+  if (deposit) deposit.innerText = "KSh " + (data.deposit || 0).toLocaleString();
+});
+</script>
 </body>
 </html>
