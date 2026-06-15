@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-html lang="en">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -38,7 +38,32 @@ button:disabled{background:#444;cursor:not-allowed}
 <a href="profile.html" class="nav-btn"><div class="nav-icon">👤</div>Profile</a>
 </div>
 
-<script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getDatabase,
+  ref,
+  set,
+  onValue
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+/* 🔥 FIREBASE CONFIG */
+const firebaseConfig = {
+  apiKey: "AIzaSyC-c_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
+  authDomain: "apex-market-investment-h-643fc.firebaseapp.com",
+  databaseURL: "https://apex-market-investment-h-643fc-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "apex-market-investment-h-643fc",
+  storageBucket: "apex-market-investment-h-643fc.firebasestorage.app",
+  messagingSenderId: "96469134780",
+  appId: "1:96469134780:web:b1b443b0467083f843cfb9",
+  measurementId: "G-NB3LXMPGTV"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const auth = getAuth(app);
+
 const plans = [
 {name:"Starter Plan",amount:1000,roi:50},
 {name:"Bronze Plan",amount:2500,roi:50},
@@ -51,121 +76,73 @@ const plans = [
 {name:"Executive Plan",amount:100000,roi:50},
 {name:"Ultimate Plan",amount:200000,roi:50}
 ];
-const container=document.getElementById("plans");
+
+const container = document.getElementById("plans");
+
+onAuthStateChanged(auth, (user) => {
+
+if(!user){
+container.innerHTML = "<p>Please login first</p>";
+return;
+}
+
+const uid = user.uid;
+
+/* REAL-TIME LISTENER */
+const investRef = ref(db, `users/${uid}/investments`);
+
+onValue(investRef, (snap)=>{
+
+const data = snap.val() || {};
+container.innerHTML = "";
 
 plans.forEach((plan,index)=>{
-let invested=JSON.parse(localStorage.getItem("plan"+index));
-let profit72=Math.round(plan.amount*(plan.roi/100));
-let total21=plan.amount+(profit72*7);
 
-container.innerHTML+=`
+const invested = data["plan_"+index];
+const profit72 = Math.round(plan.amount * 0.5);
+const total21 = plan.amount + (profit72 * 7);
+
+container.innerHTML += `
 <div class="plan">
 <h3>${plan.name}</h3>
-<p><strong>Investment:</strong> KES ${plan.amount.toLocaleString()}</p>
-<p><strong>Active Investment:</strong> ${invested?"KES "+plan.amount.toLocaleString():"KES 0"}</p>
-<p><strong>Profit per 72 Hours:</strong> KES ${profit72.toLocaleString()}</p>
-<p><strong>Total After 21 Days:</strong> KES ${total21.toLocaleString()}</p>
-<p id="payout${index}"><strong>Next Payout:</strong> ${invested?"Pending...":"Not invested KES 0"}</p>
-<p id="maturity${index}"><strong>Maturity:</strong> ${invested?"Running...":"No active investment"}</p>
-<div class="status" id="status${index}">${invested?"Running Investment":""}</div>
-<div class="timer" id="timer${index}">No active countdown</div>
-<button id="btn${index}" ${invested?"disabled":""}>${invested?"Invested":"Invest Now"}</button>
-</div>`;
 
-setTimeout(()=>{
-document.getElementById("btn"+index).onclick=()=>invest(index);
-if(invested) startTimer(index);
-},100);
+<p><strong>Investment:</strong> KES ${plan.amount.toLocaleString()}</p>
+
+<p><strong>Active Investment:</strong>
+${invested ? "KES " + plan.amount.toLocaleString() : "KES 0"}
+</p>
+
+<p><strong>Profit per 72 Hours:</strong> KES ${profit72.toLocaleString()}</p>
+
+<p><strong>Total After 21 Days:</strong> KES ${total21.toLocaleString()}</p>
+
+<div class="status">
+${invested ? "Running Investment" : "Not Invested"}
+</div>
+
+<button onclick="invest(${index})"
+${invested ? "disabled" : ""}>
+${invested ? "Invested" : "Invest Now"}
+</button>
+
+</div>`;
 });
 
-function invest(index){
-const start=Date.now();
-localStorage.setItem("plan"+index,JSON.stringify({start:start}));
-document.getElementById("btn"+index).disabled=true;
-document.getElementById("btn"+index).innerHTML="Invested";
-document.getElementById("status"+index).innerHTML="Running Investment";
-startTimer(index);
-}
+});
 
-function startTimer(index){
-const data=JSON.parse(localStorage.getItem("plan"+index));
-if(!data) return;
+window.invest = async function(index){
 
-const timer=document.getElementById("timer"+index);
-const btn=document.getElementById("btn"+index);
+await set(ref(db, `users/${uid}/investments/plan_${index}`), {
+plan: plans[index].name,
+amount: plans[index].amount,
+roi: plans[index].roi,
+start: Date.now()
+});
 
-const interval=setInterval(()=>{
+alert("Investment Activated: " + plans[index].name);
+};
 
-const now=Date.now();
-
-const payoutTime=data.start+(72*60*60*1000);
-const maturityTime=data.start+(21*24*60*60*1000);
-
-if(now < payoutTime){
-
-const diff=payoutTime-now;
-const hrs=Math.floor(diff/1000/60/60);
-const mins=Math.floor((diff/1000/60)%60);
-const secs=Math.floor((diff/1000)%60);
-
-document.getElementById("payout"+index).innerHTML=
-"<strong>Next Payout:</strong> "+hrs+"h "+mins+"m "+secs+"s";
-
-timer.innerHTML=
-"⏳ First Profit Countdown: "+hrs+"h "+mins+"m "+secs+"s";
-
-}
-
-else if(now < maturityTime){
-
-btn.disabled=false;
-btn.innerHTML="Reinvest";
-
-const diff=maturityTime-now;
-
-const days=Math.floor(diff/1000/60/60/24);
-const hrs=Math.floor((diff/1000/60/60)%24);
-const mins=Math.floor((diff/1000/60)%60);
-
-document.getElementById("status"+index).innerHTML=
-"💰 Profit Available";
-
-document.getElementById("maturity"+index).innerHTML=
-"<strong>Maturity:</strong> "+days+"d "+hrs+"h Remaining";
-
-document.getElementById("payout"+index).innerHTML=
-"<strong>Next Payout:</strong> Profit Ready";
-
-timer.innerHTML=
-"📈 Maturity Countdown: "+days+"d "+hrs+"h "+mins+"m";
-
-}
-
-else{
-
-clearInterval(interval);
-
-document.getElementById("status"+index).innerHTML=
-"✅ Investment Completed";
-
-document.getElementById("maturity"+index).innerHTML=
-"<strong>Maturity:</strong> Matured";
-
-document.getElementById("payout"+index).innerHTML=
-"<strong>Next Payout:</strong> Final Profit Received";
-
-timer.innerHTML=
-"🎉 Investment Matured Successfully";
-
-btn.disabled=false;
-btn.innerHTML="Invest Again";
-
-localStorage.removeItem("plan"+index);
-
-}
-
-},1000);
-}
+});
 </script>
 </body>
 </html>
