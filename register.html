@@ -143,7 +143,15 @@ button:hover {
 
     <!-- ✔ PROFILE NAME TITLE (already correct, kept as requested) -->
     <h2>Apex Market Investment Hub</h2>
-
+<div id="notification" style="
+display:none;
+padding:12px;
+margin-bottom:15px;
+border-radius:10px;
+text-align:center;
+font-size:13px;
+font-weight:600;
+"></div>
     <input type="text" id="name" placeholder="Full Name" required>
     <input type="email" id="email" placeholder="Gmail Address" required>
     <input type="tel" id="phone" placeholder="Phone Number (+254...)" value="+254" required>
@@ -169,15 +177,19 @@ button:hover {
     <button onclick="register()">Create Account</button>
 
     <div class="login">
-        Already have an account? <a href="#">Login</a>
-    </div>
+    Already have an account? <a href="./login.html">Login</a>
 </div>
 
 <!-- FIREBASE INTEGRATION (UNCHANGED) -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import {
+  getAuth,
+  createUserWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
+/* FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
   authDomain: "apex-market-investment-h-643fc.firebaseapp.com",
@@ -191,55 +203,126 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+const auth = getAuth(app);
 
-window.register = function () {
+/* NOTIFICATION SYSTEM */
+function showNotification(message, type = "success") {
 
-    const name = document.getElementById("name").value;
-    const email = document.getElementById("email").value;
-    const phone = document.getElementById("phone").value;
-    const password = document.getElementById("password").value;
-    const confirm = document.getElementById("confirm").value;
-    const terms = document.getElementById("terms").checked;
+  const notification = document.getElementById("notification");
 
-    if (!terms) {
-        alert("You must accept Terms & Conditions");
-        return;
-    }
+  notification.style.display = "block";
+  notification.textContent = message;
 
-    if (password !== confirm) {
-        alert("Passwords do not match");
-        return;
-    }
+  if (type === "success") {
+    notification.style.background = "rgba(0,255,136,.15)";
+    notification.style.border = "1px solid rgba(0,255,136,.4)";
+    notification.style.color = "#00ff88";
+  } else {
+    notification.style.background = "rgba(255,59,59,.15)";
+    notification.style.border = "1px solid rgba(255,59,59,.4)";
+    notification.style.color = "#ff6b6b";
+  }
 
-    const userRef = push(ref(db, "users"));
+  clearTimeout(window.ntf);
+  window.ntf = setTimeout(() => {
+    notification.style.display = "none";
+  }, 3000);
+}
 
-    set(userRef, {
-        name,
-        email,
-        phone,
-        password,
-        balance: 0,
-        investment: 0,
-        profit: 0,
-        createdAt: Date.now()
+/* PREVENT DOUBLE SUBMIT */
+let isRegistering = false;
+
+/* REGISTER */
+window.register = async function () {
+
+  if (isRegistering) return;
+  isRegistering = true;
+
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const password = document.getElementById("password").value;
+  const confirm = document.getElementById("confirm").value;
+  const terms = document.getElementById("terms").checked;
+
+  if (!terms) {
+    showNotification("Accept Terms & Conditions to continue", "error");
+    isRegistering = false;
+    return;
+  }
+
+  if (password.length < 6) {
+    showNotification("Password must be at least 6 characters", "error");
+    isRegistering = false;
+    return;
+  }
+
+  if (password !== confirm) {
+    showNotification("Passwords do not match", "error");
+    isRegistering = false;
+    return;
+  }
+
+  try {
+
+    const userCredential =
+      await createUserWithEmailAndPassword(auth, email, password);
+
+    const uid = userCredential.user.uid;
+
+    const userRef = ref(db, "users/" + uid);
+
+    /* WRITE USER DATA */
+    await set(userRef, {
+      name,
+      email,
+      phone,
+      balance: 0,
+      deposit: 0,
+      investment: 0,
+      profit: 0,
+      createdAt: Date.now()
     });
 
-    alert("Account created successfully 🚀");
+    /* REAL-TIME SYNC CONFIRMATION */
+    onValue(userRef, (snap) => {
+      console.log("LIVE USER DATA:", snap.val());
+    });
+
+    showNotification("Register Successfully ✓", "success");
+
+    setTimeout(() => {
+      window.location.href = "dashboard.html";
+    }, 1500);
+
+  } catch (error) {
+
+    console.error(error.code);
+
+    if (error.code === "auth/email-already-in-use") {
+      showNotification("Email already registered", "error");
+    } else {
+      showNotification("Registration failed", "error");
+    }
+
+  }
+
+  isRegistering = false;
 };
 
+/* TOGGLE PASSWORD */
 window.togglePassword = function (id) {
-    const input = document.getElementById(id);
-    const toggle = input.nextElementSibling;
+  const input = document.getElementById(id);
+  const toggle = input.nextElementSibling;
 
-    if (input.type === "password") {
-        input.type = "text";
-        toggle.innerText = "Hide";
-    } else {
-        input.type = "password";
-        toggle.innerText = "Show";
-    }
+  if (input.type === "password") {
+    input.type = "text";
+    toggle.innerText = "Hide";
+  } else {
+    input.type = "password";
+    toggle.innerText = "Show";
+  }
 };
 </script>
-
 </body>
 </html>
