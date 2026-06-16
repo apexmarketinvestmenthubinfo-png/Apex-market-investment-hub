@@ -231,6 +231,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getDatabase, ref, onValue, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
+/* FIREBASE CONFIG */
 const firebaseConfig = {
 apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
 authDomain: "apex-market-investment-h-643fc.firebaseapp.com",
@@ -245,52 +246,132 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const auth = getAuth(app);
 
-window.showPage = function(id,btn){
+let userBalance = 0;
 
-document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-document.getElementById(id).classList.add('active');
+/* PLANS */
+const plans = [
+{ name:"Starter Plan", amount:1000 },
+{ name:"Bronze Plan", amount:2500 },
+{ name:"Silver Plan", amount:5000 },
+{ name:"Gold Plan", amount:10000 },
+{ name:"Premium Plan", amount:20000 },
+{ name:"Elite Plan", amount:30000 },
+{ name:"Diamond Plan", amount:50000 },
+{ name:"VIP Plan", amount:75000 },
+{ name:"Executive Plan", amount:100000 },
+{ name:"Ultimate Plan", amount:200000 }
+];
 
-document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active-nav'));
-btn.classList.add('active-nav');
-};
+/* NOTIFY */
+function notify(msg){
+alert(msg);
+}
 
+/* AUTH */
 onAuthStateChanged(auth,(user)=>{
-
 if(!user) return;
 
 const userRef = ref(db,`users/${user.uid}`);
 
 onValue(userRef,(snap)=>{
+const data = snap.val() || {};
 
-const d = snap.val() || {};
+userBalance = Number(data.balance || 0);
 
-document.getElementById("mainBalance").textContent = "KSh "+(d.balance||0).toLocaleString();
+document.getElementById("mainBalance").textContent =
+"KSh "+userBalance.toLocaleString();
 
 document.getElementById("totalProfit").textContent =
-"KSh "+((d.balance||0)*0.5).toLocaleString();
+"KSh "+(userBalance*0.5).toLocaleString();
 
-document.getElementById("totalDeposit").textContent = "KSh "+(d.deposit||0).toLocaleString();
+document.getElementById("totalDeposit").textContent =
+"KSh "+(data.deposit||0).toLocaleString();
 
+/* LIVE RENDER */
+renderPlans(user.uid, data.investments || {});
+});
 });
 
-/* INVEST BUTTONS */
+/* RENDER PLANS */
+function renderPlans(uid, investments){
+
+const container = document.querySelector(".plans");
+container.innerHTML = "";
+
+/* convert investments to array */
+const investedPlans = Object.values(investments || {});
+
+plans.forEach(plan=>{
+
+const invested = investedPlans.find(i => i.plan === plan.name);
+
+/* LOCK RULE */
+const locked = !invested && userBalance < plan.amount;
+
+/* STATUS */
+const status =
+invested
+? `<span style="color:#00ff88;font-weight:700;">RUNNING</span>`
+: locked
+? `<span style="color:#ffcc00;">LOCKED</span>`
+: `<span style="color:#00f7ff;">AVAILABLE</span>`;
+
+/* BUTTON */
+const buttonText =
+invested ? "Running"
+: locked ? "Locked 🔒"
+: "Invest Now";
+
+container.innerHTML += `
+<div class="plan"
+style="border:1px solid ${
+invested ? "#00ff88" : "rgba(255,255,255,.08)"
+};">
+
+<h3>${plan.name}</h3>
+
+<p>Price: KSh ${plan.amount.toLocaleString()}</p>
+
+<p>Status: ${status}</p>
+
+<button
+class="invest-btn"
+data-plan="${plan.name}"
+data-amount="${plan.amount}"
+${invested || locked ? "disabled" : ""}
+style="background:${invested ? "#00ff88" : ""}"
+>
+${buttonText}
+</button>
+
+</div>
+`;
+});
+
+/* BUTTON ACTIONS */
 document.querySelectorAll(".invest-btn").forEach(btn=>{
-btn.addEventListener("click",async()=>{
+btn.onclick = async ()=>{
 
-const plan = btn.dataset.plan;
+const amount = Number(btn.dataset.amount);
 
-await push(ref(db,`users/${user.uid}/investments`),{
-plan,
+/* ❌ INSUFFICIENT FUNDS */
+if(userBalance < amount){
+notify("❌ Insufficient funds to invest in this plan");
+return;
+}
+
+/* FIREBASE SAVE */
+await push(ref(db,`users/${uid}/investments`),{
+plan: btn.dataset.plan,
+amount,
 returnRate:50,
 time:Date.now()
 });
 
-alert(plan+" activated (50% return)");
-
+notify("Plan invested successfully");
+};
 });
-});
-
-});
+}
 </script>
 
 </body>
