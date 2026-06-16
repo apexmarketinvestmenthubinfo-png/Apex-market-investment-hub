@@ -142,35 +142,62 @@ color:#9cb6d9;
 }
 
 .bottom-nav{
-position:fixed;
-bottom:0;
-left:0;
-right:0;
-height:78px;
-background:#03152f;
-border-top:1px solid rgba(255,255,255,.08);
-display:flex;
-justify-content:space-around;
-align-items:center;
-backdrop-filter:blur(20px);
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    height:72px;
+
+    display:flex;
+    justify-content:space-evenly;
+    align-items:center;
+
+    padding:0 8px;
+
+    background:rgba(9,19,38,.95);
+    backdrop-filter:blur(25px);
+
+    border-top:1px solid rgba(255,255,255,.08);
+
+    box-shadow:
+        0 -8px 30px rgba(0,0,0,.45);
+
+    z-index:999;
 }
 
-.nav-item{
-display:flex;
-flex-direction:column;
-align-items:center;
-text-decoration:none;
-color:#c7d8ef;
-font-size:13px;
-}
+.nav-btn{
+    flex:1;
 
-.nav-item.active{
-color:#00cfff;
+    display:flex;
+    flex-direction:row;      /* Horizontal */
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+
+    text-decoration:none;
+    color:#9ba7c7;
+
+    font-size:12px;
+    font-weight:600;
+
+    transition:.3s ease;
 }
 
 .nav-icon{
-font-size:24px;
-margin-bottom:4px;
+    font-size:20px;
+    line-height:1;
+}
+
+.nav-btn:hover,
+.active-nav{
+    color:#00f7ff;
+}
+
+.nav-btn:hover .nav-icon,
+.active-nav .nav-icon{
+    text-shadow:
+        0 0 10px rgba(0,247,255,.8),
+        0 0 20px rgba(0,247,255,.5);
 }
 
 @media(max-width:480px){
@@ -260,39 +287,42 @@ No active plans
 
 </div>
 
+<!-- NAV -->
 <div class="bottom-nav">
 
-<a href="dashboard.html" class="nav-item">
-<div class="nav-icon">🏠</div>
-Home
-</a>
+    <a href="dashboard.html" class="nav-btn active-nav">
+        <span class="nav-icon">⌂</span>
+        <span>Home</span>
+    </a>
 
-<a href="tasks.html" class="nav-item active">
-<div class="nav-icon">✔️</div>
-Task
-</a>
+    <a href="tasks.html" class="nav-btn">
+        <span class="nav-icon">✓</span>
+        <span>Tasks</span>
+    </a>
 
-<a href="team.html" class="nav-item">
-<div class="nav-icon">👥</div>
-Team
-</a>
+    <a href="plans.html" class="nav-btn">
+        <span class="nav-icon">◈</span>
+        <span>Plans</span>
+    </a>
 
-<a href="plans.html" class="nav-item">
-<div class="nav-icon">📋</div>
-Plans
-</a>
+    <a href="team.html" class="nav-btn">
+        <span class="nav-icon">◉</span>
+        <span>Team</span>
+    </a>
 
-<a href="profile.html" class="nav-item">
-<div class="nav-icon">👤</div>
-Profile
-</a>
+    <a href="profile.html" class="nav-btn">
+        <span class="nav-icon">◌</span>
+        <span>Profile</span>
+    </a>
 
 </div>
 
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script>
 const firebaseConfig = {
 apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
@@ -353,64 +383,106 @@ el.innerText = remaining72 > 0 ? format(remaining72) : "Cycle Ready";
 }
 
 /* 🔥 SYNC WITH USER INVESTMENTS */
-firebase.auth().onAuthStateChanged((user) => {
+let timersStarted = false;
 
-if(!user){
-document.getElementById("plansContainer").innerHTML =
-"<div class='empty-space'>Login required</div>";
-return;
-}
+auth.onAuthStateChanged((user)=>{
 
-const uid = user.uid;
+    if(!user){
 
-firebase.database()
-.ref("users/" + uid + "/investments")
-.on("value", (snap) => {
+        document.getElementById("plansContainer").innerHTML =
+        "<div class='empty-space'>Login required</div>";
 
-const data = snap.val() || {};
+        return;
+    }
 
-document.getElementById("plansContainer").innerHTML = "";
+    const uid = user.uid;
 
-let total = 0;
-let active = 0;
-let matured = 0;
+    db.ref(`users/${uid}/investments`)
+    .on("value",(snap)=>{
 
-Object.values(data).forEach((inv, index) => {
+        const investments = snap.val() || {};
 
-total++;
+        const container =
+        document.getElementById("plansContainer");
 
-const start = inv.start;
-const end = start + (21 * 24 * 60 * 60 * 1000);
+        container.innerHTML = "";
 
-const isMatured = Date.now() > end;
-if(isMatured) matured++;
-else active++;
+        let total = 0;
+        let active = 0;
+        let matured = 0;
 
-document.getElementById("plansContainer").innerHTML += `
-<div class="plan-row">
-<div>${inv.plan}</div>
+        Object.values(investments).forEach(inv=>{
 
-<div>
-<span data-start="${start}" data-type="21">Loading...</span>
-</div>
+            total++;
 
-<div>
-$${Math.round(inv.amount + (inv.amount * 0.5 * 7))}
-</div>
-</div>
-`;
+            const start = inv.start || 0;
 
-});
+            const end =
+            start + (21 * 24 * 60 * 60 * 1000);
 
-/* stats */
-document.getElementById("totalPlans").innerText = total;
-document.getElementById("inProgress").innerText = active;
-document.getElementById("maturedPlans").innerText = matured;
+            const maturedPlan =
+            Date.now() >= end;
 
-/* start timers */
-startTimers();
+            if(maturedPlan){
+                matured++;
+            }else{
+                active++;
+            }
 
-});
+            const earnings =
+            inv.amount + (inv.amount * 0.5 * 7);
+
+            container.innerHTML += `
+
+            <div class="plan-row">
+
+                <div>${inv.plan}</div>
+
+                <div>
+                    <span
+                    data-start="${start}"
+                    data-type="21">
+                    Loading...
+                    </span>
+                </div>
+
+                <div>
+                    KES ${earnings.toLocaleString()}
+                </div>
+
+            </div>
+
+            `;
+        });
+
+        if(total === 0){
+
+            container.innerHTML = `
+
+            <div class="empty-space">
+                No active plans
+            </div>
+
+            `;
+        }
+
+        document.getElementById("totalPlans")
+        .innerText = total;
+
+        document.getElementById("inProgress")
+        .innerText = active;
+
+        document.getElementById("maturedPlans")
+        .innerText = matured;
+
+        if(!timersStarted){
+
+            startTimers();
+
+            timersStarted = true;
+        }
+
+    });
 
 });
 </script>
