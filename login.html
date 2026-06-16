@@ -103,8 +103,18 @@ cursor:pointer;
     </div>
 
     <div class="subtitle">
-        Secure Login To Your Investment Dashboard
-    </div>
+    Secure Login To Your Investment Dashboard
+</div>
+
+<div id="notification" style="
+display:none;
+margin-bottom:15px;
+padding:12px;
+border-radius:12px;
+text-align:center;
+font-size:13px;
+font-weight:600;
+"></div>
 
     <div class="input-group">
         <label>Gmail Address</label>
@@ -115,7 +125,7 @@ cursor:pointer;
         <label>Password</label>
         <div class="password-box">
             <input type="password" id="password" placeholder="Enter your password">
-            <span class="toggle" onclick="togglePassword()">Show</span>
+            <span class="toggle" onclick<span class="toggle" onclick="togglePassword('password', this)">Show</span>
         </div>
     </div>
 
@@ -132,14 +142,55 @@ cursor:pointer;
 
 <!-- ===== FIREBASE REAL-TIME SYNC (ADDED) ===== -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {
-getDatabase,
-ref,
-set,
-onValue
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+window.togglePassword = function (id, el) {
+  const input = document.getElementById(id);
 
+  if (!input) return;
+
+  if (input.type === "password") {
+    input.type = "text";
+    el.innerText = "Hide";
+  } else {
+    input.type = "password";
+    el.innerText = "Show";
+  }
+};
+import {
+  getAuth,
+  signInWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+  getDatabase,
+  ref,
+  set
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+/* NOTIFICATION FUNCTION */
+function showNotification(message, type = "success") {
+
+  const notification = document.getElementById("notification");
+
+  notification.style.display = "block";
+  notification.textContent = message;
+
+  if (type === "success") {
+    notification.style.background = "rgba(0,255,136,.15)";
+    notification.style.border = "1px solid rgba(0,255,136,.4)";
+    notification.style.color = "#00ff88";
+  } else {
+    notification.style.background = "rgba(255,59,59,.15)";
+    notification.style.border = "1px solid rgba(255,59,59,.4)";
+    notification.style.color = "#ff6b6b";
+  }
+
+  setTimeout(() => {
+    notification.style.display = "none";
+  }, 3000);
+}
+
+/* FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
   authDomain: "apex-market-investment-h-643fc.firebaseapp.com",
@@ -151,61 +202,60 @@ const firebaseConfig = {
   measurementId: "G-NB3LXMPGTV"
 };
 
+/* INITIALIZE FIREBASE */
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 const db = getDatabase(app);
 
-/* CLEAN EMAIL */
-function key(email){
-  return email.replace(/[.#$\[\]]/g,"_");
-}
-
-/* LOGIN + CREATE USER NODE */
+/* LOGIN FUNCTION */
 window.login = async function () {
 
-const email = document.getElementById("email").value.trim();
-const password = document.getElementById("password").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
 
-if(!email || !password){
-alert("Fill all fields");
-return;
-}
+  if (!email || !password) {
+    showNotification("Please enter email and password", "error");
+    return;
+  }
 
-const userKey = key(email);
+  try {
 
-/* CREATE USER (REAL-TIME STRUCTURE) */
-await set(ref(db,"users/"+userKey),{
-email,
-password,
-balance:0,
-profit:0,
-deposit:0,
-lastLogin:Date.now()
-});
+    const userCredential =
+      await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
 
-/* REAL-TIME LISTENER (SYNC TEST) */
-onValue(ref(db,"users/"+userKey),(snap)=>{
-console.log("LIVE DATA:", snap.val());
-});
+    const user = userCredential.user;
 
-alert("Login Successful 🚀");
+    /* UPDATE LAST LOGIN */
+    await set(ref(db, "users/" + user.uid + "/session"), {
+      email: user.email,
+      lastLogin: Date.now()
+    });
+
+    /* SAVE UID */
+    localStorage.setItem("apexUser", user.uid);
+
+    /* SUCCESS MESSAGE */
+    showNotification("Login Successfully ✓", "success");
+
+    /* REDIRECT */
+    setTimeout(() => {
+      window.location.href = "dashboard.html";
+    }, 1500);
+
+  } catch (error) {
+
+    console.error("Firebase Error:", error.code);
+    console.error(error.message);
+
+    showNotification("Invalid Credentials", "error");
+
+  }
+
 };
-
 </script>
-
-<script>
-function togglePassword(){
-const p=document.getElementById("password");
-const t=document.querySelector(".toggle");
-
-if(p.type==="password"){
-p.type="text";
-t.innerText="Hide";
-}else{
-p.type="password";
-t.innerText="Show";
-}
-}
-</script>
-
 </body>
 </html>
