@@ -294,68 +294,124 @@ Profile
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
 <script>
-/* 🔥 FIREBASE CONFIG */
 const firebaseConfig = {
-  apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
-  authDomain: "apex-market-investment-h-643fc.firebaseapp.com",
-  databaseURL: "https://apex-market-investment-h-643fc-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "apex-market-investment-h-643fc",
-  storageBucket: "apex-market-investment-h-643fc.firebasestorage.app",
-  messagingSenderId: "96469134780",
-  appId: "1:96469134780:web:b1b443b0467083f843cfb9",
-  measurementId: "G-NB3LXMPGTV"
+apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
+authDomain: "apex-market-investment-h-643fc.firebaseapp.com",
+databaseURL: "https://apex-market-investment-h-643fc-default-rtdb.europe-west1.firebasedatabase.app",
+projectId: "apex-market-investment-h-643fc",
+storageBucket: "apex-market-investment-h-643fc.firebasestorage.app",
+messagingSenderId: "96469134780",
+appId: "1:96469134780:web:b1b443b0467083f843cfb9",
+measurementId: "G-NB3LXMPGTV"
 };
 
-/* ✅ INIT FIREBASE (MUST BE FIRST) */
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-/* 🔁 REALTIME LISTENER */
-function loadTasks() {
-
-  db.ref("tasks").on("value", (snapshot) => {
-
-    const data = snapshot.val() || {};
-
-    document.getElementById("totalPlans").textContent =
-      data.totalPlans || 0;
-
-    document.getElementById("daysToMaturity").textContent =
-      (data.daysToMaturity || 21) + " Days";
-
-    document.getElementById("inProgress").textContent =
-      data.inProgress || 0;
-
-    document.getElementById("maturedPlans").textContent =
-      data.maturedPlans || 0;
-
-    const plansContainer = document.getElementById("plansContainer");
-    plansContainer.innerHTML = "";
-
-    if (data.plans) {
-      Object.values(data.plans).forEach(plan => {
-        plansContainer.innerHTML += `
-          <div class="plan-row">
-            <div>${plan.type || "-"}</div>
-            <div>${plan.daysEarned || 0}</div>
-            <div>$${plan.totalEarnings || 0}</div>
-          </div>
-        `;
-      });
-    } else {
-      plansContainer.innerHTML = `
-        <div class="empty-space">No active plans</div>
-      `;
-    }
-  });
+/* ⏳ FORMAT TIMER */
+function format(ms){
+const total = Math.floor(ms / 1000);
+const days = Math.floor(total / 86400);
+const hours = Math.floor((total % 86400) / 3600);
+const minutes = Math.floor((total % 3600) / 60);
+const seconds = total % 60;
+return `${days}d ${hours}h ${minutes}m ${seconds}s`;
 }
 
-/* 🚀 START AFTER LOAD */
-document.addEventListener("DOMContentLoaded", loadTasks);
+/* 🔁 LIVE TIMER ENGINE */
+function startTimers(){
 
-/* 🔌 CONNECTION STATUS */
-firebase.database().ref(".info/connected").on("value", (snap) => {
-  console.log(snap.val() ? "Connected to Firebase" : "Disconnected");
+setInterval(() => {
+
+document.querySelectorAll("[data-start]").forEach(el => {
+
+const start = Number(el.dataset.start || 0);
+if(!start) return;
+
+const now = Date.now();
+
+/* 21 DAYS */
+const end21 = start + (21 * 24 * 60 * 60 * 1000);
+const remaining21 = end21 - now;
+
+/* 72 HOURS */
+const end72 = start + (72 * 60 * 60 * 1000);
+const remaining72 = end72 - now;
+
+if(el.dataset.type === "21"){
+el.innerText = remaining21 > 0 ? format(remaining21) : "Completed";
+}
+
+if(el.dataset.type === "72"){
+el.innerText = remaining72 > 0 ? format(remaining72) : "Cycle Ready";
+}
+
+});
+
+}, 1000);
+
+}
+
+/* 🔥 SYNC WITH USER INVESTMENTS */
+firebase.auth().onAuthStateChanged((user) => {
+
+if(!user){
+document.getElementById("plansContainer").innerHTML =
+"<div class='empty-space'>Login required</div>";
+return;
+}
+
+const uid = user.uid;
+
+firebase.database()
+.ref("users/" + uid + "/investments")
+.on("value", (snap) => {
+
+const data = snap.val() || {};
+
+document.getElementById("plansContainer").innerHTML = "";
+
+let total = 0;
+let active = 0;
+let matured = 0;
+
+Object.values(data).forEach((inv, index) => {
+
+total++;
+
+const start = inv.start;
+const end = start + (21 * 24 * 60 * 60 * 1000);
+
+const isMatured = Date.now() > end;
+if(isMatured) matured++;
+else active++;
+
+document.getElementById("plansContainer").innerHTML += `
+<div class="plan-row">
+<div>${inv.plan}</div>
+
+<div>
+<span data-start="${start}" data-type="21">Loading...</span>
+</div>
+
+<div>
+$${Math.round(inv.amount + (inv.amount * 0.5 * 7))}
+</div>
+</div>
+`;
+
+});
+
+/* stats */
+document.getElementById("totalPlans").innerText = total;
+document.getElementById("inProgress").innerText = active;
+document.getElementById("maturedPlans").innerText = matured;
+
+/* start timers */
+startTimers();
+
+});
+
 });
 </script>
 </body>
