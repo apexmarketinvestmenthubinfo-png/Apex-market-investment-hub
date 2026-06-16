@@ -11,96 +11,63 @@
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif}
 body{background:#050816;color:#fff;padding-bottom:90px;overflow-x:hidden}
 
-body::before{
+body::before,body::after{
 content:'';
 position:fixed;
 width:400px;height:400px;
-background:linear-gradient(45deg,#00f7ff,#0066ff);
 border-radius:50%;
 filter:blur(150px);
-top:-120px;left:-120px;
-opacity:.3;z-index:-1;
+opacity:.3;
+z-index:-1;
 }
 
-body::after{
-content:'';
-position:fixed;
-width:400px;height:400px;
-background:linear-gradient(45deg,#ff00ff,#6a00ff);
-border-radius:50%;
-filter:blur(150px);
-bottom:-120px;right:-120px;
-opacity:.3;z-index:-1;
-}
+body::before{background:linear-gradient(45deg,#00f7ff,#0066ff);top:-120px;left:-120px}
+body::after{background:linear-gradient(45deg,#ff00ff,#6a00ff);bottom:-120px;right:-120px}
 
 .header{
-padding:20px;
-text-align:center;
-font-size:24px;
-font-weight:700;
+padding:20px;text-align:center;
+font-size:24px;font-weight:700;
 background:rgba(255,255,255,.05);
 backdrop-filter:blur(15px);
 border-bottom:1px solid rgba(255,255,255,.08)
 }
 
-.subtitle{
-text-align:center;
-color:#00f7ff;
-margin:10px 0 20px;
-font-size:15px
-}
-
+.subtitle{text-align:center;color:#00f7ff;margin:10px 0 20px;font-size:15px}
 .container{padding:15px}
 
 .plan{
 background:rgba(255,255,255,.05);
 border:1px solid rgba(255,255,255,.08);
 border-radius:20px;
-padding:20px;
-margin-bottom:20px;
-text-align:left;
+padding:20px;margin-bottom:20px;
 backdrop-filter:blur(15px)
 }
 
-.plan h3{
-color:#00f7ff;
-font-size:26px;
-margin-bottom:15px;
-text-align:center
-}
+.plan h3{color:#00f7ff;font-size:26px;margin-bottom:15px;text-align:center}
+.plan p{color:#ccc;margin:10px 0;font-size:15px;line-height:1.8}
 
-.plan p{
-color:#ccc;
-margin:10px 0;
-font-size:15px;
-line-height:1.8
-}
-
-.timer{
-margin-top:12px;
-padding:10px;
-background:rgba(0,247,255,.08);
-border:1px solid rgba(0,247,255,.15);
-border-radius:10px;
-font-size:13px;
-color:#ffcc00;
-font-weight:600
-}
+.status{margin-top:12px;font-size:14px;color:#00ff88;font-weight:600}
 
 button{
-width:100%;
-margin-top:15px;
-padding:14px;
-border:none;
-border-radius:12px;
+width:100%;margin-top:15px;
+padding:14px;border:none;border-radius:12px;
 background:linear-gradient(90deg,#00f7ff,#0066ff);
-color:#fff;
-font-size:16px;
-font-weight:600;
+color:#fff;font-size:16px;font-weight:600;
 cursor:pointer
 }
 
 button:disabled{background:#444;cursor:not-allowed}
+
+.bottom-nav{
+position:fixed;bottom:0;left:0;right:0;
+height:70px;background:#08111f;
+display:flex;justify-content:space-around;
+align-items:center;border-top:1px solid rgba(255,255,255,.08)
+}
+
+.nav-btn{text-decoration:none;color:#fff;font-size:12px;display:flex;flex-direction:column;align-items:center}
+.nav-icon{font-size:22px;margin-bottom:3px}
+.active{color:#00f7ff}
 </style>
 </head>
 
@@ -111,20 +78,29 @@ button:disabled{background:#444;cursor:not-allowed}
 
 <div class="container" id="plans"></div>
 
+<div class="bottom-nav">
+<a href="index.html" class="nav-btn"><div class="nav-icon">🏠</div>Home</a>
+<a href="deposit.html" class="nav-btn"><div class="nav-icon">💰</div>Deposit</a>
+<a href="plans.html" class="nav-btn active"><div class="nav-icon">📊</div>Plans</a>
+<a href="withdraw.html" class="nav-btn"><div class="nav-icon">💳</div>Withdraw</a>
+<a href="profile.html" class="nav-btn"><div class="nav-icon">👤</div>Profile</a>
+</div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-/* FIREBASE */
+/* 🔥 FIREBASE CONFIG */
 const firebaseConfig = {
-apiKey: "AIzaSyC-c_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
+apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
 authDomain: "apex-market-investment-h-643fc.firebaseapp.com",
 databaseURL: "https://apex-market-investment-h-643fc-default-rtdb.europe-west1.firebasedatabase.app",
 projectId: "apex-market-investment-h-643fc",
 storageBucket: "apex-market-investment-h-643fc.firebasestorage.app",
 messagingSenderId: "96469134780",
-appId: "1:96469134780:web:b1b443b0467083f843cfb9"
+appId: "1:96469134780:web:b1b443b0467083f843cfb9",
+measurementId: "G-NB3LXMPGTV"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -146,84 +122,173 @@ const plans = [
 {name:"Ultimate Plan",amount:200000,roi:50}
 ];
 
-function notify(msg){
-alert(msg);
+let currentUserId = null;
+let timerStarted = false;
+
+/* 🔔 TOAST SYSTEM (FIXED) */
+function showToast(msg){
+
+let toast = document.getElementById("toast");
+
+if(!toast){
+toast = document.createElement("div");
+toast.id = "toast";
+document.body.appendChild(toast);
 }
 
-function countdown(ms){
-const d = Math.floor(ms/(1000*60*60*24));
-const h = Math.floor((ms/(1000*60*60))%24);
-return `${d}d ${h}h`;
+toast.innerText = msg;
+toast.style.cssText = `
+position:fixed;
+bottom:100px;
+left:50%;
+transform:translateX(-50%);
+background:rgba(0,0,0,0.85);
+color:#00f7ff;
+padding:12px 18px;
+border-radius:12px;
+font-weight:600;
+z-index:9999;
+opacity:1;
+transition:0.3s;
+`;
+
+setTimeout(() => {
+toast.style.opacity = "0";
+}, 2200);
 }
 
-onAuthStateChanged(auth,(user)=>{
+/* ⏳ FORMAT TIMER */
+function format(ms){
+const total = Math.floor(ms / 1000);
+const d = Math.floor(total / 86400);
+const h = Math.floor((total % 86400) / 3600);
+const m = Math.floor((total % 3600) / 60);
+const s = total % 60;
+return `${d}d ${h}h ${m}m ${s}s`;
+}
+
+/* ⏳ SINGLE TIMER ENGINE */
+function startCountdown(){
+
+if(timerStarted) return;
+timerStarted = true;
+
+setInterval(() => {
+
+document.querySelectorAll("[data-start]").forEach(el => {
+
+const start = Number(el.dataset.start || 0);
+if(!start) return;
+
+const now = Date.now();
+
+const end21 = start + (21 * 24 * 60 * 60 * 1000);
+const end72 = start + (72 * 60 * 60 * 1000);
+
+const r21 = end21 - now;
+const r72 = end72 - now;
+
+if(el.dataset.type === "21"){
+el.innerText = r21 > 0 ? format(r21) : "Completed";
+}
+
+if(el.dataset.type === "72"){
+el.innerText = r72 > 0 ? format(r72) : "Cycle Ready";
+}
+
+});
+
+}, 1000);
+}
+
+/* 🔐 AUTH + REALTIME SYNC */
+onAuthStateChanged(auth, (user) => {
 
 if(!user){
-container.innerHTML="<p>Please login first</p>";
+container.innerHTML = "<p>Please login first</p>";
 return;
 }
 
-const uid = user.uid;
-const refInv = ref(db,`users/${uid}/investments`);
+currentUserId = user.uid;
 
-onValue(refInv,(snap)=>{
+const investRef = ref(db, `users/${currentUserId}/investments`);
 
-const data = snap.val()||{};
-container.innerHTML="";
+onValue(investRef, (snap) => {
 
-plans.forEach((plan,i)=>{
+const data = snap.val() || {};
+container.innerHTML = "";
 
-const inv = data["plan_"+i];
+plans.forEach((plan,index)=>{
 
-let status="Not Invested";
-let disabled="";
-let timer="";
+const invested = data["plan_"+index];
+const start = invested?.start || 0;
 
-if(inv){
-const now=Date.now();
-const unlock=inv.start+72*60*60*1000;
-const mature=inv.start+21*24*60*60*1000;
+const profit72 = Math.round(plan.amount * 0.5);
+const total21 = plan.amount + (profit72 * 7);
 
-if(now<unlock){
-status="Locked";
-disabled="disabled";
-timer="Unlock in "+countdown(unlock-now);
-}else if(now<mature){
-status="Active";
-timer="Matures in "+countdown(mature-now);
-}else{
-status="Matured";
-disabled="disabled";
-timer="Completed";
-}
-}
-
-container.innerHTML+=`
+container.innerHTML += `
 <div class="plan">
+
 <h3>${plan.name}</h3>
-<p>Investment: KES ${plan.amount.toLocaleString()}</p>
-<p>Status: ${status}</p>
-<div class="timer">${timer}</div>
-<button ${disabled} onclick="invest(${i})">
-${inv?"Invested":"Invest Now"}
+
+<p><strong>Investment:</strong> KES ${plan.amount.toLocaleString()}</p>
+
+<p><strong>Active:</strong>
+${invested ? "KES " + plan.amount.toLocaleString() : "KES 0"}
+</p>
+
+<p><strong>Profit per 72 Hours:</strong> KES ${profit72.toLocaleString()}</p>
+
+<p><strong>Total After 21 Days:</strong> KES ${total21.toLocaleString()}</p>
+
+<div class="status">
+${invested ? "Running Investment" : "Not Invested"}
+</div>
+
+<p><strong>Time Left (21D):</strong>
+<span data-start="${start}" data-type="21">${start ? "Loading..." : "--"}</span>
+</p>
+
+<p><strong>Next ROI Cycle (72H):</strong>
+<span data-start="${start}" data-type="72">${start ? "Loading..." : "--"}</span>
+</p>
+
+<button onclick="invest(${index})" ${invested ? "disabled" : ""}>
+${invested ? "Invested" : "Invest Now"}
 </button>
-</div>`;
+
+</div>
+`;
+});
+
+startCountdown();
 });
 
 });
 
-window.invest=async function(i){
-const plan=plans[i];
-await set(ref(db,`users/${uid}/investments/plan_${i}`),{
-plan:plan.name,
-amount:plan.amount,
-roi:plan.roi,
-start:Date.now()
+/* 🚀 INVEST FUNCTION */
+window.invest = async function(index){
+
+if(!currentUserId){
+showToast("User not authenticated");
+return;
+}
+
+try {
+await set(ref(db, `users/${currentUserId}/investments/plan_${index}`), {
+plan: plans[index].name,
+amount: plans[index].amount,
+roi: plans[index].roi,
+start: Date.now()
 });
-notify("Investment successful");
+
+showToast("Plan invested successfully");
+
+} catch (e) {
+console.error(e);
+showToast("Failed to activate investment");
+}
 };
-
-});
 </script>
 
 </body>
