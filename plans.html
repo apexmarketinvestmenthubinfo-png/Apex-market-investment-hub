@@ -59,15 +59,122 @@ cursor:pointer
 button:disabled{background:#444;cursor:not-allowed}
 
 .bottom-nav{
-position:fixed;bottom:0;left:0;right:0;
-height:70px;background:#08111f;
-display:flex;justify-content:space-around;
-align-items:center;border-top:1px solid rgba(255,255,255,.08)
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    height:72px;
+
+    display:flex;
+    justify-content:space-evenly;
+    align-items:center;
+
+    padding:0 8px;
+
+    background:rgba(9,19,38,.95);
+    backdrop-filter:blur(25px);
+
+    border-top:1px solid rgba(255,255,255,.08);
+
+    box-shadow:
+        0 -8px 30px rgba(0,0,0,.45);
+
+    z-index:999;
 }
 
-.nav-btn{text-decoration:none;color:#fff;font-size:12px;display:flex;flex-direction:column;align-items:center}
-.nav-icon{font-size:22px;margin-bottom:3px}
-.active{color:#00f7ff}
+.nav-btn{
+    flex:1;
+
+    display:flex;
+    flex-direction:row;      /* Horizontal */
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+
+    text-decoration:none;
+    color:#9ba7c7;
+
+    font-size:12px;
+    font-weight:600;
+
+    transition:.3s ease;
+}
+
+.nav-icon{
+    font-size:20px;
+    line-height:1;
+}
+
+.nav-btn:hover,
+.active-nav{
+    color:#00f7ff;
+}
+
+.nav-btn:hover .nav-icon,
+.active-nav .nav-icon{
+    text-shadow:
+        0 0 10px rgba(0,247,255,.8),
+        0 0 20px rgba(0,247,255,.5);
+}
+/* CENTER NOTIFICATION */
+#toast-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.55);
+    backdrop-filter:blur(6px);
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    z-index:99999;
+
+    opacity:0;
+    visibility:hidden;
+
+    transition:.3s ease;
+}
+
+#toast-overlay.show{
+    opacity:1;
+    visibility:visible;
+}
+
+#toast{
+    max-width:320px;
+    width:85%;
+
+    padding:24px 20px;
+    text-align:center;
+
+    background:rgba(10,18,35,.95);
+    backdrop-filter:blur(20px);
+
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:24px;
+
+    color:#ffffff;
+    font-size:16px;
+    font-weight:600;
+    line-height:1.6;
+
+    box-shadow:
+        0 20px 60px rgba(0,0,0,.5),
+        0 0 25px rgba(0,247,255,.25);
+
+    animation:toastPop .3s ease;
+}
+
+@keyframes toastPop{
+    from{
+        transform:scale(.85);
+        opacity:0;
+    }
+    to{
+        transform:scale(1);
+        opacity:1;
+    }
+}
 </style>
 </head>
 
@@ -78,29 +185,59 @@ align-items:center;border-top:1px solid rgba(255,255,255,.08)
 
 <div class="container" id="plans"></div>
 
+<!-- NAV -->
 <div class="bottom-nav">
-<a href="index.html" class="nav-btn"><div class="nav-icon">🏠</div>Home</a>
-<a href="deposit.html" class="nav-btn"><div class="nav-icon">💰</div>Deposit</a>
-<a href="plans.html" class="nav-btn active"><div class="nav-icon">📊</div>Plans</a>
-<a href="withdraw.html" class="nav-btn"><div class="nav-icon">💳</div>Withdraw</a>
-<a href="profile.html" class="nav-btn"><div class="nav-icon">👤</div>Profile</a>
+
+    <a href="dashboard.html" class="nav-btn active-nav">
+        <span class="nav-icon">⌂</span>
+        <span>Home</span>
+    </a>
+
+    <a href="tasks.html" class="nav-btn">
+        <span class="nav-icon">✓</span>
+        <span>Tasks</span>
+    </a>
+
+    <a href="plans.html" class="nav-btn">
+        <span class="nav-icon">◈</span>
+        <span>Plans</span>
+    </a>
+
+    <a href="team.html" class="nav-btn">
+        <span class="nav-icon">◉</span>
+        <span>Team</span>
+    </a>
+
+    <a href="profile.html" class="nav-btn">
+        <span class="nav-icon">◌</span>
+        <span>Profile</span>
+    </a>
+
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import {
+    getDatabase,
+    ref,
+    set,
+    onValue,
+    get,
+    update
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 /* 🔥 FIREBASE CONFIG */
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
-authDomain: "apex-market-investment-h-643fc.firebaseapp.com",
-databaseURL: "https://apex-market-investment-h-643fc-default-rtdb.europe-west1.firebasedatabase.app",
-projectId: "apex-market-investment-h-643fc",
-storageBucket: "apex-market-investment-h-643fc.firebasestorage.app",
-messagingSenderId: "96469134780",
-appId: "1:96469134780:web:b1b443b0467083f843cfb9",
-measurementId: "G-NB3LXMPGTV"
+  apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
+  authDomain: "apex-market-investment-h-643fc.firebaseapp.com",
+  databaseURL: "https://apex-market-investment-h-643fc-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "apex-market-investment-h-643fc",
+  storageBucket: "apex-market-investment-h-643fc.firebasestorage.app",
+  messagingSenderId: "96469134780",
+  appId: "1:96469134780:web:b1b443b0467083f843cfb9",
+  measurementId: "G-NB3LXMPGTV"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -125,36 +262,31 @@ const plans = [
 let currentUserId = null;
 let timerStarted = false;
 
-/* 🔔 TOAST SYSTEM (FIXED) */
 function showToast(msg){
 
-let toast = document.getElementById("toast");
+    let overlay = document.getElementById("toast-overlay");
 
-if(!toast){
-toast = document.createElement("div");
-toast.id = "toast";
-document.body.appendChild(toast);
-}
+    if(!overlay){
 
-toast.innerText = msg;
-toast.style.cssText = `
-position:fixed;
-bottom:100px;
-left:50%;
-transform:translateX(-50%);
-background:rgba(0,0,0,0.85);
-color:#00f7ff;
-padding:12px 18px;
-border-radius:12px;
-font-weight:600;
-z-index:9999;
-opacity:1;
-transition:0.3s;
-`;
+        overlay = document.createElement("div");
+        overlay.id = "toast-overlay";
 
-setTimeout(() => {
-toast.style.opacity = "0";
-}, 2200);
+        overlay.innerHTML = `
+            <div id="toast"></div>
+        `;
+
+        document.body.appendChild(overlay);
+    }
+
+    const toast = document.getElementById("toast");
+
+    toast.innerHTML = msg.replace(/\n/g,"<br>");
+
+    overlay.classList.add("show");
+
+    setTimeout(()=>{
+        overlay.classList.remove("show");
+    },2500);
 }
 
 /* ⏳ FORMAT TIMER */
@@ -269,25 +401,84 @@ startCountdown();
 /* 🚀 INVEST FUNCTION */
 window.invest = async function(index){
 
-if(!currentUserId){
-showToast("User not authenticated");
-return;
-}
+    if(!currentUserId){
+        showToast("Please login first");
+        return;
+    }
 
-try {
-await set(ref(db, `users/${currentUserId}/investments/plan_${index}`), {
-plan: plans[index].name,
-amount: plans[index].amount,
-roi: plans[index].roi,
-start: Date.now()
-});
+    const plan = plans[index];
 
-showToast("Plan invested successfully");
+    try{
 
-} catch (e) {
-console.error(e);
-showToast("Failed to activate investment");
-}
+        /* Get latest user data from Firebase */
+        const userSnap = await get(
+            ref(db, `users/${currentUserId}`)
+        );
+
+        const userData = userSnap.val() || {};
+
+        const balance = Number(userData.balance || 0);
+
+        /* Check if already invested */
+        if(userData.investments &&
+           userData.investments[`plan_${index}`]){
+
+            showToast("This plan is already active");
+            return;
+        }
+
+        /* Insufficient funds */
+        if(balance < plan.amount){
+
+            showToast(
+                `❌ Insufficient balance.\nRequired: KES ${plan.amount.toLocaleString()}`
+            );
+
+            return;
+        }
+
+const investmentData = {
+    plan: plan.name,
+    amount: plan.amount,
+    roi: plan.roi,
+    start: Date.now(),
+    status: "running"
+};
+
+await set(
+    ref(
+        db,
+        `users/${currentUserId}/investments/plan_${index}`
+    ),
+    investmentData
+);
+
+await set(
+    ref(
+        db,
+        `users/${currentUserId}/tasks/plan_${index}`
+    ),
+    investmentData
+);
+
+        /* Deduct balance */
+        await update(
+            ref(db, `users/${currentUserId}`),
+            {
+                balance: balance - plan.amount
+            }
+        );
+
+        showToast(
+            `✅ ${plan.name} activated successfully`
+        );
+
+    }catch(error){
+
+        console.error(error);
+
+        showToast("Investment failed");
+    }
 };
 </script>
 
