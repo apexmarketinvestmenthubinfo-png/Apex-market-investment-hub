@@ -36,90 +36,305 @@ color:#00f7ff;
 .container{padding:15px;}
 
 .balance-card{
-background:rgba(255,255,255,.05);
-border-radius:20px;
-padding:20px;
-margin-bottom:20px;
+    background:rgba(255,255,255,0.04);
+    backdrop-filter:blur(25px);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:28px;
+    padding:20px;
+    margin-bottom:25px;
+    box-shadow:
+        0 10px 40px rgba(0,0,0,.45),
+        inset 0 1px 1px rgba(255,255,255,.06);
 }
 
 .top-balance{
-display:flex;
-gap:10px;
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:15px;
 }
 
-.box{flex:1;text-align:center;}
-.box h3{font-size:13px;color:#aaa;}
-.box h2{color:#00f7ff;}
+.box,
+.deposit{
+    position:relative;
+    overflow:hidden;
+    text-align:center;
+    padding:22px 15px;
+    border-radius:22px;
+    background:rgba(255,255,255,0.05);
+    backdrop-filter:blur(20px);
+    border:1px solid rgba(255,255,255,0.08);
+}
+
+.box::before,
+.deposit::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius:22px;
+    padding:1px;
+    background:linear-gradient(
+        135deg,
+        rgba(0,247,255,.8),
+        rgba(0,102,255,.4),
+        rgba(0,255,136,.5)
+    );
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite:xor;
+    mask-composite:exclude;
+}
+
+.box::after,
+.deposit::after{
+    content:"";
+    position:absolute;
+    width:140px;
+    height:140px;
+    border-radius:50%;
+    background:rgba(0,247,255,.12);
+    top:-60px;
+    right:-60px;
+    filter:blur(35px);
+}
+
+.box h3,
+.deposit h3{
+    position:relative;
+    z-index:2;
+    font-size:14px;
+    color:#b8c1d9;
+    margin-bottom:12px;
+    font-weight:500;
+}
+
+.box h2,
+.deposit h2{
+    position:relative;
+    z-index:2;
+    font-size:34px;
+    font-weight:700;
+    letter-spacing:0.5px;
+}
+
+#mainBalance{
+    color:#00f7ff;
+    text-shadow:
+        0 0 12px rgba(0,247,255,.6),
+        0 0 25px rgba(0,247,255,.3);
+}
+
+#totalProfit{
+    color:#00ff88;
+    text-shadow:
+        0 0 12px rgba(0,255,136,.6),
+        0 0 25px rgba(0,255,136,.3);
+}
+
+#totalDeposit{
+    color:#ffd54f;
+    text-shadow:
+        0 0 12px rgba(255,213,79,.6),
+        0 0 25px rgba(255,213,79,.3);
+}
 
 .deposit{
-text-align:center;
-margin-top:15px;
-padding-top:15px;
-border-top:1px solid rgba(255,255,255,.08);
+    margin-top:18px;
 }
 
-.deposit h2{color:#00ff88;}
-
-.section-title{text-align:center;margin:15px 0;}
-
-.plans{
-display:flex;
-flex-direction:column;
-gap:12px;
+.withdraw-card::before{
+    background:linear-gradient(
+        135deg,
+        #00ff88,
+        #00c853
+    );
 }
 
-.plan{
-background:rgba(255,255,255,.05);
-padding:15px;
-border-radius:18px;
-text-align:center;
-border:1px solid rgba(255,255,255,.08);
+.company-card::before{
+    background:linear-gradient(
+        135deg,
+        #ff7b00,
+        #ff006e
+    );
 }
-
-.plan h3{color:#00f7ff;}
-.plan p{color:#ccc;}
-
-.plan button{
-width:100%;
-padding:10px;
-margin-top:10px;
-border:none;
-border-radius:12px;
-background:linear-gradient(90deg,#00f7ff,#0066ff);
-color:#fff;
-font-weight:600;
-cursor:pointer;
-}
-
 .bottom-nav{
-position:fixed;
-bottom:0;
-left:0;
-right:0;
-height:70px;
-background:#091326;
-display:flex;
-justify-content:space-around;
-align-items:center;
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    height:72px;
+
+    display:flex;
+    justify-content:space-evenly;
+    align-items:center;
+
+    padding:0 8px;
+
+    background:rgba(9,19,38,.95);
+    backdrop-filter:blur(25px);
+
+    border-top:1px solid rgba(255,255,255,.08);
+
+    box-shadow:
+        0 -8px 30px rgba(0,0,0,.45);
+
+    z-index:999;
 }
 
 .nav-btn{
-background:none;
-border:none;
-color:#fff;
-font-size:11px;
-display:flex;
-flex-direction:column;
-align-items:center;
-cursor:pointer;
+    flex:1;
+
+    display:flex;
+    flex-direction:row;      /* Horizontal */
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+
+    text-decoration:none;
+    color:#9ba7c7;
+
+    font-size:12px;
+    font-weight:600;
+
+    transition:.3s ease;
 }
 
-.nav-icon{font-size:22px;}
+.nav-icon{
+    font-size:20px;
+    line-height:1;
+}
 
-.active-nav{color:#00f7ff;}
+.nav-btn:hover,
+.active-nav{
+    color:#00f7ff;
+}
 
-.page{display:none;padding:15px;}
-.page.active{display:block;}
+.nav-btn:hover .nav-icon,
+.active-nav .nav-icon{
+    text-shadow:
+        0 0 10px rgba(0,247,255,.8),
+        0 0 20px rgba(0,247,255,.5);
+}
+
+..quick-btn{
+    flex:1;
+    text-align:center;
+    padding:12px;
+    border-radius:12px;
+    text-decoration:none;
+    color:#fff;
+    background:linear-gradient(90deg,#00f7ff,#0066ff);
+    font-weight:600;
+}
+
+..section-title{
+    text-align:center;
+    margin:25px 0 18px;
+    font-size:38px;
+    font-weight:700;
+}
+
+.plans{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+}
+
+.plan{
+    position:relative;
+    overflow:hidden;
+    background:rgba(255,255,255,0.05);
+    backdrop-filter:blur(20px);
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:24px;
+    padding:22px;
+    box-shadow:
+        0 10px 30px rgba(0,0,0,.4),
+        inset 0 1px 1px rgba(255,255,255,.06);
+}
+
+.plan::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius:24px;
+    padding:1px;
+    background:linear-gradient(
+        135deg,
+        rgba(0,247,255,.9),
+        rgba(0,102,255,.5),
+        rgba(0,255,136,.6)
+    );
+
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+
+    -webkit-mask-composite:xor;
+    mask-composite:exclude;
+}
+
+.plan::after{
+    content:"";
+    position:absolute;
+    width:160px;
+    height:160px;
+    border-radius:50%;
+    background:rgba(0,247,255,.12);
+    top:-80px;
+    right:-80px;
+    filter:blur(45px);
+}
+
+.plan h3{
+    position:relative;
+    z-index:2;
+    color:#ffffff;
+    font-size:24px;
+    margin-bottom:12px;
+}
+
+.plan p{
+    position:relative;
+    z-index:2;
+    color:#cfd7e6;
+    margin:6px 0;
+    font-size:16px;
+}
+
+.plan button{
+    position:relative;
+    z-index:2;
+    width:100%;
+    margin-top:18px;
+    padding:15px;
+    border:none;
+    border-radius:16px;
+    background:linear-gradient(
+        90deg,
+        #00f7ff,
+        #0066ff
+    );
+    color:#fff;
+    font-size:16px;
+    font-weight:700;
+    cursor:pointer;
+    box-shadow:
+        0 0 20px rgba(0,247,255,.35);
+}
+
+.plan button:hover{
+    transform:translateY(-2px);
+}
+
+.plan button:disabled{
+    background:rgba(255,255,255,.15);
+    color:#aaa;
+    box-shadow:none;
+    cursor:not-allowed;
+}
+
+
 </style>
 </head>
 
@@ -153,11 +368,12 @@ cursor:pointer;
 </div>
 
 <div class="deposit">
-<h3>Total Deposit</h3>
-<h2 id="totalDeposit">KSh 0.00</h2>
-</div>
+    <h3>Total Deposit</h3>
+    <h2 id="totalDeposit">KSh 0.00</h2>
+
 
 </div>
+
 
 <h2 class="section-title">Investment Plans</h2>
 
@@ -179,67 +395,51 @@ cursor:pointer;
 </div>
 </div>
 
-<!-- OTHER PAGES -->
-<div id="deposit" class="page"><h2>Deposit</h2></div>
-<div id="plans" class="page"><h2>Plans</h2></div>
-<div id="withdraw" class="page"><h2>Withdraw</h2></div>
-<div id="profile" class="page"><h2>Profile</h2></div>
-<div id="tasks" class="page"><h2>Tasks Center</h2></div>
-
 <!-- NAV -->
 <div class="bottom-nav">
 
-<a href="dashboard.html" class="nav-btn">
-<div class="nav-icon">🏠</div>
-Home
-</a>
+    <a href="dashboard.html" class="nav-btn active-nav">
+        <span class="nav-icon">⌂</span>
+        <span>Home</span>
+    </a>
 
-<a href="deposit.html" class="nav-btn">
-<div class="nav-icon">💰</div>
-Deposit
-</a>
+    <a href="tasks.html" class="nav-btn">
+        <span class="nav-icon">✓</span>
+        <span>Tasks</span>
+    </a>
 
-<a href="plans.html" class="nav-btn">
-<div class="nav-icon">📊</div>
-Plans
-</a>
+    <a href="plans.html" class="nav-btn">
+        <span class="nav-icon">◈</span>
+        <span>Plans</span>
+    </a>
 
-<a href="withdraw.html" class="nav-btn">
-<div class="nav-icon">💳</div>
-Withdraw
-</a>
+    <a href="team.html" class="nav-btn">
+        <span class="nav-icon">◉</span>
+        <span>Team</span>
+    </a>
 
-<a href="team.html" class="nav-btn">
-<div class="nav-icon">👥</div>
-Team
-</a>
-
-<a href="profile.html" class="nav-btn">
-<div class="nav-icon">👤</div>
-Profile
-</a>
-
-<a href="tasks.html" class="nav-btn">
-<div class="nav-icon">📝</div>
-Tasks
-</a>
+    <a href="profile.html" class="nav-btn">
+        <span class="nav-icon">◌</span>
+        <span>Profile</span>
+    </a>
 
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, onValue, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, onValue, push, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-/* FIREBASE CONFIG */
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
-authDomain: "apex-market-investment-h-643fc.firebaseapp.com",
-databaseURL: "https://apex-market-investment-h-643fc-default-rtdb.europe-west1.firebasedatabase.app",
-projectId: "apex-market-investment-h-643fc",
-storageBucket: "apex-market-investment-h-643fc.firebasestorage.app",
-messagingSenderId: "96469134780",
-appId: "1:96469134780:web:b1b443b0467083f843cfb9"
+  apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
+  authDomain: "apex-market-investment-h-643fc.firebaseapp.com",
+  databaseURL: "https://apex-market-investment-h-643fc-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "apex-market-investment-h-643fc",
+  storageBucket: "apex-market-investment-h-643fc.firebasestorage.app",
+  messagingSenderId: "96469134780",
+  appId: "1:96469134780:web:b1b443b0467083f843cfb9",
+  measurementId: "G-NB3LXMPGTV"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -303,7 +503,9 @@ const investedPlans = Object.values(investments || {});
 
 plans.forEach(plan=>{
 
-const invested = investedPlans.find(i => i.plan === plan.name);
+const invested = investedPlans.find(
+    i => i.plan === plan.name && i.status === "running"
+);
 
 /* LOCK RULE */
 const locked = !invested && userBalance < plan.amount;
@@ -361,11 +563,16 @@ return;
 }
 
 /* FIREBASE SAVE */
-await push(ref(db,`users/${uid}/investments`),{
-plan: btn.dataset.plan,
-amount,
-returnRate:50,
-time:Date.now()
+await push(ref(db, `users/${uid}/investments`), {
+    plan: btn.dataset.plan,
+    amount,
+    returnRate: 50,
+    status: "running",
+    time: Date.now()
+});
+
+await update(ref(db, `users/${uid}`), {
+    balance: userBalance - amount
 });
 
 notify("Plan invested successfully");
