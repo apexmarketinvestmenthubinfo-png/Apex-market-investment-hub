@@ -1,331 +1,371 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Apex Market Investment Hub</title>
-
-<style>
-body {
-    margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background: radial-gradient(circle at top, #070b18, #000);
-    color: white;
-    overflow-x: hidden;
+<title>APEX MARKET INVESTMENT HUB COMPANY</title><style>
+:root{
+--bg:#05070F;
+--panel:rgba(255,255,255,.05);
+--stroke:rgba(255,255,255,.08);
+--text:#EAF2FF;
+--muted:rgba(234,242,255,.70);
+--accent:#00FFD5;
+--gold:#FFD36A;
+--purple:#7C5CFF;
 }
 
-/* ====== ANIMATED FINTECH GLOW BACKGROUND ====== */
-.glow, .glow2, .glow3 {
-    position: fixed;
-    border-radius: 50%;
-    filter: blur(120px);
-    z-index: -2;
-    animation: float 10s infinite alternate ease-in-out;
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Segoe UI,sans-serif;
+scroll-behavior:smooth;
 }
 
-.glow {
-    width: 600px;
-    height: 600px;
-    background: rgba(0, 255, 204, 0.18);
-    top: -120px;
-    left: -120px;
+body{
+background:var(--bg);
+color:var(--text);
+overflow-x:hidden;
 }
 
-.glow2 {
-    width: 500px;
-    height: 500px;
-    background: rgba(255, 0, 200, 0.14);
-    bottom: -150px;
-    right: -150px;
+/* Animated Fintech Background */
+.bg-glow,
+.bg-glow2{
+position:fixed;
+width:700px;
+height:700px;
+border-radius:50%;
+filter:blur(80px);
+z-index:-2;
+animation:float 12s infinite alternate;
 }
 
-.glow3 {
-    width: 400px;
-    height: 400px;
-    background: rgba(255, 215, 0, 0.10);
-    top: 40%;
-    left: 35%;
+.bg-glow{
+background:radial-gradient(circle,rgba(0,255,213,.18),transparent 70%);
+top:-250px;
+left:-250px;
 }
 
-@keyframes float {
-    from { transform: translateY(0px) scale(1); }
-    to { transform: translateY(40px) scale(1.08); }
+.bg-glow2{
+background:radial-gradient(circle,rgba(255,211,106,.15),transparent 70%);
+bottom:-250px;
+right:-250px;
 }
 
-/* subtle moving grid */
-body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background: url('https://www.transparenttextures.com/patterns/cubes.png');
-    opacity: 0.05;
-    z-index: -3;
+@keyframes float{
+from{transform:translateY(0);}
+to{transform:translateY(60px);}
 }
 
-/* HEADER */
-header {
-    display: flex;
-    justify-content: space-between;
-    padding: 18px 60px;
-    align-items: center;
-    background: rgba(0,0,0,0.55);
-    backdrop-filter: blur(14px);
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    border-bottom: 1px solid rgba(0,255,213,0.15);
+body::before{
+content:"";
+position:fixed;
+inset:0;
+background-image:
+linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+background-size:70px 70px;
+opacity:.15;
+z-index:-1;
 }
 
-.logo {
-    font-size: 22px;
-    font-weight: bold;
-    color: #00ffd5;
-    letter-spacing: 2px;
+/* Header */
+header{
+position:sticky;
+top:0;
+z-index:100;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:18px 50px;
+background:rgba(5,7,15,.8);
+backdrop-filter:blur(20px);
+border-bottom:1px solid var(--stroke);
 }
 
-nav a {
-    color: rgba(255,255,255,0.85);
-    margin: 0 15px;
-    text-decoration: none;
-    transition: 0.3s;
+.logo{
+font-weight:800;
+letter-spacing:2px;
+color:var(--accent);
 }
 
-nav a:hover {
-    color: #00ffd5;
+nav{
+display:flex;
+gap:20px;
 }
 
-/* HERO */
-.hero {
-    text-align: center;
-    padding: 120px 20px;
-    animation: fadeIn 1.2s ease-in-out;
+nav a{
+color:var(--muted);
+text-decoration:none;
+font-size:14px;
 }
 
-@keyframes fadeIn {
-    from {opacity: 0; transform: translateY(20px);}
-    to {opacity: 1; transform: translateY(0);}
+nav a:hover{
+color:var(--accent);
 }
 
-.hero h1 {
-    font-size: 52px;
-    background: linear-gradient(90deg, #00ffd5, #ff00cc, #ffd700);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+/* Hero */
+.hero{
+padding:120px 20px;
+text-align:center;
+max-width:1000px;
+margin:auto;
 }
 
-.hero p {
-    max-width: 720px;
-    margin: auto;
-    font-size: 18px;
-    opacity: 0.85;
+.hero h1{
+font-size:60px;
+line-height:1.1;
+background:linear-gradient(90deg,var(--accent),var(--purple),var(--gold));
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
 }
 
-/* BUTTONS */
-.btn {
-    margin-top: 25px;
-    padding: 14px 28px;
-    border: none;
-    background: linear-gradient(90deg, #00ffd5, #ff00cc, #ffd700);
-    color: black;
-    font-weight: bold;
-    border-radius: 30px;
-    cursor: pointer;
-    transition: 0.3s;
-    margin-right: 10px;
+.hero p{
+margin-top:20px;
+font-size:18px;
+color:var(--muted);
+line-height:1.8;
 }
 
-.btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 0 25px rgba(0,255,213,0.4);
+.btn{
+margin-top:35px;
+padding:16px 34px;
+border:none;
+border-radius:14px;
+font-weight:700;
+cursor:pointer;
+background:linear-gradient(90deg,var(--accent),var(--gold));
+color:#000;
+box-shadow:0 0 35px rgba(0,255,213,.25);
 }
 
-/* SECTIONS */
-.section {
-    padding: 90px 60px;
-    text-align: center;
+/* Sections */
+.section{
+max-width:1200px;
+margin:auto;
+padding:90px 30px;
 }
 
-.section h2 {
-    font-size: 34px;
-    margin-bottom: 40px;
-    color: #00ffd5;
-    letter-spacing: 1px;
+.section h2{
+font-size:34px;
+margin-bottom:30px;
+text-align:center;
 }
 
-/* CARDS (GLASS FINTECH STYLE) */
-.cards {
-    display: flex;
-    justify-content: center;
-    gap: 25px;
-    flex-wrap: wrap;
+/* Achievement Cards */
+.stats{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:18px;
 }
 
-.card {
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(0,255,213,0.2);
-    padding: 25px;
-    width: 280px;
-    border-radius: 16px;
-    backdrop-filter: blur(16px);
-    transition: 0.4s;
-    position: relative;
-    overflow: hidden;
+.stat{
+background:var(--panel);
+border:1px solid var(--stroke);
+padding:30px;
+border-radius:20px;
+text-align:center;
+backdrop-filter:blur(15px);
 }
 
-.card::before {
-    content: "";
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle, rgba(0,255,213,0.12), transparent 70%);
-    top: 0;
-    left: 0;
-    opacity: 0;
-    transition: 0.4s;
+.stat h3{
+font-size:38px;
+color:var(--accent);
 }
 
-.card:hover::before {
-    opacity: 1;
+.stat p{
+margin-top:10px;
+color:var(--muted);
 }
 
-.card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 0 30px rgba(0,255,213,0.25);
+/* Cards */
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:18px;
 }
 
-.vip {
-    border: 1px solid gold;
-    box-shadow: 0 0 18px rgba(255,215,0,0.25);
+.card{
+background:var(--panel);
+border:1px solid var(--stroke);
+padding:25px;
+border-radius:18px;
+backdrop-filter:blur(18px);
+transition:.3s;
 }
 
-/* FOOTER */
-footer {
-    text-align: center;
-    padding: 30px;
-    background: rgba(0,0,0,0.65);
-    font-size: 14px;
-    opacity: 0.8;
-    border-top: 1px solid rgba(0,255,213,0.15);
+.card:hover{
+transform:translateY(-6px);
+border-color:var(--accent);
 }
 
-/* RESPONSIVE */
+.card h3{
+color:var(--gold);
+margin-bottom:10px;
+}
+
+.card p{
+color:var(--muted);
+line-height:1.7;
+}
+
+/* Feed */
+.feed{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+gap:18px;
+}
+
+.feed-item{
+background:linear-gradient(
+135deg,
+rgba(0,255,213,.08),
+rgba(255,211,106,.05)
+);
+border:1px solid var(--stroke);
+padding:20px;
+border-radius:18px;
+}
+
+.feed-item h4{
+color:var(--accent);
+margin-bottom:8px;
+}
+
+.feed-item p{
+color:var(--muted);
+}
+
+/* Footer */
+footer{
+text-align:center;
+padding:40px;
+border-top:1px solid var(--stroke);
+color:var(--muted);
+margin-top:60px;
+}
+
 @media(max-width:768px){
-    header {padding: 15px 20px;}
-    .hero h1 {font-size: 36px;}
-    .section {padding: 60px 20px;}
+.hero h1{
+font-size:38px;
 }
-</style>
+header{
+padding:15px 20px;
+}
+}
+</style></head>
+<body><div class="bg-glow"></div>
+<div class="bg-glow2"></div><header>
+<div class="logo">APEX MARKET INVESTMENT HUB</div><nav>
+<a href="#achievements">Achievements</a>
+<a href="#advantages">Advantages</a>
+<a href="#plans">Plans</a>
+<a href="#history">History</a>
+<a href="#feed">Feed</a>
+</nav>
+</header><section class="hero">
+<h1>Institutional Investment Infrastructure For Modern Capital Management</h1><p>
+APEX MARKET INVESTMENT HUB COMPANY provides technology-driven portfolio management tools,
+real-time analytics, transparent financial monitoring, and scalable digital infrastructure
+designed for modern investors worldwide.
+</p><button class="btn" onclick="window.location.href='register.html'">
+REGISTER NOW
+</button>
+</section><section class="section" id="achievements">
+<h2>Platform Achievements</h2><div class="stats"><div class="stat">
+<h3>12K+</h3>
+<p>Registered Members</p>
+</div><div class="stat">
+<h3>98%</h3>
+<p>User Satisfaction</p>
+</div><div class="stat">
+<h3>24/7</h3>
+<p>System Monitoring</p>
+</div><div class="stat">
+<h3>Global</h3>
+<p>Investor Coverage</p>
+</div></div>
+</section><section class="section" id="advantages">
+<h2>Advantages To Investors</h2><div class="grid"><div class="card">
+<h3>Capital Structuring</h3>
+<p>
+Organized investment frameworks designed to support portfolio planning and efficient capital allocation.
+</p>
+</div><div class="card">
+<h3>Automated Investment Logic</h3>
+<p>
+Technology-powered systems for monitoring portfolio activity and investment performance.
+</p>
+</div><div class="card">
+<h3>Risk Management</h3>
+<p>
+Structured monitoring tools that help investors evaluate portfolio exposure and performance.
+</p>
+</div><div class="card">
+<h3>Real-Time Insights</h3>
+<p>
+Live analytics, reporting dashboards, and portfolio tracking tools available at all times.
+</p>
+</div></div>
+</section><section class="section" id="plans">
+<h2>Investment Plans</h2><div class="grid"><div class="card"><h3>Starter Plan</h3><p>Entry-level access designed for new members.</p></div><div class="card"><h3>Bronze Plan</h3><p>Structured portfolio management features.</p></div><div class="card"><h3>Silver Plan</h3><p>Balanced investment framework and monitoring tools.</p></div><div class="card"><h3>Gold Plan</h3><p>Enhanced account features and analytics access.</p></div><div class="card"><h3>Premium Plan</h3><p>Advanced financial management capabilities.</p></div><div class="card"><h3>Diamond Plan</h3><p>Institutional-grade platform features.</p></div><div class="card"><h3>VIP Plan</h3><p>Priority support and premium account tools.</p></div><div class="card"><h3>Ultimate Plan</h3><p>Complete access to all platform resources.</p></div></div>
+</section><section class="section" id="history">
+<h2>Our History</h2><div class="card"><h3>The Story Behind Apex Market Hub</h3><p>
+Apex Market Hub was established with a vision to bridge the gap between modern technology and global investment opportunities. Founded by a team of technology and financial market enthusiasts, the platform was created to provide investors with a streamlined environment for accessing digital financial services, portfolio management tools, and transparent investment monitoring systems.
+</p><br><p>
+During its early development phase, Apex Market Hub focused on building a secure digital infrastructure capable of supporting real-time financial data, advanced analytics, and scalable user management systems. The platform invested heavily in modern fintech architecture, cloud technologies, and automated reporting tools to ensure reliability and operational efficiency.
+</p><br><p>
+As the platform expanded, Apex Market Hub introduced enhanced portfolio tracking capabilities, live market monitoring features, and integrated data systems designed to improve transparency and accessibility for its growing user community.
+</p><br><p>
+Today, Apex Market Hub continues its commitment to innovation, security, and technology-driven financial solutions while focusing on user experience and responsible participation in digital finance.
+</p></div>
+</section><section class="section" id="feed">
+<h2>Live Institutional Feed</h2><div class="feed" id="galleryBox"><div class="feed-item">
+<h4>Connecting...</h4>
+<p>Loading realtime data from Firebase.</p>
+</div></div>
+</section><footer>
+© 2026 APEX MARKET INVESTMENT HUB COMPANY. All Rights Reserved.
+</footer><script type="module">
 
-</head>
-
-<body>
-
-<div class="glow"></div>
-<div class="glow2"></div>
-<div class="glow3"></div>
-
-<header>
-    <div class="logo">APEX INVEST</div>
-    <nav>
-        <a href="#">Home</a>
-        <a href="#">Plans</a>
-        <a href="#">VIP Profiles</a>
-        <a href="#">Contact</a>
-    </nav>
-</header>
-
-<section class="hero">
-    <h1>APEX MARKET INVESTMENT HUB</h1>
-    <p>
-        A premium financial ecosystem powered by modern trading infrastructure, analytics intelligence, and secure investment architecture.
-    </p>
-
-    <button class="btn">Join VIP Access</button>
-    <button class="btn" onclick="window.location.href='register.html'">Register</button>
-</section>
-
-<section class="section">
-    <h2>Elite Investment Plans</h2>
-
-    <div class="cards">
-        <div class="card">
-            <h3>Starter Plan</h3>
-            <p>Entry-level structured growth system.</p>
-        </div>
-
-        <div class="card vip">
-            <h3>VIP Gold</h3>
-            <p>Advanced trading intelligence and portfolio scaling.</p>
-        </div>
-
-        <div class="card vip">
-            <h3>Diamond Elite</h3>
-            <p>Institutional-grade capital acceleration systems.</p>
-        </div>
-    </div>
-</section>
-
-<section class="section">
-    <h2>VIP Profiles</h2>
-
-    <div class="cards">
-        <div class="card vip">
-            <h3>CEO Dashboard</h3>
-            <p>Full analytics control panel.</p>
-        </div>
-
-        <div class="card vip">
-            <h3>Investor Elite</h3>
-            <p>Priority trading signals and insights.</p>
-        </div>
-
-        <div class="card vip">
-            <h3>Affiliate Partner</h3>
-            <p>Commission-based referral system.</p>
-        </div>
-    </div>
-</section>
-
-<footer>
-    © 2026 Apex Market Investment Hub. All Rights Reserved.
-</footer>
-<script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-/* 🔥 FIREBASE CONFIG (INJECTED) */
 const firebaseConfig = {
-  apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
-  authDomain: "apex-market-investment-h-643fc.firebaseapp.com",
-  databaseURL: "https://apex-market-investment-h-643fc-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "apex-market-investment-h-643fc",
-  storageBucket: "apex-market-investment-h-643fc.firebasestorage.app",
-  messagingSenderId: "96469134780",
-  appId: "1:96469134780:web:b1b443b0467083f843cfb9",
-  measurementId: "G-NB3LXMPGTV"
+apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
+authDomain: "apex-market-investment-h-643fc.firebaseapp.com",
+databaseURL: "https://apex-market-investment-h-643fc-default-rtdb.europe-west1.firebasedatabase.app",
+projectId: "apex-market-investment-h-643fc",
+storageBucket: "apex-market-investment-h-643fc.firebasestorage.app",
+messagingSenderId: "96469134780",
+appId: "1:96469134780:web:b1b443b0467083f843cfb9",
+measurementId: "G-NB3LXMPGTV"
 };
 
 const app = initializeApp(firebaseConfig);
+getAnalytics(app);
+
 const db = getDatabase(app);
+const galleryBox = document.getElementById("galleryBox");
 
-/* 🔁 CHANGE THIS PATH IF YOU USE AUTH */
-const userRef = ref(db, "users/demo");
+onValue(ref(db,"gallery"),(snapshot)=>{
 
-/* 🔴 REAL TIME SYNC */
-onValue(userRef, (snapshot) => {
-  const data = snapshot.val() || {};
+const data = snapshot.val() || {};
 
-  console.log("LIVE FIREBASE DATA:", data);
+galleryBox.innerHTML = "";
 
-  /* OPTIONAL UI HOOKS (ADD IDS IF YOU WANT DISPLAY) */
-  const balance = document.getElementById("balance");
-  const profit = document.getElementById("profit");
-  const deposit = document.getElementById("deposit");
+Object.values(data).forEach(item=>{
 
-  if (balance) balance.innerText = "KSh " + (data.balance || 0).toLocaleString();
-  if (profit) profit.innerText = "KSh " + (data.profit || 0).toLocaleString();
-  if (deposit) deposit.innerText = "KSh " + (data.deposit || 0).toLocaleString();
+galleryBox.innerHTML += `
+<div class="feed-item">
+<h4>${item.title || "Update"}</h4>
+<p>${item.desc || "Live platform information"}</p>
+</div>
+`;
+
 });
-</script>
-</body>
+
+});
+</script></body>
 </html>
