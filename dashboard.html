@@ -3,228 +3,266 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APEX MARKET INVESTMENT HUB</title>
 
-<title>Apex Market Investment Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-body {
-    margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background: radial-gradient(circle at top, #050816, #000);
-    color: white;
-    overflow-x: hidden;
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+body{background:#050816;color:#fff;padding-bottom:90px;overflow-x:hidden;}
+
+.header{
+padding:20px;text-align:center;font-size:22px;font-weight:700;
+background:rgba(255,255,255,.05);
+backdrop-filter:blur(20px);
+border-bottom:1px solid rgba(255,255,255,.1);
 }
 
-/* 🌌 BACKGROUND */
-.stars {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    background: url('https://www.transparenttextures.com/patterns/stardust.png');
-    opacity: 0.2;
-    z-index: -2;
+.ticker{
+background:#091326;padding:12px 0;overflow:hidden;white-space:nowrap;
 }
 
-/* ✨ GLOW */
-.glow1, .glow2 {
-    position: fixed;
-    width: 450px;
-    height: 450px;
-    filter: blur(120px);
-    border-radius: 50%;
-    z-index: -1;
+.ticker span{
+display:inline-block;padding-left:100%;
+animation:scroll 30s linear infinite;
+color:#00f7ff;
 }
 
-.glow1 {
-    background: radial-gradient(circle, rgba(0,255,213,0.3), transparent 70%);
-    top: -120px;
-    left: -120px;
+@keyframes scroll{
+0%{transform:translateX(0);}
+100%{transform:translateX(-100%);}
 }
 
-.glow2 {
-    background: radial-gradient(circle, rgba(255,0,200,0.25), transparent 70%);
-    bottom: -120px;
-    right: -120px;
+.container{padding:15px;}
+
+.balance-card{
+background:rgba(255,255,255,.05);
+border-radius:20px;
+padding:20px;
+margin-bottom:20px;
 }
 
-/* CONTAINER */
-.container {
-    max-width: 420px;
-    margin: 60px auto;
-    padding: 25px;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(0,255,213,0.2);
-    border-radius: 18px;
-    backdrop-filter: blur(12px);
-    box-shadow: 0 0 25px rgba(0,255,213,0.15);
+.top-balance{
+display:flex;
+gap:10px;
 }
 
-h2 {
-    text-align: center;
-    color: #00ffd5;
+.box{flex:1;text-align:center;}
+.box h3{font-size:13px;color:#aaa;}
+.box h2{color:#00f7ff;}
+
+.deposit{
+text-align:center;
+margin-top:15px;
+padding-top:15px;
+border-top:1px solid rgba(255,255,255,.08);
 }
 
-input {
-    width: 100%;
-    padding: 12px;
-    margin: 8px 0;
-    border-radius: 10px;
-    border: 1px solid rgba(0,255,213,0.3);
-    background: rgba(0,0,0,0.4);
-    color: white;
+.deposit h2{color:#00ff88;}
+
+.section-title{text-align:center;margin:15px 0;}
+
+.plans{
+display:flex;
+flex-direction:column;
+gap:12px;
 }
 
-.password-box {
-    position: relative;
+.plan{
+background:rgba(255,255,255,.05);
+padding:15px;
+border-radius:18px;
+text-align:center;
+border:1px solid rgba(255,255,255,.08);
 }
 
-.toggle {
-    position: absolute;
-    right: 10px;
-    top: 12px;
-    cursor: pointer;
-    font-size: 12px;
-    color: #00ffd5;
+.plan h3{color:#00f7ff;}
+.plan p{color:#ccc;}
+
+.plan button{
+width:100%;
+padding:10px;
+margin-top:10px;
+border:none;
+border-radius:12px;
+background:linear-gradient(90deg,#00f7ff,#0066ff);
+color:#fff;
+font-weight:600;
+cursor:pointer;
 }
 
-label {
-    font-size: 12px;
-    display: block;
-    margin: 8px 0;
+.bottom-nav{
+position:fixed;
+bottom:0;
+left:0;
+right:0;
+height:70px;
+background:#091326;
+display:flex;
+justify-content:space-around;
+align-items:center;
 }
 
-button {
-    width: 100%;
-    padding: 12px;
-    border: none;
-    border-radius: 25px;
-    margin-top: 10px;
-    background: linear-gradient(90deg, #00ffd5, #ff00cc, #ffd700);
-    color: black;
-    font-weight: bold;
-    cursor: pointer;
+.nav-btn{
+background:none;
+border:none;
+color:#fff;
+font-size:11px;
+display:flex;
+flex-direction:column;
+align-items:center;
+cursor:pointer;
 }
 
-.login {
-    text-align: center;
-    margin-top: 12px;
-    font-size: 13px;
-}
+.nav-icon{font-size:22px;}
 
-.login a {
-    color: #00ffd5;
-    text-decoration: none;
-}
+.active-nav{color:#00f7ff;}
+
+.page{display:none;padding:15px;}
+.page.active{display:block;}
 </style>
 </head>
 
 <body>
 
-<div class="stars"></div>
-<div class="glow1"></div>
-<div class="glow2"></div>
+<div class="header">APEX MARKET INVESTMENT HUB</div>
+
+<div class="ticker">
+<span>🚀 Secure Investment Platform • Real Time Dashboard • 50% ROI System • 24/7 Support</span>
+</div>
+
+<!-- HOME -->
+<div id="home" class="page active">
 
 <div class="container">
 
-<h2>Apex Market Investment Hub</h2>
+<div class="balance-card">
 
-<input type="text" id="name" placeholder="Full Name">
-<input type="email" id="email" placeholder="Gmail Address">
-<input type="tel" id="phone" placeholder="Phone Number (+254)" value="+254">
+<div class="top-balance">
 
-<div class="password-box">
-<input type="password" id="password" placeholder="Password">
-<span class="toggle" onclick="togglePassword('password')">Show</span>
+<div class="box">
+<h3>Main Balance</h3>
+<h2 id="mainBalance">KSh 0.00</h2>
 </div>
 
-<div class="password-box">
-<input type="password" id="confirm" placeholder="Confirm Password">
-<span class="toggle" onclick="togglePassword('confirm')">Show</span>
-</div>
-
-<label><input type="checkbox"> Remember Me</label>
-<label><input type="checkbox" id="terms"> I agree to Terms</label>
-
-<button onclick="register()">Create Account</button>
-
-<div class="login">
-Already have an account? <a href="#">Login</a>
+<div class="box">
+<h3>Total Profit (50%)</h3>
+<h2 id="totalProfit">KSh 0.00</h2>
 </div>
 
 </div>
 
-<!-- FIREBASE -->
+<div class="deposit">
+<h3>Total Deposit</h3>
+<h2 id="totalDeposit">KSh 0.00</h2>
+</div>
+
+</div>
+
+<h2 class="section-title">Investment Plans</h2>
+
+<div class="plans">
+
+<div class="plan"><h3>Starter Plan</h3><p>Return: 50%</p><button class="invest-btn" data-plan="Starter Plan">Invest Now</button></div>
+<div class="plan"><h3>Bronze Plan</h3><p>Return: 50%</p><button class="invest-btn" data-plan="Bronze Plan">Invest Now</button></div>
+<div class="plan"><h3>Silver Plan</h3><p>Return: 50%</p><button class="invest-btn" data-plan="Silver Plan">Invest Now</button></div>
+<div class="plan"><h3>Gold Plan</h3><p>Return: 50%</p><button class="invest-btn" data-plan="Gold Plan">Invest Now</button></div>
+<div class="plan"><h3>Premium Plan</h3><p>Return: 50%</p><button class="invest-btn" data-plan="Premium Plan">Invest Now</button></div>
+<div class="plan"><h3>Elite Plan</h3><p>Return: 50%</p><button class="invest-btn" data-plan="Elite Plan">Invest Now</button></div>
+<div class="plan"><h3>Diamond Plan</h3><p>Return: 50%</p><button class="invest-btn" data-plan="Diamond Plan">Invest Now</button></div>
+<div class="plan"><h3>VIP Plan</h3><p>Return: 50%</p><button class="invest-btn" data-plan="VIP Plan">Invest Now</button></div>
+<div class="plan"><h3>Executive Plan</h3><p>Return: 50%</p><button class="invest-btn" data-plan="Executive Plan">Invest Now</button></div>
+<div class="plan"><h3>Ultimate Plan</h3><p>Return: 50%</p><button class="invest-btn" data-plan="Ultimate Plan">Invest Now</button></div>
+
+</div>
+
+</div>
+</div>
+
+<!-- OTHER PAGES -->
+<div id="deposit" class="page"><h2>Deposit</h2></div>
+<div id="plans" class="page"><h2>Plans</h2></div>
+<div id="withdraw" class="page"><h2>Withdraw</h2></div>
+<div id="profile" class="page"><h2>Profile</h2></div>
+<div id="tasks" class="page"><h2>Tasks Center</h2></div>
+
+<!-- NAV -->
+<div class="bottom-nav">
+
+<button class="nav-btn active-nav" onclick="showPage('home',this)">🏠 Home</button>
+<button class="nav-btn" onclick="showPage('deposit',this)">💰 Deposit</button>
+<button class="nav-btn" onclick="showPage('plans',this)">📊 Plans</button>
+<button class="nav-btn" onclick="showPage('withdraw',this)">💳 Withdraw</button>
+<button class="nav-btn" onclick="showPage('profile',this)">👤 Profile</button>
+<button class="nav-btn" onclick="showPage('tasks',this)">📝 Tasks</button>
+
+</div>
+
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
-  authDomain: "apex-market-investment-h-643fc.firebaseapp.com",
-  databaseURL: "https://apex-market-investment-h-643fc-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "apex-market-investment-h-643fc",
-  storageBucket: "apex-market-investment-h-643fc.firebasestorage.app",
-  messagingSenderId: "96469134780",
-  appId: "1:96469134780:web:b1b443b0467083f843cfb9",
-  measurementId: "G-NB3LXMPGTV"
+apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
+authDomain: "apex-market-investment-h-643fc.firebaseapp.com",
+databaseURL: "https://apex-market-investment-h-643fc-default-rtdb.europe-west1.firebasedatabase.app",
+projectId: "apex-market-investment-h-643fc",
+storageBucket: "apex-market-investment-h-643fc.firebasestorage.app",
+messagingSenderId: "96469134780",
+appId: "1:96469134780:web:b1b443b0467083f843cfb9"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+const auth = getAuth(app);
 
-/* REGISTER */
-window.register = function () {
+window.showPage = function(id,btn){
 
-    const name = document.getElementById("name").value;
-    const email = document.getElementById("email").value;
-    const phone = document.getElementById("phone").value;
-    const password = document.getElementById("password").value;
-    const confirm = document.getElementById("confirm").value;
-    const terms = document.getElementById("terms").checked;
+document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+document.getElementById(id).classList.add('active');
 
-    if (!terms) {
-        alert("You must accept Terms & Conditions");
-        return;
-    }
-
-    if (password !== confirm) {
-        alert("Passwords do not match");
-        return;
-    }
-
-    const userRef = push(ref(db, "users"));
-
-    set(userRef, {
-        name,
-        email,
-        phone,
-        password,
-        balance: 0,
-        investment: 0,
-        profit: 0,
-        createdAt: Date.now()
-    });
-
-    alert("Account is successfully created");
-
-    setTimeout(() => {
-        window.location.href = "dashboard.html";
-    }, 800);
+document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active-nav'));
+btn.classList.add('active-nav');
 };
 
-/* TOGGLE PASSWORD */
-window.togglePassword = function (id) {
-    const input = document.getElementById(id);
-    const toggle = input.nextElementSibling;
+onAuthStateChanged(auth,(user)=>{
 
-    if (input.type === "password") {
-        input.type = "text";
-        toggle.innerText = "Hide";
-    } else {
-        input.type = "password";
-        toggle.innerText = "Show";
-    }
-};
+if(!user) return;
+
+const userRef = ref(db,`users/${user.uid}`);
+
+onValue(userRef,(snap)=>{
+
+const d = snap.val() || {};
+
+document.getElementById("mainBalance").textContent = "KSh "+(d.balance||0).toLocaleString();
+
+document.getElementById("totalProfit").textContent =
+"KSh "+((d.balance||0)*0.5).toLocaleString();
+
+document.getElementById("totalDeposit").textContent = "KSh "+(d.deposit||0).toLocaleString();
+
+});
+
+/* INVEST BUTTONS */
+document.querySelectorAll(".invest-btn").forEach(btn=>{
+btn.addEventListener("click",async()=>{
+
+const plan = btn.dataset.plan;
+
+await push(ref(db,`users/${user.uid}/investments`),{
+plan,
+returnRate:50,
+time:Date.now()
+});
+
+alert(plan+" activated (50% return)");
+
+});
+});
+
+});
 </script>
 
 </body>
