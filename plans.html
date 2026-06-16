@@ -4,65 +4,134 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Apex Market Investment Hub - Plans</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif}
 body{background:#050816;color:#fff;padding-bottom:90px;overflow-x:hidden}
-body::before{content:'';position:fixed;width:400px;height:400px;background:linear-gradient(45deg,#00f7ff,#0066ff);border-radius:50%;filter:blur(150px);top:-120px;left:-120px;opacity:.3;z-index:-1}
-body::after{content:'';position:fixed;width:400px;height:400px;background:linear-gradient(45deg,#ff00ff,#6a00ff);border-radius:50%;filter:blur(150px);bottom:-120px;right:-120px;opacity:.3;z-index:-1}
-.header{padding:20px;text-align:center;font-size:24px;font-weight:700;background:rgba(255,255,255,.05);backdrop-filter:blur(15px);border-bottom:1px solid rgba(255,255,255,.08)}
-.subtitle{text-align:center;color:#00f7ff;margin:10px 0 20px;font-size:15px}
+
+body::before{
+content:'';
+position:fixed;
+width:400px;height:400px;
+background:linear-gradient(45deg,#00f7ff,#0066ff);
+border-radius:50%;
+filter:blur(150px);
+top:-120px;left:-120px;
+opacity:.3;z-index:-1;
+}
+
+body::after{
+content:'';
+position:fixed;
+width:400px;height:400px;
+background:linear-gradient(45deg,#ff00ff,#6a00ff);
+border-radius:50%;
+filter:blur(150px);
+bottom:-120px;right:-120px;
+opacity:.3;z-index:-1;
+}
+
+.header{
+padding:20px;
+text-align:center;
+font-size:24px;
+font-weight:700;
+background:rgba(255,255,255,.05);
+backdrop-filter:blur(15px);
+border-bottom:1px solid rgba(255,255,255,.08)
+}
+
+.subtitle{
+text-align:center;
+color:#00f7ff;
+margin:10px 0 20px;
+font-size:15px
+}
+
 .container{padding:15px}
-.plan{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:20px;margin-bottom:20px;text-align:left;backdrop-filter:blur(15px)}
-.plan h3{color:#00f7ff;font-size:26px;margin-bottom:15px;text-align:center}
-.plan p{color:#ccc;margin:10px 0;font-size:15px;line-height:1.8;text-align:left}
-.status{margin-top:12px;font-size:14px;color:#00ff88;font-weight:600;text-align:left}
-.timer{margin-top:12px;padding:10px;background:rgba(0,247,255,.08);border:1px solid rgba(0,247,255,.15);border-radius:10px;font-size:13px;color:#ffcc00;font-weight:600;text-align:left}
-button{width:100%;margin-top:15px;padding:14px;border:none;border-radius:12px;background:linear-gradient(90deg,#00f7ff,#0066ff);color:#fff;font-size:16px;font-weight:600;cursor:pointer}
+
+.plan{
+background:rgba(255,255,255,.05);
+border:1px solid rgba(255,255,255,.08);
+border-radius:20px;
+padding:20px;
+margin-bottom:20px;
+text-align:left;
+backdrop-filter:blur(15px)
+}
+
+.plan h3{
+color:#00f7ff;
+font-size:26px;
+margin-bottom:15px;
+text-align:center
+}
+
+.plan p{
+color:#ccc;
+margin:10px 0;
+font-size:15px;
+line-height:1.8
+}
+
+.timer{
+margin-top:12px;
+padding:10px;
+background:rgba(0,247,255,.08);
+border:1px solid rgba(0,247,255,.15);
+border-radius:10px;
+font-size:13px;
+color:#ffcc00;
+font-weight:600
+}
+
+button{
+width:100%;
+margin-top:15px;
+padding:14px;
+border:none;
+border-radius:12px;
+background:linear-gradient(90deg,#00f7ff,#0066ff);
+color:#fff;
+font-size:16px;
+font-weight:600;
+cursor:pointer
+}
+
 button:disabled{background:#444;cursor:not-allowed}
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;height:70px;background:#08111f;display:flex;justify-content:space-around;align-items:center;border-top:1px solid rgba(255,255,255,.08)}
-.nav-btn{text-decoration:none;color:#fff;font-size:12px;display:flex;flex-direction:column;align-items:center}
-.nav-icon{font-size:22px;margin-bottom:3px}.active{color:#00f7ff}
 </style>
 </head>
+
 <body>
+
 <div class="header">APEX MARKET INVESTMENT HUB</div>
 <div class="subtitle">Investment Plans</div>
-<div class="container" id="plans"></div>
 
-<div class="bottom-nav">
-<a href="index.html" class="nav-btn"><div class="nav-icon">🏠</div>Home</a>
-<a href="deposit.html" class="nav-btn"><div class="nav-icon">💰</div>Deposit</a>
-<a href="plans.html" class="nav-btn active"><div class="nav-icon">📊</div>Plans</a>
-<a href="withdraw.html" class="nav-btn"><div class="nav-icon">💳</div>Withdraw</a>
-<a href="profile.html" class="nav-btn"><div class="nav-icon">👤</div>Profile</a>
-</div>
+<div class="container" id="plans"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {
-  getDatabase,
-  ref,
-  set,
-  onValue
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-/* 🔥 FIREBASE CONFIG */
+/* FIREBASE */
 const firebaseConfig = {
-  apiKey: "AIzaSyC-c_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
-  authDomain: "apex-market-investment-h-643fc.firebaseapp.com",
-  databaseURL: "https://apex-market-investment-h-643fc-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "apex-market-investment-h-643fc",
-  storageBucket: "apex-market-investment-h-643fc.firebasestorage.app",
-  messagingSenderId: "96469134780",
-  appId: "1:96469134780:web:b1b443b0467083f843cfb9",
-  measurementId: "G-NB3LXMPGTV"
+apiKey: "AIzaSyC-c_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
+authDomain: "apex-market-investment-h-643fc.firebaseapp.com",
+databaseURL: "https://apex-market-investment-h-643fc-default-rtdb.europe-west1.firebasedatabase.app",
+projectId: "apex-market-investment-h-643fc",
+storageBucket: "apex-market-investment-h-643fc.firebasestorage.app",
+messagingSenderId: "96469134780",
+appId: "1:96469134780:web:b1b443b0467083f843cfb9"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const auth = getAuth(app);
+
+const container = document.getElementById("plans");
 
 const plans = [
 {name:"Starter Plan",amount:1000,roi:50},
@@ -77,72 +146,85 @@ const plans = [
 {name:"Ultimate Plan",amount:200000,roi:50}
 ];
 
-const container = document.getElementById("plans");
+function notify(msg){
+alert(msg);
+}
 
-onAuthStateChanged(auth, (user) => {
+function countdown(ms){
+const d = Math.floor(ms/(1000*60*60*24));
+const h = Math.floor((ms/(1000*60*60))%24);
+return `${d}d ${h}h`;
+}
+
+onAuthStateChanged(auth,(user)=>{
 
 if(!user){
-container.innerHTML = "<p>Please login first</p>";
+container.innerHTML="<p>Please login first</p>";
 return;
 }
 
 const uid = user.uid;
+const refInv = ref(db,`users/${uid}/investments`);
 
-/* REAL-TIME LISTENER */
-const investRef = ref(db, `users/${uid}/investments`);
+onValue(refInv,(snap)=>{
 
-onValue(investRef, (snap)=>{
+const data = snap.val()||{};
+container.innerHTML="";
 
-const data = snap.val() || {};
-container.innerHTML = "";
+plans.forEach((plan,i)=>{
 
-plans.forEach((plan,index)=>{
+const inv = data["plan_"+i];
 
-const invested = data["plan_"+index];
-const profit72 = Math.round(plan.amount * 0.5);
-const total21 = plan.amount + (profit72 * 7);
+let status="Not Invested";
+let disabled="";
+let timer="";
 
-container.innerHTML += `
+if(inv){
+const now=Date.now();
+const unlock=inv.start+72*60*60*1000;
+const mature=inv.start+21*24*60*60*1000;
+
+if(now<unlock){
+status="Locked";
+disabled="disabled";
+timer="Unlock in "+countdown(unlock-now);
+}else if(now<mature){
+status="Active";
+timer="Matures in "+countdown(mature-now);
+}else{
+status="Matured";
+disabled="disabled";
+timer="Completed";
+}
+}
+
+container.innerHTML+=`
 <div class="plan">
 <h3>${plan.name}</h3>
-
-<p><strong>Investment:</strong> KES ${plan.amount.toLocaleString()}</p>
-
-<p><strong>Active Investment:</strong>
-${invested ? "KES " + plan.amount.toLocaleString() : "KES 0"}
-</p>
-
-<p><strong>Profit per 72 Hours:</strong> KES ${profit72.toLocaleString()}</p>
-
-<p><strong>Total After 21 Days:</strong> KES ${total21.toLocaleString()}</p>
-
-<div class="status">
-${invested ? "Running Investment" : "Not Invested"}
-</div>
-
-<button onclick="invest(${index})"
-${invested ? "disabled" : ""}>
-${invested ? "Invested" : "Invest Now"}
+<p>Investment: KES ${plan.amount.toLocaleString()}</p>
+<p>Status: ${status}</p>
+<div class="timer">${timer}</div>
+<button ${disabled} onclick="invest(${i})">
+${inv?"Invested":"Invest Now"}
 </button>
-
 </div>`;
 });
 
 });
 
-window.invest = async function(index){
-
-await set(ref(db, `users/${uid}/investments/plan_${index}`), {
-plan: plans[index].name,
-amount: plans[index].amount,
-roi: plans[index].roi,
-start: Date.now()
+window.invest=async function(i){
+const plan=plans[i];
+await set(ref(db,`users/${uid}/investments/plan_${i}`),{
+plan:plan.name,
+amount:plan.amount,
+roi:plan.roi,
+start:Date.now()
 });
-
-alert("Investment Activated: " + plans[index].name);
+notify("Investment successful");
 };
 
 });
 </script>
+
 </body>
 </html>
