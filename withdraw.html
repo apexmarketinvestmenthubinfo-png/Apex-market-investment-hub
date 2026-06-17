@@ -260,7 +260,7 @@ footer {
 <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-auth.js"></script>
 <script>
 const firebaseConfig = {
-  apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
+  apiKey: "AIzaSy -d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
   authDomain: "apex-market-investment-h-643fc.firebaseapp.com",
   databaseURL: "https://apex-market-investment-h-643fc-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "apex-market-investment-h-643fc",
@@ -325,50 +325,96 @@ function toggleMethod() {
     if (method === "bank") document.getElementById("bankSection").classList.remove("hidden");
 }
 
-/* WITHDRAW */
+<script>
 function submitWithdrawal() {
+
+    if (!currentUser) {
+        return showToast("Please wait...");
+    }
 
     const method = document.getElementById("method").value;
     const amount = parseFloat(document.getElementById("amount").value);
-if (!currentUser) {
-    return showToast("Please wait...");
-}
-    if (!method) return showToast("Select method");
-    if (!amount || amount < 600) return showToast("Minimum KSH 600");
 
-    let data = {
-        method,
-        amount,
-        status: "pending",
-        createdAt: new Date().toISOString()
-    };
-
-    if (method === "mobile") {
-        data.provider = document.getElementById("mobileProvider").value;
-        data.number = document.getElementById("mobileNumber").value;
-        if (!data.number) return showToast("Enter mobile number");
+    if (!method) {
+        return showToast("Select withdrawal method");
     }
 
-    if (method === "bank") {
-        data.bank = document.getElementById("bankName").value;
-        data.account = document.getElementById("accountNumber").value;
-        if (!data.account) return showToast("Enter account number");
+    if (!amount || amount < 600) {
+        return showToast("Minimum withdrawal amount is KSH 600");
     }
 
-db.ref("users/" + currentUser.uid + "/transactions").push({
-    type: "withdraw",
-    method: method,
-    amount: amount,
-    status: "pending",
-    createdAt: Date.now(),
-    ...data
-});
+    const balanceRef = db.ref("users/" + currentUser.uid + "/balance");
 
-showToast("Withdrawal submitted successfully");
+    balanceRef.once("value")
+    .then(function(balanceSnap) {
 
-window.location.replace("transaction.html");
+        const currentBalance = Number(balanceSnap.val() || 0);
+
+        /* CHECK INSUFFICIENT FUNDS */
+        if (amount > currentBalance) {
+            return showToast("Insufficient balance");
+        }
+
+        let transactionData = {
+            type: "withdraw",
+            method: method,
+            amount: amount,
+            status: "pending",
+            createdAt: Date.now()
+        };
+
+        if (method === "mobile") {
+
+            const number =
+                document.getElementById("mobileNumber").value.trim();
+
+            if (!number) {
+                return showToast("Enter mobile number");
+            }
+
+            transactionData.provider =
+                document.getElementById("mobileProvider").value;
+
+            transactionData.number = number;
+        }
+
+        if (method === "bank") {
+
+            const account =
+                document.getElementById("accountNumber").value.trim();
+
+            if (!account) {
+                return showToast("Enter account number");
+            }
+
+            transactionData.bank =
+                document.getElementById("bankName").value;
+
+            transactionData.account = account;
+        }
+
+        /* SAVE WITHDRAWAL */
+        return db.ref(
+            "users/" + currentUser.uid + "/transactions"
+        ).push(transactionData);
+
+    })
+    .then(function(result) {
+
+        if (!result) return;
+
+        showToast("Withdrawal submitted successfully");
+
+        window.location.replace("transaction.html");
+
+    })
+    .catch(function(error) {
+
+        console.error(error);
+
+        showToast("Failed to submit withdrawal");
+    });
 }
 </script>
-
 </body>
 </html>
