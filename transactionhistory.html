@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Apex Market Investment Hub Company - Transaction History</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: radial-gradient(circle at top, #0b1220, #050814);
+    color: #fff;
+}
+
+/* HEADER */
+.header {
+    text-align: center;
+    padding: 22px;
+    font-size: 18px;
+    font-weight: bold;
+    background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+    box-shadow: 0 0 30px rgba(0,255,255,0.25);
+}
+
+/* WRAPPER */
+.container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+/* FILTER BAR */
+.filters {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background: rgba(255,255,255,0.05);
+    color: #fff;
+    border: 1px solid rgba(0,255,255,0.15);
+    transition: 0.3s;
+}
+
+.filter-btn:hover {
+    background: rgba(0,255,200,0.15);
+    box-shadow: 0 0 15px rgba(0,255,200,0.3);
+}
+
+/* TABLE */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(255,255,255,0.04);
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 0 25px rgba(0,255,255,0.08);
+}
+
+.table th, .table td {
+    padding: 14px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.table th {
+    background: rgba(0,255,255,0.08);
+    font-weight: bold;
+}
+
+/* STATUS COLORS */
+.status {
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+}
+
+.pending {
+    background: rgba(255, 204, 0, 0.15);
+    color: #facc15;
+    border: 1px solid #facc15;
+}
+
+.approved {
+    background: rgba(0, 255, 120, 0.15);
+    color: #22c55e;
+    border: 1px solid #22c55e;
+}
+
+.rejected {
+    background: rgba(255, 0, 80, 0.15);
+    color: #ef4444;
+    border: 1px solid #ef4444;
+}
+
+/* TYPE TAG */
+.type {
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+
+.deposit {
+    background: rgba(0,150,255,0.15);
+    color: #38bdf8;
+}
+
+.withdraw {
+    background: rgba(255,100,0,0.15);
+    color: #fb923c;
+}
+
+/* FOOTER */
+footer {
+    text-align: center;
+    padding: 15px;
+    font-size: 13px;
+    color: #94a3b8;
+    margin-top: 30px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    APEX MARKET INVESTMENT HUB COMPANY
+</div>
+
+<div class="container">
+
+<div class="filters">
+    <button class="filter-btn" onclick="filterData('all')">All</button>
+    <button class="filter-btn" onclick="filterData('deposit')">Deposit</button>
+    <button class="filter-btn" onclick="filterData('withdraw')">Withdraw</button>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Type</th>
+            <th>Amount (KSH)</th>
+            <th>Method</th>
+            <th>Status</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+    <tbody id="txBody">
+    </tbody>
+</table>
+
+</div>
+
+<footer>
+    © 2026 Apex Market Investment Hub Company • All Rights Reserved
+</footer>
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-database.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
+  authDomain: "apex-market-investment-h-643fc.firebaseapp.com",
+  databaseURL: "https://apex-market-investment-h-643fc-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "apex-market-investment-h-643fc",
+  storageBucket: "apex-market-investment-h-643fc.firebasestorage.app",
+  messagingSenderId: "96469134780",
+  appId: "1:96469134780:web:b1b443b0467083f843cfb9",
+  measurementId: "G-NB3LXMPGTV"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+const userId = "user_123";
+
+let allTransactions = [];
+
+/* LIVE WITHDRAWALS */
+db.ref("withdrawals/" + userId).on("value", snap => {
+    let data = snap.val() || {};
+    renderTransactions(data, "withdraw");
+});
+
+/* LIVE DEPOSITS */
+db.ref("deposits/" + userId).on("value", snap => {
+    let data = snap.val() || {};
+    renderTransactions(data, "deposit");
+});
+
+function renderTransactions(data, type) {
+    let list = [];
+
+    Object.keys(data).forEach(key => {
+        list.push({
+            id: key,
+            type: type,
+            ...data[key]
+        });
+    });
+
+    allTransactions = allTransactions
+        .filter(t => t.type !== type)
+        .concat(list);
+
+    display(allTransactions);
+}
+
+function display(list) {
+    const body = document.getElementById("txBody");
+    body.innerHTML = "";
+
+    list.sort((a, b) => b.createdAt?.localeCompare(a.createdAt));
+
+    list.forEach(tx => {
+        const row = `
+        <tr>
+            <td><span class="type ${tx.type}">${tx.type}</span></td>
+            <td>${tx.amount}</td>
+            <td>${tx.method || "-"}</td>
+            <td><span class="status ${tx.status}">${tx.status}</span></td>
+            <td>${tx.createdAt ? new Date(tx.createdAt).toLocaleString() : "-"}</td>
+        </tr>
+        `;
+        body.innerHTML += row;
+    });
+}
+
+/* FILTER */
+function filterData(type) {
+    if (type === "all") {
+        display(allTransactions);
+    } else {
+        display(allTransactions.filter(t => t.type === type));
+    }
+}
+</script>
+
+</body>
+</html>
