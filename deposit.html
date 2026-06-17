@@ -459,7 +459,10 @@ btn.addEventListener("click", async () => {
             }
         );
 
-        showNotification("Deposit submitted successfully");
+showNotification("Deposit submitted successfully");
+
+// Redirect immediately after Firebase confirms the save
+window.location.replace("transaction.html");
 
         setTimeout(() => {
             window.location.href = "transaction.html";
