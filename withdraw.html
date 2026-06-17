@@ -11,7 +11,6 @@ body {
     font-family: 'Segoe UI', sans-serif;
     background: radial-gradient(circle at top, #0b1220, #050814);
     color: #fff;
-    min-height: 100vh;
 }
 
 /* HEADER */
@@ -24,22 +23,20 @@ body {
     box-shadow: 0 0 30px rgba(0,255,255,0.25);
 }
 
-/* WRAPPER */
+/* CONTAINER */
 .container {
-    max-width: 800px;
+    max-width: 850px;
     margin: 30px auto;
     padding: 20px;
 }
 
 /* CARD */
 .card {
-    margin-top: 20px;
     padding: 25px;
     border-radius: 20px;
     background: rgba(255,255,255,0.05);
     backdrop-filter: blur(18px);
     border: 1px solid rgba(0,255,255,0.15);
-    box-shadow: 0 0 25px rgba(0,255,255,0.08);
 }
 
 /* BALANCE */
@@ -49,10 +46,9 @@ body {
     padding: 16px;
     border-radius: 14px;
     background: linear-gradient(90deg, #00c6ff, #0072ff);
-    box-shadow: 0 0 20px rgba(0,114,255,0.4);
 }
 
-/* FORM */
+/* INPUTS */
 label {
     margin-top: 14px;
     display: block;
@@ -66,7 +62,6 @@ select, input {
     margin-top: 6px;
     border-radius: 12px;
     border: none;
-    outline: none;
     background: #0f172a;
     color: #fff;
 }
@@ -78,54 +73,39 @@ button {
     padding: 15px;
     border: none;
     border-radius: 14px;
-    font-size: 16px;
-    cursor: pointer;
     background: linear-gradient(90deg, #00f5a0, #00d9f5);
-    color: #000;
     font-weight: bold;
+    cursor: pointer;
 }
 
-/* HIDDEN */
-.hidden { display: none; }
-
-/* FOOTER */
-footer {
-    text-align: center;
-    padding: 15px;
-    font-size: 13px;
-    color: #94a3b8;
-    margin-top: 30px;
-    border-top: 1px solid rgba(255,255,255,0.08);
-}
-
-/* CENTER MODAL */
+/* MODAL */
 .overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.65);
-    backdrop-filter: blur(6px);
+    inset: 0;
+    background: rgba(0,0,0,0.6);
     display: none;
-    z-index: 9998;
 }
 
 .modal {
     position: fixed;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0,255,170,0.12);
-    border: 1px solid rgba(0,255,170,0.4);
-    padding: 25px 35px;
+    transform: translate(-50%,-50%);
+    background: rgba(0,255,170,0.15);
+    padding: 25px;
     border-radius: 16px;
-    text-align: center;
-    font-size: 16px;
-    color: #fff;
     display: none;
-    z-index: 9999;
-    box-shadow: 0 0 35px rgba(0,255,200,0.35);
+    text-align: center;
+    box-shadow: 0 0 25px rgba(0,255,200,0.4);
+}
+
+.hidden { display:none; }
+
+footer {
+    text-align:center;
+    padding:15px;
+    color:#94a3b8;
+    margin-top:30px;
 }
 </style>
 </head>
@@ -133,71 +113,67 @@ footer {
 <body>
 
 <div class="header">
-    APEX MARKET INVESTMENT HUB COMPANY
+APEX MARKET INVESTMENT HUB COMPANY
 </div>
 
 <div class="container">
 
 <div class="card">
 
-    <div class="balance">
-        Main Balance: KSH <span id="balance">Loading...</span>
-    </div>
+<div class="balance">
+Main Balance: KSH <span id="balance">Loading...</span>
+</div>
 
-    <label>Select Method of Withdrawal</label>
-    <select id="method" onchange="toggleMethod()">
-        <option value="">-- Select Method --</option>
-        <option value="mobile">Mobile Money</option>
-        <option value="bank">Bank Withdrawal</option>
+<label>Select Method</label>
+<select id="method" onchange="toggleMethod()">
+    <option value="">Select</option>
+    <option value="mobile">Mobile Money</option>
+    <option value="bank">Bank Withdrawal</option>
+</select>
+
+<!-- MOBILE -->
+<div id="mobileBox" class="hidden">
+    <label>Mobile Provider</label>
+    <select id="mobileProvider">
+        <option>Safaricom</option>
+        <option>Airtel Money</option>
     </select>
 
-    <!-- MOBILE -->
-    <div id="mobileSection" class="hidden">
-        <label>Mobile Provider</label>
-        <select id="mobileProvider">
-            <option>Safaricom</option>
-            <option>Airtel Money</option>
-        </select>
-
-        <label>Mobile Number</label>
-        <input type="text" id="mobileNumber" placeholder="Enter phone number"/>
-    </div>
-
-    <!-- BANK -->
-    <div id="bankSection" class="hidden">
-        <label>Select Bank</label>
-        <select id="bankName">
-            <option>Equity Bank</option>
-            <option>I&M Bank</option>
-            <option>KCB Bank</option>
-            <option>Cooperative Bank</option>
-            <option>Stanbic Bank</option>
-            <option>National Bank</option>
-            <option>Family Bank</option>
-        </select>
-
-        <label>Account Number</label>
-        <input type="text" id="accountNumber" placeholder="Enter account number"/>
-    </div>
-
-    <label>Amount (Minimum KSH 600)</label>
-    <input type="number" id="amount" placeholder="Enter amount"/>
-
-    <button onclick="submitWithdrawal()">Withdraw Funds</button>
-
+    <label>Phone Number</label>
+    <input id="phone" placeholder="Enter phone number"/>
 </div>
 
+<!-- BANK (FIXED - NOW PROPER) -->
+<div id="bankBox" class="hidden">
+    <label>Bank Name</label>
+    <select id="bankName">
+        <option>Equity Bank</option>
+        <option>I&M Bank</option>
+        <option>KCB Bank</option>
+        <option>Cooperative Bank</option>
+        <option>Stanbic Bank</option>
+        <option>National Bank</option>
+        <option>Family Bank</option>
+    </select>
+
+    <label>Account Number</label>
+    <input id="account" placeholder="Enter account number"/>
 </div>
+
+<label>Amount (Min 600)</label>
+<input type="number" id="amount"/>
+
+<button onclick="withdraw()">Withdraw Funds</button>
+
+</div>
+</div>
+
+<div class="overlay" id="overlay"></div>
+<div class="modal" id="modal"></div>
 
 <footer>
-    © 2026 Apex Market Investment Hub Company • All Rights Reserved
+© 2026 Apex Market Investment Hub Company
 </footer>
-
-<!-- MODAL -->
-<div id="overlay" class="overlay"></div>
-<div id="modal" class="modal">
-    <div id="modalText"></div>
-</div>
 
 <!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-app.js"></script>
@@ -220,74 +196,88 @@ const db = firebase.database();
 
 const userId = "user_123";
 
-/* LIVE BALANCE */
-db.ref("users/" + userId + "/balance").on("value", snap => {
+/* LIVE BALANCE FIX */
+db.ref("users/"+userId+"/balance").on("value", snap=>{
     document.getElementById("balance").innerText = snap.val() || 0;
 });
 
-/* CENTER MODAL */
-function showMessage(msg) {
-    document.getElementById("modalText").innerText = msg;
-    document.getElementById("overlay").style.display = "block";
-    document.getElementById("modal").style.display = "block";
+/* TOGGLE METHOD FIX */
+function toggleMethod(){
+    let m = document.getElementById("method").value;
 
-    setTimeout(() => {
-        document.getElementById("overlay").style.display = "none";
-        document.getElementById("modal").style.display = "none";
-    }, 2000);
+    document.getElementById("mobileBox").classList.add("hidden");
+    document.getElementById("bankBox").classList.add("hidden");
+
+    if(m === "mobile") document.getElementById("mobileBox").classList.remove("hidden");
+    if(m === "bank") document.getElementById("bankBox").classList.remove("hidden");
 }
 
-/* SWITCH METHOD */
-function toggleMethod() {
-    const method = document.getElementById("method").value;
+/* MODAL */
+function show(msg){
+    document.getElementById("modal").innerText = msg;
+    document.getElementById("overlay").style.display="block";
+    document.getElementById("modal").style.display="block";
 
-    document.getElementById("mobileSection").classList.add("hidden");
-    document.getElementById("bankSection").classList.add("hidden");
-
-    if (method === "mobile") {
-        document.getElementById("mobileSection").classList.remove("hidden");
-    }
-
-    if (method === "bank") {
-        document.getElementById("bankSection").classList.remove("hidden");
-    }
+    setTimeout(()=>{
+        document.getElementById("overlay").style.display="none";
+        document.getElementById("modal").style.display="none";
+    },2000);
 }
 
-/* WITHDRAW */
-function submitWithdrawal() {
+/* WITHDRAW FIX (IMPORTANT PART) */
+function withdraw(){
 
-    const method = document.getElementById("method").value;
-    const amount = parseFloat(document.getElementById("amount").value);
+    let amount = Number(document.getElementById("amount").value);
+    let method = document.getElementById("method").value;
 
-    if (!method) return showMessage("Select withdrawal method");
-    if (!amount || amount < 600) return showMessage("Minimum withdrawal is KSH 600");
+    if(!method) return show("Select method");
+    if(!amount || amount < 600) return show("Minimum 600 required");
 
-    let data = {
-        method,
-        amount,
-        status: "pending",
-        createdAt: new Date().toISOString()
-    };
+    let balanceRef = db.ref("users/"+userId+"/balance");
 
-    if (method === "mobile") {
-        data.provider = document.getElementById("mobileProvider").value;
-        data.number = document.getElementById("mobileNumber").value;
-        if (!data.number) return showMessage("Enter mobile number");
-    }
+    balanceRef.once("value", snap=>{
 
-    if (method === "bank") {
-        data.bank = document.getElementById("bankName").value;
-        data.account = document.getElementById("accountNumber").value;
-        if (!data.account) return showMessage("Enter account number");
-    }
+        let balance = snap.val() || 0;
 
-    db.ref("withdrawals/" + userId).push(data);
+        if(amount > balance){
+            return show("Insufficient balance");
+        }
 
-    showMessage("Withdrawal submitted successfully");
+        let newBalance = balance - amount;
 
-    setTimeout(() => {
-        window.location.href = "transaction.html";
-    }, 1500);
+        // UPDATE BALANCE
+        balanceRef.set(newBalance);
+
+        let data = {
+            userId,
+            method,
+            amount,
+            status: "pending",
+            createdAt: new Date().toISOString()
+        };
+
+        if(method === "mobile"){
+            data.provider = document.getElementById("mobileProvider").value;
+            data.phone = document.getElementById("phone").value;
+        }
+
+        if(method === "bank"){
+            data.bank = document.getElementById("bankName").value;
+            data.account = document.getElementById("account").value;
+        }
+
+        // 🔥 IMPORTANT: SAVE TO TRANSACTIONS (FOR HISTORY PAGE FIX)
+        db.ref("transactions/"+userId).push(data);
+
+        // ALSO SAVE TO WITHDRAWALS (optional backup)
+        db.ref("withdrawals/"+userId).push(data);
+
+        show("Withdrawal submitted successfully");
+
+        setTimeout(()=>{
+            window.location.href = "transaction-history.html";
+        },1500);
+    });
 }
 </script>
 
