@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Team • Apex Market Investment Hub</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* COPY SUCCESS NOTIFICATION */
+#copyToast{
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%) scale(.9);
+
+    background:rgba(8,16,35,.96);
+    backdrop-filter:blur(20px);
+
+    border:1px solid rgba(0,247,255,.25);
+    border-radius:22px;
+
+    padding:22px 28px;
+
+    color:#00f7ff;
+    font-size:18px;
+    font-weight:700;
+    letter-spacing:.5px;
+
+    box-shadow:
+        0 20px 60px rgba(0,0,0,.5),
+        0 0 35px rgba(0,247,255,.35);
+
+    z-index:99999;
+
+    opacity:0;
+    visibility:hidden;
+
+    transition:.3s ease;
+}
+
+#copyToast.show{
+    opacity:1;
+    visibility:visible;
+    transform:translate(-50%,-50%) scale(1);
+}
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+background:#050816;
+color:#fff;
+padding-bottom:90px;
+overflow-x:hidden;
+}
+
+/* Fintech Glow Background */
+
+body::before,
+body::after{
+content:'';
+position:fixed;
+width:400px;
+height:400px;
+border-radius:50%;
+filter:blur(140px);
+opacity:.25;
+z-index:-1;
+}
+
+body::before{
+background:#00f7ff;
+top:-120px;
+left:-120px;
+}
+
+body::after{
+background:#6a00ff;
+bottom:-120px;
+right:-120px;
+}
+
+.header{
+padding:25px 20px;
+text-align:center;
+}
+
+.header h1{
+font-size:28px;
+font-weight:700;
+color:#00f7ff;
+text-shadow:0 0 20px rgba(0,247,255,.6);
+}
+
+.header p{
+margin-top:8px;
+color:#a8b6d9;
+}
+
+.container{
+padding:15px;
+}
+
+.card{
+background:rgba(255,255,255,.05);
+backdrop-filter:blur(25px);
+
+border:1px solid rgba(255,255,255,.08);
+
+border-radius:28px;
+
+padding:22px;
+
+margin-bottom:20px;
+
+box-shadow:
+0 15px 45px rgba(0,0,0,.4),
+0 0 30px rgba(0,247,255,.08);
+}
+
+.card-title{
+font-size:18px;
+font-weight:700;
+margin-bottom:18px;
+color:#00f7ff;
+}
+
+/* Referral Link */
+
+.referral-box{
+display:flex;
+overflow:hidden;
+border-radius:18px;
+border:1px solid rgba(255,255,255,.08);
+background:rgba(255,255,255,.04);
+}
+
+.referral-link{
+flex:1;
+padding:14px;
+font-size:13px;
+word-break:break-all;
+color:#d7e2ff;
+}
+
+.copy-btn{
+padding:14px 18px;
+border:none;
+background:linear-gradient(90deg,#00f7ff,#0066ff);
+color:white;
+font-weight:600;
+cursor:pointer;
+}
+
+/* Reward List */
+
+.reward-item{
+padding:12px 0;
+color:#d6def3;
+border-bottom:1px solid rgba(255,255,255,.06);
+line-height:1.6;
+}
+
+.reward-item:last-child{
+border-bottom:none;
+}
+
+/* Statistics */
+
+.stats-grid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:15px;
+}
+
+.stat-box{
+text-align:center;
+
+padding:20px;
+
+border-radius:22px;
+
+background:rgba(255,255,255,.05);
+
+border:1px solid rgba(255,255,255,.08);
+}
+
+.stat-value{
+font-size:34px;
+font-weight:700;
+color:#00f7ff;
+}
+
+.stat-label{
+margin-top:8px;
+color:#b9c6df;
+}
+
+/* Referral List */
+
+.referral-row{
+padding:15px 0;
+border-bottom:1px solid rgba(255,255,255,.06);
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.referral-name{
+font-weight:600;
+}
+
+.referral-status{
+color:#00ff88;
+}
+
+.empty{
+text-align:center;
+padding:30px;
+color:#8fa0c0;
+}
+
+/* Bottom Nav */
+
+.bottom-nav{
+position:fixed;
+bottom:0;
+left:0;
+right:0;
+
+height:72px;
+
+display:flex;
+justify-content:space-evenly;
+align-items:center;
+
+padding:0 8px;
+
+background:rgba(9,19,38,.95);
+
+backdrop-filter:blur(25px);
+
+border-top:1px solid rgba(255,255,255,.08);
+
+z-index:999;
+}
+
+.nav-btn{
+flex:1;
+
+display:flex;
+flex-direction:row;
+
+justify-content:center;
+align-items:center;
+
+gap:6px;
+
+text-decoration:none;
+
+color:#9ba7c7;
+
+font-size:12px;
+font-weight:600;
+}
+
+.nav-icon{
+font-size:20px;
+}
+
+.active-nav{
+color:#00f7ff;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+<h1>APEX MARKET INVESTMENT HUB</h1>
+<p>Build Your Team & Earn Referral Rewards</p>
+</div>
+
+<div class="container">
+
+<!-- Referral Link -->
+
+<div class="card">
+
+<div class="card-title">
+Your Referral Link
+</div>
+
+<div class="referral-box">
+
+<div class="referral-link" id="referralLink">
+Loading...
+</div>
+
+<button class="copy-btn" onclick="copyReferral()">
+Copy
+</button>
+
+</div>
+
+</div>
+
+<!-- Rewards -->
+
+<div class="card">
+
+<div class="card-title">
+Referral Rewards
+</div>
+
+<div class="reward-item">
+Invite new members using your referral link.
+</div>
+
+<div class="reward-item">
+Earn <strong>KSH 350</strong> on each referral.
+</div>
+
+<div class="reward-item">
+Rewards are credited only after the referral makes their first deposit.
+</div>
+
+<div class="reward-item">
+Multiple referrals are allowed.
+</div>
+
+<div class="reward-item">
+Deposits are verified before rewards are approved.
+</div>
+
+</div>
+
+<!-- Statistics -->
+
+<div class="card">
+
+<div class="card-title">
+Team Statistics
+</div>
+
+<div class="stats-grid">
+
+<div class="stat-box">
+<div class="stat-value" id="totalInvited">0</div>
+<div class="stat-label">Invited</div>
+</div>
+
+<div class="stat-box">
+<div class="stat-value" id="totalDeposits">0</div>
+<div class="stat-label">Deposits</div>
+</div>
+
+</div>
+
+</div>
+
+<!-- Referrals -->
+
+<div class="card">
+
+<div class="card-title">
+My Referrals
+</div>
+
+<div id="referralsContainer">
+
+<div class="empty">
+No referral yet
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- NAV -->
+
+<div class="bottom-nav">
+
+<a href="dashboard.html" class="nav-btn">
+<span class="nav-icon">⌂</span>
+<span>Home</span>
+</a>
+
+<a href="tasks.html" class="nav-btn">
+<span class="nav-icon">✓</span>
+<span>Tasks</span>
+</a>
+
+<a href="plans.html" class="nav-btn">
+<span class="nav-icon">◈</span>
+<span>Plans</span>
+</a>
+
+<a href="team.html" class="nav-btn active-nav">
+<span class="nav-icon">◎</span>
+<span>Team</span>
+</a>
+
+<a href="profile.html" class="nav-btn">
+<span class="nav-icon">◌</span>
+<span>Profile</span>
+</a>
+
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+getDatabase,
+ref,
+onValue,
+set
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+import {
+getAuth,
+onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+/* Firebase Config */
+
+const firebaseConfig = {
+apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
+authDomain: "apex-market-investment-h-643fc.firebaseapp.com",
+databaseURL: "https://apex-market-investment-h-643fc-default-rtdb.europe-west1.firebasedatabase.app",
+projectId: "apex-market-investment-h-643fc",
+storageBucket: "apex-market-investment-h-643fc.firebasestorage.app",
+messagingSenderId: "96469134780",
+appId: "1:96469134780:web:b1b443b0467083f843cfb9",
+measurementId: "G-NB3LXMPGTV"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const auth = getAuth(app);
+
+let referralURL = "";
+
+onAuthStateChanged(auth,(user)=>{
+
+if(!user) return;
+
+const uid = user.uid;
+
+/* Save referral code */
+
+set(ref(db,`users/${uid}/referralCode`),uid);
+
+/* Generate Link */
+
+referralURL =
+`https://apexmarketinvestmenthubinfo-png.github.io/Apex-market-investment-hub/?ref=${uid}`;
+
+document.getElementById("referralLink").textContent =
+referralURL;
+
+/* Realtime Referrals */
+
+onValue(ref(db,`users/${uid}/referrals`),(snap)=>{
+
+const data = snap.val() || {};
+
+const container =
+document.getElementById("referralsContainer");
+
+container.innerHTML="";
+
+let invited=0;
+let deposits=0;
+
+Object.values(data).forEach(referral=>{
+
+invited++;
+
+if(referral.deposited){
+deposits++;
+}
+
+container.innerHTML += `
+<div class="referral-row">
+
+<div class="referral-name">
+${referral.name || "Anonymous"}
+</div>
+
+<div class="referral-status">
+${referral.deposited ? "Deposited" : "Pending"}
+</div>
+
+</div>
+`;
+
+});
+
+if(invited===0){
+
+container.innerHTML =
+`<div class="empty">No referral yet</div>`;
+
+}
+
+document.getElementById("totalInvited").textContent =
+invited;
+
+document.getElementById("totalDeposits").textContent =
+deposits;
+
+});
+
+});
+
+window.copyReferral = async function(){
+
+    try{
+
+        await navigator.clipboard.writeText(referralURL);
+
+        const toast = document.getElementById("copyToast");
+
+        toast.classList.add("show");
+
+        setTimeout(()=>{
+            toast.classList.remove("show");
+        },2000);
+
+    }catch(error){
+
+        console.error(error);
+
+    }
+
+};
+
+</script>
+
+</body>
+</html>
