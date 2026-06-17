@@ -13,7 +13,6 @@ body {
     color: #fff;
 }
 
-/* HEADER */
 .header {
     text-align: center;
     padding: 22px;
@@ -23,14 +22,12 @@ body {
     box-shadow: 0 0 30px rgba(0,255,255,0.25);
 }
 
-/* CONTAINER */
 .container {
     max-width: 850px;
     margin: 30px auto;
     padding: 20px;
 }
 
-/* CARD */
 .card {
     padding: 25px;
     border-radius: 20px;
@@ -39,7 +36,6 @@ body {
     border: 1px solid rgba(0,255,255,0.15);
 }
 
-/* BALANCE */
 .balance {
     text-align: center;
     font-size: 22px;
@@ -48,7 +44,6 @@ body {
     background: linear-gradient(90deg, #00c6ff, #0072ff);
 }
 
-/* INPUTS */
 label {
     margin-top: 14px;
     display: block;
@@ -66,7 +61,6 @@ select, input {
     color: #fff;
 }
 
-/* BUTTON */
 button {
     width: 100%;
     margin-top: 22px;
@@ -84,6 +78,7 @@ button {
     inset: 0;
     background: rgba(0,0,0,0.6);
     display: none;
+    z-index: 9998;
 }
 
 .modal {
@@ -97,6 +92,7 @@ button {
     display: none;
     text-align: center;
     box-shadow: 0 0 25px rgba(0,255,200,0.4);
+    z-index: 9999;
 }
 
 .hidden { display:none; }
@@ -143,7 +139,7 @@ Main Balance: KSH <span id="balance">Loading...</span>
     <input id="phone" placeholder="Enter phone number"/>
 </div>
 
-<!-- BANK (FIXED - NOW PROPER) -->
+<!-- BANK (FIXED & COMPLETE) -->
 <div id="bankBox" class="hidden">
     <label>Bank Name</label>
     <select id="bankName">
@@ -196,46 +192,46 @@ const db = firebase.database();
 
 const userId = "user_123";
 
-/* LIVE BALANCE FIX */
-db.ref("users/"+userId+"/balance").on("value", snap=>{
+/* REAL-TIME BALANCE */
+db.ref("users/" + userId + "/balance").on("value", snap => {
     document.getElementById("balance").innerText = snap.val() || 0;
 });
 
-/* TOGGLE METHOD FIX */
-function toggleMethod(){
+/* TOGGLE METHOD */
+function toggleMethod() {
     let m = document.getElementById("method").value;
 
     document.getElementById("mobileBox").classList.add("hidden");
     document.getElementById("bankBox").classList.add("hidden");
 
-    if(m === "mobile") document.getElementById("mobileBox").classList.remove("hidden");
-    if(m === "bank") document.getElementById("bankBox").classList.remove("hidden");
+    if (m === "mobile") document.getElementById("mobileBox").classList.remove("hidden");
+    if (m === "bank") document.getElementById("bankBox").classList.remove("hidden");
 }
 
 /* MODAL */
 function show(msg){
     document.getElementById("modal").innerText = msg;
-    document.getElementById("overlay").style.display="block";
-    document.getElementById("modal").style.display="block";
+    document.getElementById("overlay").style.display = "block";
+    document.getElementById("modal").style.display = "block";
 
-    setTimeout(()=>{
-        document.getElementById("overlay").style.display="none";
-        document.getElementById("modal").style.display="none";
-    },2000);
+    setTimeout(() => {
+        document.getElementById("overlay").style.display = "none";
+        document.getElementById("modal").style.display = "none";
+    }, 2000);
 }
 
-/* WITHDRAW FIX (IMPORTANT PART) */
+/* WITHDRAW (FINAL FIX) */
 function withdraw(){
 
     let amount = Number(document.getElementById("amount").value);
     let method = document.getElementById("method").value;
 
     if(!method) return show("Select method");
-    if(!amount || amount < 600) return show("Minimum 600 required");
+    if(!amount || amount < 600) return show("Minimum withdrawal is 600");
 
-    let balanceRef = db.ref("users/"+userId+"/balance");
+    let balanceRef = db.ref("users/" + userId + "/balance");
 
-    balanceRef.once("value", snap=>{
+    balanceRef.once("value", snap => {
 
         let balance = snap.val() || 0;
 
@@ -257,26 +253,32 @@ function withdraw(){
         };
 
         if(method === "mobile"){
+            let phone = document.getElementById("phone").value;
+            if(!phone) return show("Enter phone number");
+
             data.provider = document.getElementById("mobileProvider").value;
-            data.phone = document.getElementById("phone").value;
+            data.phone = phone;
         }
 
         if(method === "bank"){
+            let acc = document.getElementById("account").value;
+            if(!acc) return show("Enter account number");
+
             data.bank = document.getElementById("bankName").value;
-            data.account = document.getElementById("account").value;
+            data.account = acc;
         }
 
-        // 🔥 IMPORTANT: SAVE TO TRANSACTIONS (FOR HISTORY PAGE FIX)
-        db.ref("transactions/"+userId).push(data);
+        // 🔥 MAIN FIX: SAVE FOR HISTORY PAGE
+        db.ref("transactions/" + userId).push(data);
 
-        // ALSO SAVE TO WITHDRAWALS (optional backup)
-        db.ref("withdrawals/"+userId).push(data);
+        // backup
+        db.ref("withdrawals/" + userId).push(data);
 
         show("Withdrawal submitted successfully");
 
-        setTimeout(()=>{
+        setTimeout(() => {
             window.location.href = "transaction-history.html";
-        },1500);
+        }, 1500);
     });
 }
 </script>
