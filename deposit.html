@@ -355,8 +355,8 @@ button.submit-btn:disabled{
 </div>
 
 <script type="module">
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
 import {
     getDatabase,
     ref,
@@ -368,15 +368,6 @@ import {
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-import {
-    getStorage,
-    ref as storageRef,
-    uploadBytes,
-    getDownloadURL
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
-
-/* ================= FIREBASE CONFIG ================= */
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
   authDomain: "apex-market-investment-h-643fc.firebaseapp.com",
@@ -388,41 +379,42 @@ const firebaseConfig = {
   measurementId: "G-NB3LXMPGTV"
 };
 
-/* INIT */
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const auth = getAuth(app);
-const storage = getStorage(app);
 
 let currentUser = null;
 
-/* SAFE NOTIFICATION */
-function showNotification(message){
+function showNotification(message) {
     const el = document.createElement("div");
+
     el.style.cssText = `
-        position:fixed;
-        top:25px;
-        left:50%;
-        transform:translateX(-50%);
-        background:rgba(9,19,38,.96);
-        color:#fff;
-        padding:14px 24px;
-        border-radius:16px;
-        z-index:99999;
-        font-weight:600;
+        position: fixed;
+        top: 25px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(9,19,38,.96);
+        color: white;
+        padding: 14px 24px;
+        border-radius: 16px;
+        z-index: 99999;
+        font-weight: 600;
     `;
+
     el.textContent = message;
+
     document.body.appendChild(el);
-    setTimeout(()=> el.remove(), 2500);
+
+    setTimeout(() => {
+        el.remove();
+    }, 2500);
 }
 
-/* FIX COPY FUNCTION (WAS MISSING) */
-window.copyText = function(text){
+window.copyText = function(text) {
     navigator.clipboard.writeText(text);
     showNotification("Copied Successfully");
 };
 
-/* AUTH */
 onAuthStateChanged(auth, (user) => {
 
     if (!user) {
@@ -433,83 +425,56 @@ onAuthStateChanged(auth, (user) => {
     currentUser = user;
 });
 
-/* WAIT FOR DOM SAFELY */
-window.addEventListener("DOMContentLoaded", () => {
+const btn = document.getElementById("submitDeposit");
 
-    const btn = document.getElementById("submitDeposit");
+btn.addEventListener("click", async () => {
 
-    if (!btn) {
-        console.error("Submit button not found");
+    if (!currentUser) {
+        showNotification("Please wait...");
         return;
     }
 
-    btn.addEventListener("click", async () => {
+    const amount = Number(
+        document.getElementById("depositAmount").value
+    );
 
-        if (!currentUser) {
-            showNotification("User not logged in");
-            return;
-        }
-
-        const amount = Number(document.getElementById("depositAmount").value);
-        const file = document.getElementById("depositProof").files[0];
-
-        if (amount < 1000) {
-            showNotification("Minimum deposit is KSh 1,000");
-            return;
-        }
-
-        if (!file) {
-            showNotification("Upload transaction screenshot");
-            return;
-        }
-
-        try {
-
-            btn.disabled = true;
-            btn.innerText = "Processing...";
-
-            const proofReference = storageRef(
-                storage,
-                `deposits/${currentUser.uid}/${Date.now()}_${file.name}`
-            );
-
-            await uploadBytes(proofReference, file);
-            const screenshotURL = await getDownloadURL(proofReference);
-
-await push(
-    ref(db, `users/${currentUser.uid}/transactions`),
-    {
-        type: "Deposit",
-        amount: amount,
-        screenshot: screenshotURL,
-        status: "Pending",
-        createdAt: Date.now()
+    if (!amount || amount < 1000) {
+        showNotification("Minimum deposit is KSh 1,000");
+        return;
     }
-);
 
-showNotification("Deposit submitted successfully");
+    btn.disabled = true;
+    btn.innerText = "Processing...";
 
-/* ✅ INSTANT REDIRECT (NO DELAY) */
-window.location.href = "transaction.html";
+    try {
 
-            showNotification("Deposit submitted successfully");
+        await push(
+            ref(db, `users/${currentUser.uid}/transactions`),
+            {
+                type: "deposit",
+                amount: amount,
+                method: "M-Pesa",
+                status: "pending",
+                createdAt: Date.now()
+            }
+        );
 
-            setTimeout(() => {
-                window.location.href = "transaction.html";
-            }, 1200);
+        showNotification("Deposit submitted successfully");
 
-        } catch (error) {
+        setTimeout(() => {
+            window.location.href = "transaction.html";
+        }, 1500);
 
-            console.error(error);
-            showNotification(error.message);
+    } catch (error) {
 
-        } finally {
-            btn.disabled = false;
-            btn.innerText = "Submit Deposit";
-        }
-    });
+        console.error(error);
+
+        showNotification("Failed to submit deposit");
+
+        btn.disabled = false;
+        btn.innerText = "Submit Deposit";
+    }
 });
-
 </script>
 
 </body>
