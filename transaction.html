@@ -166,10 +166,20 @@ footer {
 </footer>
 
 <!-- FIREBASE -->
-<script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-database.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
-<script>
+import {
+    getDatabase,
+    ref,
+    onValue
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+import {
+    getAuth,
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
 const firebaseConfig = {
   apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
   authDomain: "apex-market-investment-h-643fc.firebaseapp.com",
@@ -181,71 +191,85 @@ const firebaseConfig = {
   measurementId: "G-NB3LXMPGTV"
 };
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-
-const userId = "user_123";
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const auth = getAuth(app);
 
 let allTransactions = [];
 
-/* LIVE WITHDRAWALS */
-db.ref("withdrawals/" + userId).on("value", snap => {
-    let data = snap.val() || {};
-    renderTransactions(data, "withdraw");
+onAuthStateChanged(auth, (user) => {
+
+    if (!user) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    onValue(
+        ref(db, `users/${user.uid}/transactions`),
+        (snapshot) => {
+
+            const data = snapshot.val() || {};
+
+            allTransactions = Object.keys(data).map(key => ({
+                id: key,
+                ...data[key]
+            }));
+
+            display(allTransactions);
+        }
+    );
 });
-
-/* LIVE DEPOSITS */
-db.ref("deposits/" + userId).on("value", snap => {
-    let data = snap.val() || {};
-    renderTransactions(data, "deposit");
-});
-
-function renderTransactions(data, type) {
-    let list = [];
-
-    Object.keys(data).forEach(key => {
-        list.push({
-            id: key,
-            type: type,
-            ...data[key]
-        });
-    });
-
-    allTransactions = allTransactions
-        .filter(t => t.type !== type)
-        .concat(list);
-
-    display(allTransactions);
-}
 
 function display(list) {
+
     const body = document.getElementById("txBody");
+
     body.innerHTML = "";
 
-    list.sort((a, b) => b.createdAt?.localeCompare(a.createdAt));
+    list.sort((a, b) => b.createdAt - a.createdAt);
 
     list.forEach(tx => {
-        const row = `
+
+        body.innerHTML += `
         <tr>
-            <td><span class="type ${tx.type}">${tx.type}</span></td>
-            <td>${tx.amount}</td>
-            <td>${tx.method || "-"}</td>
-            <td><span class="status ${tx.status}">${tx.status}</span></td>
-            <td>${tx.createdAt ? new Date(tx.createdAt).toLocaleString() : "-"}</td>
+            <td>
+                <span class="type ${tx.type}">
+                    ${tx.type}
+                </span>
+            </td>
+
+            <td>
+                ${tx.amount}
+            </td>
+
+            <td>
+                ${tx.method || "-"}
+            </td>
+
+            <td>
+                <span class="status ${tx.status}">
+                    ${tx.status}
+                </span>
+            </td>
+
+            <td>
+                ${new Date(tx.createdAt).toLocaleString()}
+            </td>
         </tr>
         `;
-        body.innerHTML += row;
     });
 }
 
-/* FILTER */
-function filterData(type) {
+window.filterData = function(type) {
+
     if (type === "all") {
         display(allTransactions);
     } else {
-        display(allTransactions.filter(t => t.type === type));
+        display(
+            allTransactions.filter(tx => tx.type === type)
+        );
     }
-}
+};
 </script>
 
 </body>
