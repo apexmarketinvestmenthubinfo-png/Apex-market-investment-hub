@@ -6,71 +6,12 @@
 <title>Apex Market Investment Hub Company - Withdraw</title>
 
 <style>
-.overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.65);
-    backdrop-filter: blur(6px);
-    display: none;
-    z-index: 9998;
-}
-
-.modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0,255,170,0.12);
-    border: 1px solid rgba(0,255,170,0.4);
-    padding: 25px 35px;
-    border-radius: 16px;
-    text-align: center;
-    font-size: 16px;
-    color: #fff;
-    display: none;
-    z-index: 9999;
-    box-shadow: 0 0 35px rgba(0,255,200,0.35);
-    min-width: 260px;
-}
 body {
     margin: 0;
     font-family: 'Segoe UI', sans-serif;
     background: radial-gradient(circle at top, #0b1220, #050814);
     color: #fff;
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
-
-/* TOAST */
-.toast {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: rgba(0,255,170,0.15);
-    border: 1px solid rgba(0,255,170,0.4);
-    padding: 14px 18px;
-    border-radius: 12px;
-    backdrop-filter: blur(10px);
-    display: none;
-    z-index: 9999;
-}
-
-/* MAIN WRAPPER FULL HEIGHT */
-.wrapper {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: stretch;
-    padding: 20px;
-}
-
-.container {
-    width: 100%;
-    max-width: 750px;
 }
 
 /* HEADER */
@@ -79,15 +20,21 @@ body {
     padding: 22px;
     font-size: 18px;
     font-weight: bold;
-    border-radius: 18px;
     background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
-    box-shadow: 0 0 35px rgba(0,255,255,0.25);
+    box-shadow: 0 0 30px rgba(0,255,255,0.25);
+}
+
+/* WRAPPER */
+.container {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 20px;
 }
 
 /* CARD */
 .card {
-    margin-top: 25px;
-    padding: 28px;
+    margin-top: 20px;
+    padding: 25px;
     border-radius: 20px;
     background: rgba(255,255,255,0.05);
     backdrop-filter: blur(18px);
@@ -95,7 +42,7 @@ body {
     box-shadow: 0 0 25px rgba(0,255,255,0.08);
 }
 
-/* BALANCE LIVE */
+/* BALANCE */
 .balance {
     text-align: center;
     font-size: 22px;
@@ -107,7 +54,7 @@ body {
 
 /* FORM */
 label {
-    margin-top: 15px;
+    margin-top: 14px;
     display: block;
     font-size: 13px;
     color: #cbd5e1;
@@ -138,6 +85,7 @@ button {
     font-weight: bold;
 }
 
+/* HIDDEN */
 .hidden { display: none; }
 
 /* FOOTER */
@@ -146,60 +94,52 @@ footer {
     padding: 15px;
     font-size: 13px;
     color: #94a3b8;
+    margin-top: 30px;
     border-top: 1px solid rgba(255,255,255,0.08);
-    margin-top: 20px;
+}
+
+/* CENTER MODAL */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.65);
+    backdrop-filter: blur(6px);
+    display: none;
+    z-index: 9998;
 }
 
 .modal {
     position: fixed;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%) scale(0.8);
+    transform: translate(-50%, -50%);
     background: rgba(0,255,170,0.12);
     border: 1px solid rgba(0,255,170,0.4);
-    padding: 25px 30px;
+    padding: 25px 35px;
     border-radius: 16px;
     text-align: center;
     font-size: 16px;
     color: #fff;
     display: none;
     z-index: 9999;
-    box-shadow: 0 0 30px rgba(0,255,200,0.3);
-    animation: pop 0.25s ease forwards;
-}
-
-@keyframes pop {
-    from {
-        transform: translate(-50%, -50%) scale(0.7);
-        opacity: 0;
-    }
-    to {
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 1;
-    }
-}
+    box-shadow: 0 0 35px rgba(0,255,200,0.35);
 }
 </style>
 </head>
 
 <body>
-<div id="overlay" class="overlay"></div>
-
-<div id="modal" class="modal">
-    <div id="modalText">Message</div>
-</div>
-<div id="toast" class="toast"></div>
-
-<div class="wrapper">
-<div class="container">
 
 <div class="header">
     APEX MARKET INVESTMENT HUB COMPANY
 </div>
 
+<div class="container">
+
 <div class="card">
 
-    <!-- LIVE BALANCE -->
     <div class="balance">
         Main Balance: KSH <span id="balance">Loading...</span>
     </div>
@@ -213,7 +153,7 @@ footer {
 
     <!-- MOBILE -->
     <div id="mobileSection" class="hidden">
-        <label>Mobile Money Provider</label>
+        <label>Mobile Provider</label>
         <select id="mobileProvider">
             <option>Safaricom</option>
             <option>Airtel Money</option>
@@ -248,18 +188,22 @@ footer {
 </div>
 
 </div>
-</div>
 
 <footer>
     © 2026 Apex Market Investment Hub Company • All Rights Reserved
 </footer>
 
+<!-- MODAL -->
+<div id="overlay" class="overlay"></div>
+<div id="modal" class="modal">
+    <div id="modalText"></div>
+</div>
+
 <!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-database.js"></script>
-<script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-auth.js"></script>
+
 <script>
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
   authDomain: "apex-market-investment-h-643fc.firebaseapp.com",
@@ -274,148 +218,78 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-let currentUser = null;
+const userId = "user_123";
 
-firebase.auth().onAuthStateChanged(function(user) {
-
-    if (!user) {
-        window.location.href = "login.html";
-        return;
-    }
-
-    currentUser = user;
-
-    /* LIVE BALANCE */
-    db.ref("users/" + currentUser.uid + "/balance")
-      .on("value", function(snap) {
-
-        document.getElementById("balance").innerText =
-            snap.val() || 0;
-    });
-});
-
-/* LIVE BALANCE SYNC */
-db.ref("users/" + userId + "/balance").on("value", (snap) => {
+/* LIVE BALANCE */
+db.ref("users/" + userId + "/balance").on("value", snap => {
     document.getElementById("balance").innerText = snap.val() || 0;
 });
 
-/* TOAST */
-function showToast(msg) {
-    const modal = document.getElementById("modal");
-    const overlay = document.getElementById("overlay");
-    const text = document.getElementById("modalText");
-
-    text.innerText = msg;
-
-    modal.style.display = "block";
-    overlay.style.display = "block";
+/* CENTER MODAL */
+function showMessage(msg) {
+    document.getElementById("modalText").innerText = msg;
+    document.getElementById("overlay").style.display = "block";
+    document.getElementById("modal").style.display = "block";
 
     setTimeout(() => {
-        modal.style.display = "none";
-        overlay.style.display = "none";
+        document.getElementById("overlay").style.display = "none";
+        document.getElementById("modal").style.display = "none";
     }, 2000);
 }
 
-/* UI */
+/* SWITCH METHOD */
 function toggleMethod() {
     const method = document.getElementById("method").value;
+
     document.getElementById("mobileSection").classList.add("hidden");
     document.getElementById("bankSection").classList.add("hidden");
 
-    if (method === "mobile") document.getElementById("mobileSection").classList.remove("hidden");
-    if (method === "bank") document.getElementById("bankSection").classList.remove("hidden");
+    if (method === "mobile") {
+        document.getElementById("mobileSection").classList.remove("hidden");
+    }
+
+    if (method === "bank") {
+        document.getElementById("bankSection").classList.remove("hidden");
+    }
 }
 
-<script>
+/* WITHDRAW */
 function submitWithdrawal() {
-
-    if (!currentUser) {
-        return showToast("Please wait...");
-    }
 
     const method = document.getElementById("method").value;
     const amount = parseFloat(document.getElementById("amount").value);
 
-    if (!method) {
-        return showToast("Select withdrawal method");
+    if (!method) return showMessage("Select withdrawal method");
+    if (!amount || amount < 600) return showMessage("Minimum withdrawal is KSH 600");
+
+    let data = {
+        method,
+        amount,
+        status: "pending",
+        createdAt: new Date().toISOString()
+    };
+
+    if (method === "mobile") {
+        data.provider = document.getElementById("mobileProvider").value;
+        data.number = document.getElementById("mobileNumber").value;
+        if (!data.number) return showMessage("Enter mobile number");
     }
 
-    if (!amount || amount < 600) {
-        return showToast("Minimum withdrawal amount is KSH 600");
+    if (method === "bank") {
+        data.bank = document.getElementById("bankName").value;
+        data.account = document.getElementById("accountNumber").value;
+        if (!data.account) return showMessage("Enter account number");
     }
 
-    const balanceRef = db.ref("users/" + currentUser.uid + "/balance");
+    db.ref("withdrawals/" + userId).push(data);
 
-    balanceRef.once("value")
-    .then(function(balanceSnap) {
+    showMessage("Withdrawal submitted successfully");
 
-        const currentBalance = Number(balanceSnap.val() || 0);
-
-        /* CHECK INSUFFICIENT FUNDS */
-        if (amount > currentBalance) {
-            return showToast("Insufficient balance");
-        }
-
-        let transactionData = {
-            type: "withdraw",
-            method: method,
-            amount: amount,
-            status: "pending",
-            createdAt: Date.now()
-        };
-
-        if (method === "mobile") {
-
-            const number =
-                document.getElementById("mobileNumber").value.trim();
-
-            if (!number) {
-                return showToast("Enter mobile number");
-            }
-
-            transactionData.provider =
-                document.getElementById("mobileProvider").value;
-
-            transactionData.number = number;
-        }
-
-        if (method === "bank") {
-
-            const account =
-                document.getElementById("accountNumber").value.trim();
-
-            if (!account) {
-                return showToast("Enter account number");
-            }
-
-            transactionData.bank =
-                document.getElementById("bankName").value;
-
-            transactionData.account = account;
-        }
-
-        /* SAVE WITHDRAWAL */
-        return db.ref(
-            "users/" + currentUser.uid + "/transactions"
-        ).push(transactionData);
-
-    })
-    .then(function(result) {
-
-        if (!result) return;
-
-        showToast("Withdrawal submitted successfully");
-
-        window.location.replace("transaction.html");
-
-    })
-    .catch(function(error) {
-
-        console.error(error);
-
-        showToast("Failed to submit withdrawal");
-    });
+    setTimeout(() => {
+        window.location.href = "transaction-history.html";
+    }, 1500);
 }
 </script>
+
 </body>
 </html>
