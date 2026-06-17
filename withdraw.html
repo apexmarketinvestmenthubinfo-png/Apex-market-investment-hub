@@ -257,7 +257,7 @@ footer {
 <!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-database.js"></script>
-
+<script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-auth.js"></script>
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
@@ -273,7 +273,25 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-const userId = "user_123";
+let currentUser = null;
+
+firebase.auth().onAuthStateChanged(function(user) {
+
+    if (!user) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    currentUser = user;
+
+    /* LIVE BALANCE */
+    db.ref("users/" + currentUser.uid + "/balance")
+      .on("value", function(snap) {
+
+        document.getElementById("balance").innerText =
+            snap.val() || 0;
+    });
+});
 
 /* LIVE BALANCE SYNC */
 db.ref("users/" + userId + "/balance").on("value", (snap) => {
@@ -312,7 +330,9 @@ function submitWithdrawal() {
 
     const method = document.getElementById("method").value;
     const amount = parseFloat(document.getElementById("amount").value);
-
+if (!currentUser) {
+    return showToast("Please wait...");
+}
     if (!method) return showToast("Select method");
     if (!amount || amount < 600) return showToast("Minimum KSH 600");
 
@@ -335,13 +355,18 @@ function submitWithdrawal() {
         if (!data.account) return showToast("Enter account number");
     }
 
-    db.ref("withdrawals/" + userId).push(data);
+db.ref("users/" + currentUser.uid + "/transactions").push({
+    type: "withdraw",
+    method: method,
+    amount: amount,
+    status: "pending",
+    createdAt: Date.now(),
+    ...data
+});
 
-    showToast("Withdrawal submitted successfully");
+showToast("Withdrawal submitted successfully");
 
-    setTimeout(() => {
-        window.location.href = "transaction.html";
-    }, 1500);
+window.location.replace("transaction.html");
 }
 </script>
 
