@@ -602,21 +602,53 @@ userBalance = Number(data.balance || 0);
 document.getElementById("mainBalance").textContent =
 "KSh " + userBalance.toLocaleString();
 
+
+// FIXED TOTAL DEPOSIT
+let depositValue = data.deposit;
+
+if(typeof depositValue === "string"){
+    depositValue = depositValue.replace(/[^0-9.]/g,"");
+}
+
+depositValue = parseFloat(depositValue);
+
+if(isNaN(depositValue)){
+    depositValue = 0;
+}
+
 document.getElementById("totalDeposit").textContent =
-"KSh " + Number(data.deposit || 0).toLocaleString();
+"KSh " + depositValue.toLocaleString();
+
+
 
 const investments = data.investments || {};
 
 let totalProfit = 0;
 
 Object.values(investments).forEach(item=>{
+
 if(item && item.status === "running"){
-totalProfit += Number(item.amount || 0) * 0.5;
+
+let amount = item.amount;
+
+if(typeof amount === "string"){
+amount = amount.replace(/[^0-9.]/g,"");
 }
+
+amount = parseFloat(amount);
+
+if(!isNaN(amount)){
+totalProfit += amount * 0.5;
+}
+
+}
+
 });
+
 
 document.getElementById("totalProfit").textContent =
 "KSh " + totalProfit.toLocaleString();
+
 
 renderPlans(user.uid, investments);
 
