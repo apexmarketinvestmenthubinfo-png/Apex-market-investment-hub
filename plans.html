@@ -1,486 +1,1029 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Apex Market Investment Hub - Plans</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>Apex Market Investment Hub</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif}
-body{background:#050816;color:#fff;padding-bottom:90px;overflow-x:hidden}
 
-body::before,body::after{
-content:'';
-position:fixed;
-width:400px;height:400px;
-border-radius:50%;
-filter:blur(150px);
-opacity:.3;
-z-index:-1;
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Poppins,sans-serif
 }
 
-body::before{background:linear-gradient(45deg,#00f7ff,#0066ff);top:-120px;left:-120px}
-body::after{background:linear-gradient(45deg,#ff00ff,#6a00ff);bottom:-120px;right:-120px}
+
+body{
+background:#050816;
+color:white;
+padding-bottom:90px;
+overflow-x:hidden;
+}
+
 
 .header{
-padding:20px;text-align:center;
-font-size:24px;font-weight:700;
-background:rgba(255,255,255,.05);
-backdrop-filter:blur(15px);
-border-bottom:1px solid rgba(255,255,255,.08)
+padding:20px;
+text-align:center;
+font-size:22px;
+font-weight:700;
+
+background:
+linear-gradient(135deg,
+rgba(0,247,255,.25),
+rgba(0,102,255,.15));
+
+box-shadow:0 0 30px #0066ff;
 }
 
-.subtitle{text-align:center;color:#00f7ff;margin:10px 0 20px;font-size:15px}
-.container{padding:15px}
+
+
+.container{
+padding:15px;
+}
+
+
+
+.summary{
+
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:12px;
+margin-bottom:20px;
+
+}
+
+
+
+.card{
+
+padding:18px;
+border-radius:22px;
+
+background:
+linear-gradient(145deg,
+rgba(0,247,255,.20),
+rgba(0,102,255,.15));
+
+border:1px solid rgba(0,247,255,.4);
+
+box-shadow:
+0 0 25px rgba(0,247,255,.35);
+
+text-align:center;
+
+}
+
+
+
+.card h3{
+
+font-size:13px;
+color:#aaa;
+
+}
+
+
+
+.card h2{
+
+margin-top:10px;
+color:#00f7ff;
+
+}
+
+
+
+
+
+#plans{
+padding:15px;
+}
+
+
 
 .plan{
-background:rgba(255,255,255,.05);
-border:1px solid rgba(255,255,255,.08);
-border-radius:20px;
-padding:20px;margin-bottom:20px;
-backdrop-filter:blur(15px)
+
+padding:20px;
+margin-bottom:20px;
+
+border-radius:25px;
+
+background:
+linear-gradient(145deg,
+rgba(255,255,255,.12),
+rgba(0,102,255,.10));
+
+border:1px solid rgba(0,247,255,.35);
+
+box-shadow:
+0 0 30px rgba(0,247,255,.25);
+
+backdrop-filter:blur(20px);
+
 }
 
-.plan h3{color:#00f7ff;font-size:26px;margin-bottom:15px;text-align:center}
-.plan p{color:#ccc;margin:10px 0;font-size:15px;line-height:1.8}
 
-.status{margin-top:12px;font-size:14px;color:#00ff88;font-weight:600}
+
+.plan h3{
+
+color:#00f7ff;
+text-align:center;
+margin-bottom:15px;
+
+}
+
+
+
+.plan p{
+
+margin:8px 0;
+color:#ddd;
+
+}
+
+
 
 button{
-width:100%;margin-top:15px;
-padding:14px;border:none;border-radius:12px;
-background:linear-gradient(90deg,#00f7ff,#0066ff);
-color:#fff;font-size:16px;font-weight:600;
-cursor:pointer
+
+width:100%;
+padding:14px;
+
+border:none;
+border-radius:15px;
+
+background:
+linear-gradient(90deg,
+#00f7ff,
+#0066ff);
+
+color:white;
+font-weight:700;
+
+margin-top:15px;
+
+box-shadow:
+0 0 20px #0066ff;
+
 }
 
-button:disabled{background:#444;cursor:not-allowed}
+
+
+button:disabled{
+
+background:#444;
+box-shadow:none;
+
+}
+
+
+
 
 .bottom-nav{
-    position:fixed;
-    bottom:0;
-    left:0;
-    right:0;
-    height:72px;
 
-    display:flex;
-    justify-content:space-evenly;
-    align-items:center;
+position:fixed;
+bottom:0;
+left:0;
+right:0;
 
-    padding:0 8px;
+height:70px;
 
-    background:rgba(9,19,38,.95);
-    backdrop-filter:blur(25px);
+display:flex;
+justify-content:space-around;
+align-items:center;
 
-    border-top:1px solid rgba(255,255,255,.08);
+background:#091326;
 
-    box-shadow:
-        0 -8px 30px rgba(0,0,0,.45);
+z-index:999;
 
-    z-index:999;
 }
+
+
 
 .nav-btn{
-    flex:1;
 
-    display:flex;
-    flex-direction:row;      /* Horizontal */
-    align-items:center;
-    justify-content:center;
-    gap:6px;
+color:#aaa;
+text-decoration:none;
+font-size:12px;
+text-align:center;
 
-    text-decoration:none;
-    color:#9ba7c7;
-
-    font-size:12px;
-    font-weight:600;
-
-    transition:.3s ease;
 }
+
+
 
 .nav-icon{
-    font-size:20px;
-    line-height:1;
+
+font-size:20px;
+display:block;
+
 }
 
-.nav-btn:hover,
+
+
 .active-nav{
-    color:#00f7ff;
+
+color:#00f7ff;
+
 }
 
-.nav-btn:hover .nav-icon,
-.active-nav .nav-icon{
-    text-shadow:
-        0 0 10px rgba(0,247,255,.8),
-        0 0 20px rgba(0,247,255,.5);
-}
-/* CENTER NOTIFICATION */
-#toast-overlay{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.55);
-    backdrop-filter:blur(6px);
 
-    display:flex;
-    justify-content:center;
-    align-items:center;
 
-    z-index:99999;
 
-    opacity:0;
-    visibility:hidden;
 
-    transition:.3s ease;
-}
-
-#toast-overlay.show{
-    opacity:1;
-    visibility:visible;
-}
-
-#toast{
-    max-width:320px;
-    width:85%;
-
-    padding:24px 20px;
-    text-align:center;
-
-    background:rgba(10,18,35,.95);
-    backdrop-filter:blur(20px);
-
-    border:1px solid rgba(255,255,255,.08);
-    border-radius:24px;
-
-    color:#ffffff;
-    font-size:16px;
-    font-weight:600;
-    line-height:1.6;
-
-    box-shadow:
-        0 20px 60px rgba(0,0,0,.5),
-        0 0 25px rgba(0,247,255,.25);
-
-    animation:toastPop .3s ease;
-}
-
-@keyframes toastPop{
-    from{
-        transform:scale(.85);
-        opacity:0;
-    }
-    to{
-        transform:scale(1);
-        opacity:1;
-    }
-}
 </style>
+
 </head>
+
 
 <body>
 
-<div class="header">APEX MARKET INVESTMENT HUB</div>
-<div class="subtitle">Investment Plans</div>
 
-<div class="container" id="plans"></div>
+<div class="header">
+APEX MARKET INVESTMENT HUB
+</div>
 
-<!-- NAV -->
+
+
+<div class="container">
+
+
+<div class="summary">
+
+
+<div class="card">
+
+<h3>Balance</h3>
+
+<h2 id="mainBalance">
+KSh 0
+</h2>
+
+</div>
+
+
+
+
+<div class="card">
+
+<h3>Profit</h3>
+
+<h2 id="totalProfit">
+KSh 0
+</h2>
+
+</div>
+
+
+
+</div>
+
+
+</div>
+
+
+
+<div id="plans"></div>
+
+
+
+
+
 <div class="bottom-nav">
 
-    <a href="dashboard.html" class="nav-btn active-nav">
-        <span class="nav-icon">⌂</span>
-        <span>Home</span>
-    </a>
 
-    <a href="tasks.html" class="nav-btn">
-        <span class="nav-icon">✓</span>
-        <span>Tasks</span>
-    </a>
+<a class="nav-btn" href="dashboard.html">
 
-    <a href="plans.html" class="nav-btn">
-        <span class="nav-icon">◈</span>
-        <span>Plans</span>
-    </a>
+<span class="nav-icon">⌂</span>
+Home
 
-    <a href="team.html" class="nav-btn">
-        <span class="nav-icon">◉</span>
-        <span>Team</span>
-    </a>
+</a>
 
-    <a href="profile.html" class="nav-btn">
-        <span class="nav-icon">◌</span>
-        <span>Profile</span>
-    </a>
+
+<a class="nav-btn" href="tasks.html">
+
+<span class="nav-icon">✓</span>
+Tasks
+
+</a>
+
+
+
+<a class="nav-btn active-nav" href="plans.html">
+
+<span class="nav-icon">◈</span>
+Plans
+
+</a>
+
+
+
+<a class="nav-btn" href="team.html">
+
+<span class="nav-icon">◉</span>
+Team
+
+</a>
+
+
+
+<a class="nav-btn" href="profile.html">
+
+<span class="nav-icon">◌</span>
+Profile
+
+</a>
+
+
 
 </div>
+
+
+
+
+
+
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {
-    getDatabase,
-    ref,
-    set,
-    onValue,
-    get,
-    update
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-/* 🔥 FIREBASE CONFIG */
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
-  authDomain: "apex-market-investment-h-643fc.firebaseapp.com",
-  databaseURL: "https://apex-market-investment-h-643fc-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "apex-market-investment-h-643fc",
-  storageBucket: "apex-market-investment-h-643fc.firebasestorage.app",
-  messagingSenderId: "96469134780",
-  appId: "1:96469134780:web:b1b443b0467083f843cfb9",
-  measurementId: "G-NB3LXMPGTV"
+
+import {initializeApp}
+
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+
+
+import {
+
+getDatabase,
+ref,
+onValue,
+get,
+set,
+update
+
+}
+
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+
+
+import {
+
+getAuth,
+onAuthStateChanged
+
+}
+
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+
+
+
+
+
+const firebaseConfig={
+
+
+apiKey:"AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
+
+authDomain:"apex-market-investment-h-643fc.firebaseapp.com",
+
+databaseURL:"https://apex-market-investment-h-643fc-default-rtdb.europe-west1.firebasedatabase.app",
+
+projectId:"apex-market-investment-h-643fc",
+
+storageBucket:"apex-market-investment-h-643fc.firebasestorage.app",
+
+messagingSenderId:"96469134780",
+
+appId:"1:96469134780:web:b1b443b0467083f843cfb9",
+
+measurementId:"G-NB3LXMPGTV"
+
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-const auth = getAuth(app);
 
-const container = document.getElementById("plans");
 
-const plans = [
-{name:"Starter Plan",amount:1000,roi:50},
-{name:"Bronze Plan",amount:2500,roi:50},
-{name:"Silver Plan",amount:5000,roi:50},
-{name:"Gold Plan",amount:10000,roi:50},
-{name:"Premium Plan",amount:20000,roi:50},
-{name:"Elite Plan",amount:30000,roi:50},
-{name:"Diamond Plan",amount:50000,roi:50},
-{name:"VIP Plan",amount:75000,roi:50},
-{name:"Executive Plan",amount:100000,roi:50},
-{name:"Ultimate Plan",amount:200000,roi:50}
+
+
+const app=initializeApp(firebaseConfig);
+
+const db=getDatabase(app);
+
+const auth=getAuth(app);
+
+
+
+
+
+
+const plans=[
+
+{name:"Starter Plan",amount:1000},
+
+{name:"Bronze Plan",amount:2500},
+
+{name:"Silver Plan",amount:5000},
+
+{name:"Gold Plan",amount:10000},
+
+{name:"Premium Plan",amount:20000},
+
+{name:"Elite Plan",amount:30000},
+
+{name:"Diamond Plan",amount:50000},
+
+{name:"VIP Plan",amount:75000},
+
+{name:"Executive Plan",amount:100000},
+
+{name:"Ultimate Plan",amount:200000}
+
 ];
 
-let currentUserId = null;
-let timerStarted = false;
 
-function showToast(msg){
 
-    let overlay = document.getElementById("toast-overlay");
+let uid=null;
+let currentInvestments={};
 
-    if(!overlay){
 
-        overlay = document.createElement("div");
-        overlay.id = "toast-overlay";
 
-        overlay.innerHTML = `
-            <div id="toast"></div>
-        `;
 
-        document.body.appendChild(overlay);
-    }
 
-    const toast = document.getElementById("toast");
 
-    toast.innerHTML = msg.replace(/\n/g,"<br>");
 
-    overlay.classList.add("show");
+function notify(text){
 
-    setTimeout(()=>{
-        overlay.classList.remove("show");
-    },2500);
+
+let n=document.getElementById("notify");
+
+
+if(!n){
+
+n=document.createElement("div");
+
+n.id="notify";
+
+n.style=`
+
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+
+padding:25px;
+
+width:80%;
+max-width:320px;
+
+border-radius:25px;
+
+background:
+linear-gradient(135deg,#001f3f,#0066ff);
+
+box-shadow:0 0 40px #00f7ff;
+
+text-align:center;
+
+z-index:99999;
+
+font-weight:700;
+
+`;
+
+document.body.appendChild(n);
+
 }
 
-/* ⏳ FORMAT TIMER */
+
+
+n.innerHTML=text;
+
+n.style.display="block";
+
+
+setTimeout(()=>{
+
+n.style.display="none";
+
+},2500);
+
+
+
+}
+
+
+
+
+
 function format(ms){
-const total = Math.floor(ms / 1000);
-const d = Math.floor(total / 86400);
-const h = Math.floor((total % 86400) / 3600);
-const m = Math.floor((total % 3600) / 60);
-const s = total % 60;
-return `${d}d ${h}h ${m}m ${s}s`;
+
+
+if(ms<=0)
+return "00:00:00";
+
+
+let sec=Math.floor(ms/1000);
+
+
+let h=Math.floor(sec/3600);
+
+
+let m=Math.floor((sec%3600)/60);
+
+
+let s=sec%60;
+
+
+
+return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+
 }
 
-/* ⏳ SINGLE TIMER ENGINE */
-function startCountdown(){
 
-if(timerStarted) return;
-timerStarted = true;
 
-setInterval(() => {
 
-document.querySelectorAll("[data-start]").forEach(el => {
 
-const start = Number(el.dataset.start || 0);
-if(!start) return;
 
-const now = Date.now();
 
-const end21 = start + (21 * 24 * 60 * 60 * 1000);
-const end72 = start + (72 * 60 * 60 * 1000);
 
-const r21 = end21 - now;
-const r72 = end72 - now;
+onAuthStateChanged(auth,user=>{
 
-if(el.dataset.type === "21"){
-el.innerText = r21 > 0 ? format(r21) : "Completed";
-}
-
-if(el.dataset.type === "72"){
-el.innerText = r72 > 0 ? format(r72) : "Cycle Ready";
-}
-
-});
-
-}, 1000);
-}
-
-/* 🔐 AUTH + REALTIME SYNC */
-onAuthStateChanged(auth, (user) => {
 
 if(!user){
-container.innerHTML = "<p>Please login first</p>";
+
+location="login.html";
 return;
+
 }
 
-currentUserId = user.uid;
 
-const investRef = ref(db, `users/${currentUserId}/investments`);
+uid=user.uid;
 
-onValue(investRef, (snap) => {
 
-const data = snap.val() || {};
-container.innerHTML = "";
+onValue(
+ref(db,`users/${uid}`),
+snap=>{
 
-plans.forEach((plan,index)=>{
 
-const invested = data["plan_"+index];
-const start = invested?.start || 0;
+let data=snap.val()||{};
 
-const profit72 = Math.round(plan.amount * 0.5);
-const total21 = plan.amount + (profit72 * 7);
 
-container.innerHTML += `
+let balance=Number(data.balance||0);
+
+
+currentInvestments=data.investments||{};
+
+
+let profit=0;
+
+
+
+Object.values(currentInvestments)
+.forEach(i=>{
+
+if(i)
+
+profit+=Number(i.totalProfit||0);
+
+
+});
+
+
+
+mainBalance.innerHTML=
+"KSh "+balance.toLocaleString();
+
+
+
+totalProfit.innerHTML=
+"KSh "+profit.toLocaleString();
+
+
+
+render();
+
+
+
+});
+
+
+});
+
+
+
+
+
+
+
+
+
+function render(){
+
+
+let box=document.getElementById("plans");
+
+
+box.innerHTML="";
+
+
+
+plans.forEach((p,i)=>{
+
+
+let inv=currentInvestments["plan_"+i];
+
+
+let active=
+inv &&
+inv.status==="running";
+
+
+
+let cycle=0;
+
+let maturity=0;
+
+
+if(active){
+
+
+cycle=
+(inv.lastProfit+72*60*60*1000)-Date.now();
+
+
+maturity=
+(inv.start+21*24*60*60*1000)-Date.now();
+
+
+}
+
+
+
+box.innerHTML+=`
+
 <div class="plan">
 
-<h3>${plan.name}</h3>
 
-<p><strong>Investment:</strong> KES ${plan.amount.toLocaleString()}</p>
+<h3>${p.name}</h3>
 
-<p><strong>Active:</strong>
-${invested ? "KES " + plan.amount.toLocaleString() : "KES 0"}
+
+<p>
+Investment:
+KSh ${p.amount.toLocaleString()}
 </p>
 
-<p><strong>Profit per 72 Hours:</strong> KES ${profit72.toLocaleString()}</p>
 
-<p><strong>Total After 21 Days:</strong> KES ${total21.toLocaleString()}</p>
-
-<div class="status">
-${invested ? "Running Investment" : "Not Invested"}
-</div>
-
-<p><strong>Time Left (21D):</strong>
-<span data-start="${start}" data-type="21">${start ? "Loading..." : "--"}</span>
+<p>
+ROI:
+50%
 </p>
 
-<p><strong>Next ROI Cycle (72H):</strong>
-<span data-start="${start}" data-type="72">${start ? "Loading..." : "--"}</span>
+
+<p>
+Status:
+${active?"ACTIVE":"LOCKED"}
 </p>
 
-<button onclick="invest(${index})" ${invested ? "disabled" : ""}>
-${invested ? "Invested" : "Invest Now"}
+
+<p style="color:#00ff88">
+
+Profit After 72H:
+KSh ${(p.amount*.5).toLocaleString()}
+
+</p>
+
+
+${active?`
+
+<p>
+Next Profit:
+<span id="c${i}">
+${format(cycle)}
+</span>
+</p>
+
+
+<p style="color:#ffcc00">
+
+Maturity Day:
+${new Date(inv.start+21*86400000).toLocaleDateString()}
+
+</p>
+
+
+<p>
+
+Maturity Countdown:
+
+<span id="m${i}">
+${format(maturity)}
+</span>
+
+</p>
+
+`:
+
+`
+
+<p>
+Maturity:
+21 Days After Activation
+</p>
+
+`}
+
+
+<button onclick="invest(${i})"
+${active?"disabled":""}>
+
+${active?"Invested":"Invest Now"}
+
 </button>
 
+
 </div>
+
 `;
-});
-
-startCountdown();
-});
 
 });
 
-/* 🚀 INVEST FUNCTION */
-window.invest = async function(index){
 
-    if(!currentUserId){
-        showToast("Please login first");
-        return;
-    }
+}
 
-    const plan = plans[index];
 
-    try{
 
-        /* Get latest user data from Firebase */
-        const userSnap = await get(
-            ref(db, `users/${currentUserId}`)
-        );
 
-        const userData = userSnap.val() || {};
 
-        const balance = Number(userData.balance || 0);
 
-        /* Check if already invested */
-        if(userData.investments &&
-           userData.investments[`plan_${index}`]){
+setInterval(()=>{
 
-            showToast("This plan is already active");
-            return;
-        }
 
-        /* Insufficient funds */
-        if(balance < plan.amount){
+Object.keys(currentInvestments)
+.forEach(key=>{
 
-            showToast(
-                `❌ Insufficient balance.\nRequired: KES ${plan.amount.toLocaleString()}`
-            );
 
-            return;
-        }
+let inv=currentInvestments[key];
 
-const investmentData = {
-    plan: plan.name,
-    amount: plan.amount,
-    roi: plan.roi,
-    start: Date.now(),
-    status: "running"
-};
 
-await set(
-    ref(
-        db,
-        `users/${currentUserId}/investments/plan_${index}`
-    ),
-    investmentData
+if(!inv ||
+inv.status!=="running")
+return;
+
+
+
+let i=key.replace("plan_","");
+
+
+
+let c=document.getElementById("c"+i);
+
+let m=document.getElementById("m"+i);
+
+
+
+if(c)
+
+c.innerHTML=format(
+(inv.lastProfit+259200000)-Date.now()
 );
 
-await set(
-    ref(
-        db,
-        `users/${currentUserId}/tasks/plan_${index}`
-    ),
-    investmentData
+
+
+if(m)
+
+m.innerHTML=format(
+(inv.start+1814400000)-Date.now()
 );
 
-        /* Deduct balance */
-        await update(
-            ref(db, `users/${currentUserId}`),
-            {
-                balance: balance - plan.amount
-            }
-        );
 
-        showToast(
-            `✅ ${plan.name} activated successfully`
-        );
 
-    }catch(error){
+});
 
-        console.error(error);
 
-        showToast("Investment failed");
-    }
+
+},1000);
+
+
+
+
+
+
+
+
+
+window.invest=async function(i){
+
+
+
+let plan=plans[i];
+
+
+
+let snap=await get(
+ref(db,`users/${uid}`)
+);
+
+
+
+let user=snap.val()||{};
+
+
+
+let balance=Number(user.balance||0);
+
+
+
+
+
+if(balance < plan.amount){
+
+
+notify("❌ Insufficient balance");
+
+return;
+
+}
+
+
+
+
+
+if(user.investments?.["plan_"+i]){
+
+notify("Already invested");
+
+return;
+
+}
+
+
+
+
+
+
+let investment={
+
+plan:plan.name,
+
+amount:plan.amount,
+
+status:"running",
+
+roi:50,
+
+start:Date.now(),
+
+lastProfit:Date.now(),
+
+totalProfit:0
+
 };
+
+
+
+
+
+await set(
+
+ref(db,`users/${uid}/investments/plan_${i}`),
+
+investment
+
+);
+
+
+
+
+
+await update(
+
+ref(db,`users/${uid}`),
+
+{
+
+balance:balance-plan.amount
+
+}
+
+);
+
+
+
+notify("✅ Invested successfully");
+
+
+};
+
+
+
+
+
+
+
+
+
+setInterval(async()=>{
+
+
+if(!uid)return;
+
+
+let snap=await get(
+ref(db,`users/${uid}`)
+);
+
+
+
+let user=snap.val()||{};
+
+
+let investments=user.investments||{};
+
+
+let changed=false;
+
+
+let profit=0;
+
+
+
+for(let k in investments){
+
+
+let inv= investments[k];
+
+
+if(!inv || inv.status!=="running")
+continue;
+
+
+
+if(Date.now()-inv.lastProfit>=259200000){
+
+
+inv.totalProfit=
+Number(inv.totalProfit||0)
++
+Number(inv.amount)*0.5;
+
+
+inv.lastProfit=Date.now();
+
+
+changed=true;
+
+
+}
+
+
+
+if(Date.now()>=inv.start+1814400000){
+
+
+inv.status="completed";
+
+changed=true;
+
+}
+
+
+
+profit+=Number(inv.totalProfit||0);
+
+
+}
+
+
+
+if(changed){
+
+
+await update(
+ref(db,`users/${uid}`),
+{
+investments,
+profit
+}
+);
+
+
+}
+
+
+
+},60000);
+
+
+
 </script>
+
 
 </body>
 </html>
