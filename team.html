@@ -420,131 +420,293 @@ No referral yet
 
 <script type="module">
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
 
 import {
 getDatabase,
 ref,
 onValue,
+update,
 set
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
 
 import {
 getAuth,
 onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-/* Firebase Config */
+
 
 const firebaseConfig = {
-apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
-authDomain: "apex-market-investment-h-643fc.firebaseapp.com",
-databaseURL: "https://apex-market-investment-h-643fc-default-rtdb.europe-west1.firebasedatabase.app",
-projectId: "apex-market-investment-h-643fc",
-storageBucket: "apex-market-investment-h-643fc.firebasestorage.app",
-messagingSenderId: "96469134780",
-appId: "1:96469134780:web:b1b443b0467083f843cfb9",
-measurementId: "G-NB3LXMPGTV"
+
+apiKey:"AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
+
+authDomain:
+"apex-market-investment-h-643fc.firebaseapp.com",
+
+databaseURL:
+"https://apex-market-investment-h-643fc-default-rtdb.europe-west1.firebasedatabase.app",
+
+projectId:
+"apex-market-investment-h-643fc",
+
+storageBucket:
+"apex-market-investment-h-643fc.firebasestorage.app",
+
+messagingSenderId:
+"96469134780",
+
+appId:
+"1:96469134780:web:b1b443b0467083f843cfb9",
+
+measurementId:
+"G-NB3LXMPGTV"
+
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-const auth = getAuth(app);
 
-let referralURL = "";
 
-onAuthStateChanged(auth,(user)=>{
+const app =
+initializeApp(firebaseConfig);
 
-if(!user) return;
 
-const uid = user.uid;
+const db =
+getDatabase(app);
 
-/* Save referral code */
 
-set(ref(db,`users/${uid}/referralCode`),uid);
+const auth =
+getAuth(app);
 
-/* Generate Link */
+
+
+let referralURL="";
+
+
+
+onAuthStateChanged(auth, async(user)=>{
+
+
+if(!user){
+
+location.href="login.html";
+
+return;
+
+}
+
+
+
+const uid=user.uid;
+
+
+
+
+/*
+SYNC USER REFERRAL CODE
+*/
+
+await update(
+ref(db,`users/${uid}`),
+{
+
+referralCode:uid
+
+}
+
+);
+
+
+
+
+/*
+CREATE REFERRAL LINK
+*/
 
 referralURL =
-`https://apexmarketinvestmenthubinfo-png.github.io/Apex-market-investment-hub/?ref=${uid}`;
+"https://apexmarketinvestmenthubinfo-png.github.io/Apex-market-investment-hub/?ref="
++uid;
 
-document.getElementById("referralLink").textContent =
+
+
+document
+.getElementById("referralLink")
+.innerText =
 referralURL;
 
-/* Realtime Referrals */
 
-onValue(ref(db,`users/${uid}/referrals`),(snap)=>{
 
-const data = snap.val() || {};
 
-const container =
-document.getElementById("referralsContainer");
 
-container.innerHTML="";
+/*
+LIVE TEAM DATA
+*/
+
+
+onValue(
+ref(db,`users/${uid}/referrals`),
+(snapshot)=>{
+
+
+const referrals =
+snapshot.val() || {};
+
+
+
+const list =
+document.getElementById(
+"referralsContainer"
+);
+
+
+
+list.innerHTML="";
+
+
 
 let invited=0;
+
 let deposits=0;
 
-Object.values(data).forEach(referral=>{
+
+
+Object.entries(referrals)
+.forEach(([key,value])=>{
+
 
 invited++;
 
-if(referral.deposited){
+
+
+if(value.deposited === true){
+
 deposits++;
+
 }
 
-container.innerHTML += `
+
+
+list.innerHTML += `
+
 <div class="referral-row">
 
 <div class="referral-name">
-${referral.name || "Anonymous"}
+
+${value.name || "Anonymous"}
+
 </div>
+
 
 <div class="referral-status">
-${referral.deposited ? "Deposited" : "Pending"}
-</div>
+
+${value.deposited ? 
+"Deposited" :
+"Pending"}
 
 </div>
+
+
+</div>
+
 `;
 
+
+
 });
+
+
+
+
 
 if(invited===0){
 
-container.innerHTML =
-`<div class="empty">No referral yet</div>`;
+list.innerHTML =
+
+`
+<div class="empty">
+No referral yet
+</div>
+`;
 
 }
 
-document.getElementById("totalInvited").textContent =
+
+
+
+
+document
+.getElementById("totalInvited")
+.innerText =
 invited;
 
-document.getElementById("totalDeposits").textContent =
+
+
+document
+.getElementById("totalDeposits")
+.innerText =
 deposits;
 
-});
+
 
 });
+
+
+
+});
+
+
+
+
+
+
 
 window.copyReferral = async function(){
 
-    try{
 
-        await navigator.clipboard.writeText(referralURL);
+if(!referralURL)
+return;
 
-        const toast = document.getElementById("copyToast");
 
-        toast.classList.add("show");
 
-        setTimeout(()=>{
-            toast.classList.remove("show");
-        },2000);
+try{
 
-    }catch(error){
 
-        console.error(error);
+await navigator.clipboard.writeText(
+referralURL
+);
 
-    }
+
+
+const toast =
+document.getElementById(
+"copyToast"
+);
+
+
+
+toast.classList.add("show");
+
+
+
+setTimeout(()=>{
+
+toast.classList.remove("show");
+
+},2000);
+
+
+
+}catch(err){
+
+console.log(err);
+
+}
+
+
 
 };
 
