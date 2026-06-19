@@ -319,78 +319,93 @@ No active plans
 
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
 <script>
 const firebaseConfig = {
-apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
-authDomain: "apex-market-investment-h-643fc.firebaseapp.com",
-databaseURL: "https://apex-market-investment-h-643fc-default-rtdb.europe-west1.firebasedatabase.app",
-projectId: "apex-market-investment-h-643fc",
-storageBucket: "apex-market-investment-h-643fc.firebasestorage.app",
-messagingSenderId: "96469134780",
-appId: "1:96469134780:web:b1b443b0467083f843cfb9",
-measurementId: "G-NB3LXMPGTV"
+    apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
+    authDomain: "apex-market-investment-h-643fc.firebaseapp.com",
+    databaseURL: "https://apex-market-investment-h-643fc-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "apex-market-investment-h-643fc",
+    storageBucket: "apex-market-investment-h-643fc.firebasestorage.app",
+    messagingSenderId: "96469134780",
+    appId: "1:96469134780:web:b1b443b0467083f843cfb9",
+    measurementId: "G-NB3LXMPGTV"
 };
 
+// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
 const db = firebase.database();
 
-/* ⏳ FORMAT TIMER */
-function format(ms){
-const total = Math.floor(ms / 1000);
-const days = Math.floor(total / 86400);
-const hours = Math.floor((total % 86400) / 3600);
-const minutes = Math.floor((total % 3600) / 60);
-const seconds = total % 60;
-return `${days}d ${hours}h ${minutes}m ${seconds}s`;
+/* FORMAT COUNTDOWN */
+function format(ms) {
+
+    const total = Math.floor(ms / 1000);
+
+    const days = Math.floor(total / 86400);
+    const hours = Math.floor((total % 86400) / 3600);
+    const minutes = Math.floor((total % 3600) / 60);
+    const seconds = total % 60;
+
+    return `${days}d ${hours}h ${minutes}m ${seconds}s`;
 }
 
-/* 🔁 LIVE TIMER ENGINE */
-function startTimers(){
+/* LIVE TIMER ENGINE */
+let timerRunning = false;
 
-setInterval(() => {
+function startTimers() {
 
-document.querySelectorAll("[data-start]").forEach(el => {
+    if (timerRunning) return;
 
-const start = Number(el.dataset.start || 0);
-if(!start) return;
+    timerRunning = true;
 
-const now = Date.now();
+    setInterval(() => {
 
-/* 21 DAYS */
-const end21 = start + (21 * 24 * 60 * 60 * 1000);
-const remaining21 = end21 - now;
+        document.querySelectorAll("[data-start]").forEach(el => {
 
-/* 72 HOURS */
-const end72 = start + (72 * 60 * 60 * 1000);
-const remaining72 = end72 - now;
+            const start = Number(el.dataset.start || 0);
 
-if(el.dataset.type === "21"){
-el.innerText = remaining21 > 0 ? format(remaining21) : "Completed";
+            if (!start) {
+                el.innerText = "N/A";
+                return;
+            }
+
+            const now = Date.now();
+
+            const end21 =
+                start + (21 * 24 * 60 * 60 * 1000);
+
+            const remaining21 = end21 - now;
+
+            if (el.dataset.type === "21") {
+
+                el.innerText =
+                    remaining21 > 0
+                    ? format(remaining21)
+                    : "Completed";
+            }
+
+        });
+
+    }, 1000);
 }
 
-if(el.dataset.type === "72"){
-el.innerText = remaining72 > 0 ? format(remaining72) : "Cycle Ready";
-}
+/* AUTH STATE */
+auth.onAuthStateChanged(user => {
 
-});
+    const container =
+        document.getElementById("plansContainer");
 
-}, 1000);
+    if (!user) {
 
-}
-
-/* 🔥 SYNC WITH USER INVESTMENTS */
-let timersStarted = false;
-
-auth.onAuthStateChanged((user)=>{
-
-    if(!user){
-
-        document.getElementById("plansContainer").innerHTML =
-        "<div class='empty-space'>Login required</div>";
+        container.innerHTML = `
+            <div class="empty-space">
+                Login required
+            </div>
+        `;
 
         return;
     }
@@ -398,90 +413,141 @@ auth.onAuthStateChanged((user)=>{
     const uid = user.uid;
 
     db.ref(`users/${uid}/investments`)
-    .on("value",(snap)=>{
+    .on("value", snapshot => {
 
-        const investments = snap.val() || {};
-
-        const container =
-        document.getElementById("plansContainer");
+        const investments = snapshot.val() || {};
 
         container.innerHTML = "";
 
-        let total = 0;
-        let active = 0;
-        let matured = 0;
+        let totalPlans = 0;
+        let activePlans = 0;
+        let maturedPlans = 0;
 
-        Object.values(investments).forEach(inv=>{
+        Object.values(investments).forEach(inv => {
 
-            total++;
+            if (!inv) return;
 
-            const start = inv.start || 0;
+            totalPlans++;
 
-            const end =
-            start + (21 * 24 * 60 * 60 * 1000);
+            const amount =
+                Number(inv.amount || 0);
 
-            const maturedPlan =
-            Date.now() >= end;
+            const planName =
+                inv.plan || "Investment Plan";
 
-            if(maturedPlan){
-                matured++;
-            }else{
-                active++;
+            const start =
+                Number(inv.start || 0);
+
+            let matured = false;
+
+            if (start > 0) {
+
+                const maturityDate =
+                    start + (21 * 24 * 60 * 60 * 1000);
+
+                matured =
+                    Date.now() >= maturityDate;
             }
 
+            if (matured) {
+                maturedPlans++;
+            } else {
+                activePlans++;
+            }
+
+            // 50% ROI
             const earnings =
-            inv.amount + (inv.amount * 0.5 * 7);
+                amount + (amount * 0.5);
 
             container.innerHTML += `
+                <div class="plan-row">
 
-            <div class="plan-row">
+                    <div>${planName}</div>
 
-                <div>${inv.plan}</div>
+                    <div>
+                        <span
+                            data-start="${start}"
+                            data-type="21">
+                            Loading...
+                        </span>
+                    </div>
 
-                <div>
-                    <span
-                    data-start="${start}"
-                    data-type="21">
-                    Loading...
-                    </span>
+                    <div>
+                        KES ${earnings.toLocaleString()}
+                    </div>
+
                 </div>
-
-                <div>
-                    KES ${earnings.toLocaleString()}
-                </div>
-
-            </div>
-
             `;
         });
 
-        if(total === 0){
+        if (totalPlans === 0) {
 
             container.innerHTML = `
-
-            <div class="empty-space">
-                No active plans
-            </div>
-
+                <div class="empty-space">
+                    No active plans
+                </div>
             `;
         }
 
         document.getElementById("totalPlans")
-        .innerText = total;
+        .innerText = totalPlans;
 
         document.getElementById("inProgress")
-        .innerText = active;
+        .innerText = activePlans;
 
         document.getElementById("maturedPlans")
-        .innerText = matured;
+        .innerText = maturedPlans;
 
-        if(!timersStarted){
+        // Show nearest maturity countdown
+        let nextRemaining = null;
 
-            startTimers();
+        Object.values(investments).forEach(inv => {
 
-            timersStarted = true;
+            if (!inv || !inv.start) return;
+
+            const end =
+                Number(inv.start) +
+                (21 * 24 * 60 * 60 * 1000);
+
+            const remaining =
+                end - Date.now();
+
+            if (remaining > 0) {
+
+                if (
+                    nextRemaining === null ||
+                    remaining < nextRemaining
+                ) {
+                    nextRemaining = remaining;
+                }
+            }
+        });
+
+        const maturityEl =
+            document.getElementById("daysToMaturity");
+
+        if (nextRemaining !== null) {
+
+            maturityEl.innerText =
+                format(nextRemaining);
+
+        } else {
+
+            maturityEl.innerText =
+                "No Active Plan";
         }
 
+        startTimers();
+
+    }, error => {
+
+        console.error(error);
+
+        container.innerHTML = `
+            <div class="empty-space">
+                Failed to load investments
+            </div>
+        `;
     });
 
 });
