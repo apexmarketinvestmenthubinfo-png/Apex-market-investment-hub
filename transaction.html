@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Apex Market Investment Hub Company - Transaction</title>
+<title>Apex Market Investment Hub Company - Transaction History</title>
 
 <style>
 body {
@@ -167,18 +167,25 @@ footer {
 
 <!-- FIREBASE -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import { initializeApp } 
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
     getDatabase,
     ref,
     onValue
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 import {
     getAuth,
     onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+
+// FIREBASE CONFIG
 
 const firebaseConfig = {
   apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
@@ -191,85 +198,262 @@ const firebaseConfig = {
   measurementId: "G-NB3LXMPGTV"
 };
 
+
+// INIT
+
 const app = initializeApp(firebaseConfig);
+
 const db = getDatabase(app);
+
 const auth = getAuth(app);
+
 
 let allTransactions = [];
 
-onAuthStateChanged(auth, (user) => {
 
-    if (!user) {
-        window.location.href = "transaction.html";
+// AUTH CHECK
+
+onAuthStateChanged(auth, (user)=>{
+
+
+    if(!user){
+
+        window.location.href="login.html";
+
         return;
     }
 
+
+
+    const transactionsRef = ref(
+        db,
+        `users/${user.uid}/transactions`
+    );
+
+
+
+    // REAL TIME DATABASE LISTENER
+
     onValue(
-        ref(db, `users/${user.uid}/transactions`),
-        (snapshot) => {
+        transactionsRef,
 
-            const data = snapshot.val() || {};
+        (snapshot)=>{
 
-            allTransactions = Object.keys(data).map(key => ({
-                id: key,
-                ...data[key]
-            }));
+
+            const data = snapshot.val();
+
+
+
+            if(!data){
+
+                allTransactions = [];
+
+                display([]);
+
+                return;
+            }
+
+
+
+            allTransactions = Object.entries(data).map(
+                ([id,value])=>({
+
+                    id:id,
+
+                    ...value
+
+                })
+            );
+
+
 
             display(allTransactions);
+
+
+
+        },
+
+        (error)=>{
+
+            console.error(
+                "Firebase read error:",
+                error
+            );
+
+
+            document.getElementById("txBody").innerHTML =
+            `
+            <tr>
+                <td colspan="5">
+                    Failed loading transactions
+                </td>
+            </tr>
+            `;
+
         }
     );
+
+
 });
 
-function display(list) {
 
-    const body = document.getElementById("txBody");
 
-    body.innerHTML = "";
 
-    list.sort((a, b) => b.createdAt - a.createdAt);
+// DISPLAY TABLE
 
-    list.forEach(tx => {
+function display(list){
 
-        body.innerHTML += `
+
+    const body =
+    document.getElementById("txBody");
+
+
+    body.innerHTML="";
+
+
+
+    if(list.length===0){
+
+        body.innerHTML=
+        `
         <tr>
+            <td colspan="5">
+                No transactions found
+            </td>
+        </tr>
+        `;
+
+        return;
+
+    }
+
+
+
+    list.sort(
+        (a,b)=>
+        (b.createdAt || 0) -
+        (a.createdAt || 0)
+    );
+
+
+
+
+    list.forEach(tx=>{
+
+
+        const type =
+        (tx.type || "unknown").toLowerCase();
+
+
+        const status =
+        (tx.status || "pending").toLowerCase();
+
+
+
+        body.innerHTML +=
+        `
+        <tr>
+
             <td>
-                <span class="type ${tx.type}">
-                    ${tx.type}
+                <span class="type ${type}">
+                    ${type}
                 </span>
             </td>
 
+
             <td>
-                ${tx.amount}
+                KSH ${Number(tx.amount || 0).toLocaleString()}
             </td>
+
 
             <td>
                 ${tx.method || "-"}
             </td>
 
-            <td>
-                <span class="status ${tx.status}">
-                    ${tx.status}
-                </span>
-            </td>
 
             <td>
-                ${new Date(tx.createdAt).toLocaleString()}
+
+                <span class="status ${status}">
+                    ${status}
+                </span>
+
             </td>
+
+
+            <td>
+
+                ${
+                tx.createdAt
+                ?
+                new Date(tx.createdAt)
+                .toLocaleString()
+                :
+                "-"
+                }
+
+            </td>
+
+
         </tr>
         `;
+
     });
+
 }
 
-window.filterData = function(type) {
 
-    if (type === "all") {
+
+// FILTER FUNCTION
+
+window.filterData=function(type){
+
+
+    if(type==="all"){
+
         display(allTransactions);
-    } else {
-        display(
-            allTransactions.filter(tx => tx.type === type)
-        );
+
+        return;
+
     }
+
+
+
+    display(
+
+        allTransactions.filter(
+            tx =>
+            (tx.type || "").toLowerCase()
+            === type.toLowerCase()
+        )
+
+    );
+
 };
+
+
+
+// BUTTON EVENTS
+
+document
+.querySelectorAll(".filter-btn")
+.forEach(btn=>{
+
+
+    btn.addEventListener(
+        "click",
+        ()=>{
+
+            filterData(
+                btn.innerText.toLowerCase()
+            );
+
+        }
+    );
+
+
+});
+
+
 </script>
 
 </body>
