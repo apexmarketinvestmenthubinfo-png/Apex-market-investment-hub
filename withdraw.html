@@ -171,116 +171,391 @@ Main Balance: KSH <span id="balance">Loading...</span>
 © 2026 Apex Market Investment Hub Company
 </footer>
 
-<!-- FIREBASE -->
-<script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-database.js"></script>
+<script type="module">
 
-<script>
+import {initializeApp}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+getDatabase,
+ref,
+onValue,
+get,
+push,
+update
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+import {
+getAuth,
+onAuthStateChanged
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+
 const firebaseConfig = {
-  apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
-  authDomain: "apex-market-investment-h-643fc.firebaseapp.com",
-  databaseURL: "https://apex-market-investment-h-643fc-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "apex-market-investment-h-643fc",
-  storageBucket: "apex-market-investment-h-643fc.firebasestorage.app",
-  messagingSenderId: "96469134780",
-  appId: "1:96469134780:web:b1b443b0467083f843cfb9",
-  measurementId: "G-NB3LXMPGTV"
+apiKey:"AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
+authDomain:"apex-market-investment-h-643fc.firebaseapp.com",
+databaseURL:"https://apex-market-investment-h-643fc-default-rtdb.europe-west1.firebasedatabase.app",
+projectId:"apex-market-investment-h-643fc",
+storageBucket:"apex-market-investment-h-643fc.firebasestorage.app",
+messagingSenderId:"96469134780",
+appId:"1:96469134780:web:b1b443b0467083f843cfb9",
+measurementId:"G-NB3LXMPGTV"
 };
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
 
-const userId = "user_123";
+const app = initializeApp(firebaseConfig);
 
-/* REAL-TIME BALANCE */
-db.ref("users/" + userId + "/balance").on("value", snap => {
-    document.getElementById("balance").innerText = snap.val() || 0;
+const db = getDatabase(app);
+
+const auth = getAuth(app);
+
+
+
+let uid="";
+
+let availableProfit=0;
+
+
+
+/* REAL TIME PROFIT */
+
+onAuthStateChanged(auth,user=>{
+
+
+if(!user){
+
+location="login.html";
+return;
+
+}
+
+
+uid=user.uid;
+
+
+
+onValue(
+ref(db,`users/${uid}/investments`),
+snap=>{
+
+
+let investments=snap.val()||{};
+
+let profit=0;
+
+
+
+Object.values(investments)
+.forEach(inv=>{
+
+
+if(inv){
+
+profit += Number(inv.totalProfit||0);
+
+}
+
+
 });
 
-/* TOGGLE METHOD */
-function toggleMethod() {
-    let m = document.getElementById("method").value;
 
-    document.getElementById("mobileBox").classList.add("hidden");
-    document.getElementById("bankBox").classList.add("hidden");
 
-    if (m === "mobile") document.getElementById("mobileBox").classList.remove("hidden");
-    if (m === "bank") document.getElementById("bankBox").classList.remove("hidden");
+availableProfit=profit;
+
+
+
+document.getElementById("balance").innerText =
+profit.toLocaleString();
+
+
+
+});
+
+
+});
+
+
+
+
+
+
+/* TOGGLE */
+
+window.toggleMethod=function(){
+
+let m=document.getElementById("method").value;
+
+
+document.getElementById("mobileBox")
+.classList.add("hidden");
+
+
+document.getElementById("bankBox")
+.classList.add("hidden");
+
+
+
+if(m==="mobile")
+
+document.getElementById("mobileBox")
+.classList.remove("hidden");
+
+
+
+if(m==="bank")
+
+document.getElementById("bankBox")
+.classList.remove("hidden");
+
+
 }
 
-/* MODAL */
+
+
+
+
+
 function show(msg){
-    document.getElementById("modal").innerText = msg;
-    document.getElementById("overlay").style.display = "block";
-    document.getElementById("modal").style.display = "block";
 
-    setTimeout(() => {
-        document.getElementById("overlay").style.display = "none";
-        document.getElementById("modal").style.display = "none";
-    }, 2000);
+document.getElementById("modal").innerText=msg;
+
+document.getElementById("overlay").style.display="block";
+
+document.getElementById("modal").style.display="block";
+
+
+setTimeout(()=>{
+
+document.getElementById("overlay").style.display="none";
+
+document.getElementById("modal").style.display="none";
+
+
+},2000);
+
 }
 
-/* WITHDRAW (FINAL FIX) */
-function withdraw(){
 
-    let amount = Number(document.getElementById("amount").value);
-    let method = document.getElementById("method").value;
 
-    if(!method) return show("Select method");
-    if(!amount || amount < 600) return show("Minimum withdrawal is 600");
 
-    let balanceRef = db.ref("users/" + userId + "/balance");
 
-    balanceRef.once("value", snap => {
 
-        let balance = snap.val() || 0;
 
-        if(amount > balance){
-            return show("Insufficient balance");
-        }
 
-        let newBalance = balance - amount;
+window.withdraw=async function(){
 
-        // UPDATE BALANCE
-        balanceRef.set(newBalance);
 
-        let data = {
-            userId,
-            method,
-            amount,
-            status: "pending",
-            createdAt: new Date().toISOString()
-        };
 
-        if(method === "mobile"){
-            let phone = document.getElementById("phone").value;
-            if(!phone) return show("Enter phone number");
+let amount =
+Number(document.getElementById("amount").value);
 
-            data.provider = document.getElementById("mobileProvider").value;
-            data.phone = phone;
-        }
 
-        if(method === "bank"){
-            let acc = document.getElementById("account").value;
-            if(!acc) return show("Enter account number");
 
-            data.bank = document.getElementById("bankName").value;
-            data.account = acc;
-        }
+let method =
+document.getElementById("method").value;
 
-        // 🔥 MAIN FIX: SAVE FOR HISTORY PAGE
-        db.ref("transactions/" + userId).push(data);
 
-        // backup
-        db.ref("withdrawals/" + userId).push(data);
 
-        show("Withdrawal submitted successfully");
 
-        setTimeout(() => {
-            window.location.href = "transaction-history.html";
-        }, 1500);
-    });
+
+if(!method){
+
+show("Select withdrawal method");
+
+return;
+
 }
+
+
+
+if(amount < 600){
+
+show("Minimum withdrawal is KSh 600");
+
+return;
+
+}
+
+
+
+
+if(amount > 750){
+
+show("Maximum withdrawal is KSh 750");
+
+return;
+
+}
+
+
+
+
+
+if(amount > availableProfit){
+
+show("Insufficient profit balance");
+
+return;
+
+}
+
+
+
+
+
+
+
+let data={
+
+userId:uid,
+
+amount,
+
+method,
+
+status:"pending",
+
+createdAt:Date.now()
+
+};
+
+
+
+
+
+
+
+if(method==="mobile"){
+
+
+let phone =
+document.getElementById("phone").value;
+
+
+
+if(!phone){
+
+show("Enter phone number");
+
+return;
+
+}
+
+
+
+data.provider =
+document.getElementById("mobileProvider").value;
+
+
+data.phone=phone;
+
+
+
+}
+
+
+
+
+
+
+
+if(method==="bank"){
+
+
+let acc =
+document.getElementById("account").value;
+
+
+
+if(!acc){
+
+show("Enter account number");
+
+return;
+
+}
+
+
+
+data.bank =
+document.getElementById("bankName").value;
+
+
+data.account=acc;
+
+
+}
+
+
+
+
+
+
+
+
+// SAVE WITHDRAWAL REQUEST
+
+
+await push(
+ref(db,`transactions/${uid}`),
+data
+);
+
+
+
+await push(
+ref(db,`withdrawals/${uid}`),
+data
+);
+
+
+
+
+
+
+
+// subtract ONLY PROFIT
+
+
+let remaining =
+availableProfit - amount;
+
+
+
+await update(
+ref(db,`users/${uid}`),
+{
+
+profit:remaining
+
+}
+
+);
+
+
+
+
+
+
+show("Withdrawal submitted successfully");
+
+
+
+setTimeout(()=>{
+
+location="transaction-history.html";
+
+},1500);
+
+
+
+}
+
+
+
+
 </script>
 
 </body>
