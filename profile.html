@@ -605,37 +605,44 @@ body::after{
 
 <script type="module">
 
-import { initializeApp }
+import {initializeApp}
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
 getDatabase,
 ref,
-onValue,
-get,
-set,
-update,
-push
+onValue
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 import {
 getAuth,
-onAuthStateChanged
+onAuthStateChanged,
+signOut
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 
 const firebaseConfig = {
-apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
-authDomain: "apex-market-investment-h-643fc.firebaseapp.com",
-databaseURL: "https://apex-market-investment-h-643fc-default-rtdb.europe-west1.firebasedatabase.app",
-projectId: "apex-market-investment-h-643fc",
-storageBucket: "apex-market-investment-h-643fc.firebasestorage.app",
-messagingSenderId: "96469134780",
-appId: "1:96469134780:web:b1b443b0467083f843cfb9",
-measurementId: "G-NB3LXMPGTV"
+
+apiKey:"AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
+
+authDomain:"apex-market-investment-h-643fc.firebaseapp.com",
+
+databaseURL:"https://apex-market-investment-h-643fc-default-rtdb.europe-west1.firebasedatabase.app",
+
+projectId:"apex-market-investment-h-643fc",
+
+storageBucket:"apex-market-investment-h-643fc.firebasestorage.app",
+
+messagingSenderId:"96469134780",
+
+appId:"1:96469134780:web:b1b443b0467083f843cfb9",
+
+measurementId:"G-NB3LXMPGTV"
+
 };
+
 
 
 const app = initializeApp(firebaseConfig);
@@ -645,166 +652,13 @@ const db = getDatabase(app);
 const auth = getAuth(app);
 
 
-let uid=null;
 
-let investments={};
+function money(x){
 
-
-const plans=[
-
-{name:"Starter Plan",amount:1000},
-{name:"Bronze Plan",amount:2500},
-{name:"Silver Plan",amount:5000},
-{name:"Gold Plan",amount:10000},
-{name:"Premium Plan",amount:20000},
-{name:"Elite Plan",amount:30000},
-{name:"Diamond Plan",amount:50000},
-{name:"VIP Plan",amount:75000},
-{name:"Executive Plan",amount:100000},
-{name:"Ultimate Plan",amount:200000}
-
-];
-
-
-
-function number(v){
-
-return Number(
-String(v||0)
-.replace(/[^0-9]/g,"")
-)||0;
+return Number(x||0)
+.toLocaleString();
 
 }
-
-
-
-function timer(end){
-
-let diff=end-Date.now();
-
-
-if(diff<=0)
-return "Completed";
-
-
-let sec=Math.floor(diff/1000);
-
-
-let days=Math.floor(sec/86400);
-
-let hours=Math.floor((sec%86400)/3600);
-
-let mins=Math.floor((sec%3600)/60);
-
-let secs=sec%60;
-
-
-return `${days}d : ${hours}h : ${mins}m : ${secs}s`;
-
-}
-
-
-
-function render(){
-
-
-const box=document.getElementById("plans");
-
-box.innerHTML="";
-
-
-plans.forEach((plan,i)=>{
-
-
-let inv=investments["plan_"+i];
-
-
-let active =
-inv &&
-inv.status==="running";
-
-
-
-let html="";
-
-
-
-if(active){
-
-
-html=`
-
-<p>
-
-ROI Profit In:
-
-<span class="timer"
-data-time="${inv.roiTime}">
-Loading...
-</span>
-
-</p>
-
-
-<p>
-
-Maturity:
-
-<span class="timer"
-data-time="${inv.maturityTime}">
-Loading...
-</span>
-
-</p>
-
-`;
-
-}
-
-
-
-
-box.innerHTML+=`
-
-<div class="plan">
-
-
-<h3>${plan.name}</h3>
-
-
-<p>
-Investment:
-KSh ${plan.amount.toLocaleString()}
-</p>
-
-
-<p>
-Status:
-${active?"ACTIVE":"LOCKED"}
-</p>
-
-
-${html}
-
-
-
-<button onclick="invest(${i})"
-${active?"disabled":""}>
-
-${active?"Invested":"Invest Now"}
-
-</button>
-
-
-</div>
-
-`;
-
-});
-
-
-}
-
 
 
 
@@ -820,7 +674,13 @@ return;
 }
 
 
-uid=user.uid;
+
+document.getElementById("userEmail")
+.innerHTML=user.email;
+
+
+
+const uid=user.uid;
 
 
 
@@ -833,31 +693,52 @@ let data=snap.val()||{};
 
 
 
-investments =
-data.investments || {};
+let balance =
+Number(data.balance||0);
+
+
+
+let profit=0;
+
+
+
+let investments =
+data.investments||{};
+
+
+
+Object.values(investments)
+.forEach(inv=>{
+
+
+if(inv){
+
+profit += Number(inv.totalProfit||0);
+
+}
+
+
+});
+
+
 
 
 
 document.getElementById("mainBalance")
 .innerHTML =
-"KSh "+
-number(data.balance)
-.toLocaleString();
+"KSh "+money(balance);
 
 
 
-document.getElementById("totalProfit")
+
+document.getElementById("totalEarnings")
 .innerHTML =
-"KSh "+
-number(data.profit)
-.toLocaleString();
+"KSh "+money(profit);
 
-
-
-render();
 
 
 });
+
 
 
 });
@@ -866,186 +747,39 @@ render();
 
 
 
-setInterval(()=>{
 
+window.logout=function(){
+
+
+signOut(auth)
+.then(()=>{
+
+location="login.html";
+
+});
+
+
+}
+
+
+
+window.showLogout=function(){
 
 document
-.querySelectorAll(".timer")
-.forEach(el=>{
-
-
-el.innerHTML =
-timer(
-Number(el.dataset.time)
-);
-
-
-});
-
-
-},1000);
-
-
-
-
-
-
-window.invest=async function(i){
-
-
-let plan=plans[i];
-
-
-let snap =
-await get(
-ref(db,`users/${uid}`)
-);
-
-
-
-let user=snap.val()||{};
-
-
-
-let balance =
-number(user.balance);
-
-
-
-if(balance < plan.amount){
-
-
-alert("Insufficient balance");
-
-return;
+.getElementById("logoutModal")
+.classList.add("show");
 
 }
 
 
 
+window.hideLogout=function(){
 
-let old =
-user.investments &&
-user.investments["plan_"+i];
-
-
-
-if(old &&
-old.status==="running"){
-
-
-alert("Already invested");
-
-return;
+document
+.getElementById("logoutModal")
+.classList.remove("show");
 
 }
-
-
-
-
-let now=Date.now();
-
-
-
-let roiTime =
-now+(72*60*60*1000);
-
-
-
-let maturityTime =
-now+(21*24*60*60*1000);
-
-
-
-
-
-await set(
-
-ref(
-db,
-`users/${uid}/investments/plan_${i}`
-),
-
-{
-
-
-plan:plan.name,
-
-amount:plan.amount,
-
-status:"running",
-
-start:now,
-
-
-roiTime,
-
-maturityTime,
-
-
-profitStatus:"pending"
-
-}
-
-
-);
-
-
-
-
-
-
-await push(
-
-ref(db,`users/${uid}/tasks`),
-
-{
-
-title:"Investment Activated",
-
-plan:plan.name,
-
-amount:plan.amount,
-
-roiTime,
-
-maturityTime,
-
-status:"pending",
-
-created:now
-
-}
-
-);
-
-
-
-
-
-
-
-await update(
-
-ref(db,`users/${uid}`),
-
-{
-
-balance:
-balance-plan.amount
-
-}
-
-);
-
-
-
-alert("Investment Activated");
-
-
-};
-
-
 
 
 
