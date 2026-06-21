@@ -423,7 +423,6 @@ No referral yet
 import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
-
 import {
 getDatabase,
 ref,
@@ -464,23 +463,17 @@ messagingSenderId:
 appId:
 "1:96469134780:web:b1b443b0467083f843cfb9",
 
-measurementId:
-"G-NB3LXMPGTV"
+measurementId:"G-NB3LXMPGTV"
 
 };
 
 
 
-const app =
-initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
 
+const db = getDatabase(app);
 
-const db =
-getDatabase(app);
-
-
-const auth =
-getAuth(app);
+const auth = getAuth(app);
 
 
 
@@ -488,48 +481,38 @@ let referralURL="";
 
 
 
-onAuthStateChanged(auth, async(user)=>{
+
+onAuthStateChanged(auth,user=>{
 
 
 if(!user){
 
-location.href="login.html";
+location="login.html";
 
 return;
 
 }
 
 
-
 const uid=user.uid;
 
 
 
+// CREATE USER REFERRAL CODE
 
-/*
-SYNC USER REFERRAL CODE
-*/
-
-await update(
-ref(db,`users/${uid}`),
-{
-
-referralCode:uid
-
-}
-
+set(
+ref(db,`users/${uid}/referralCode`),
+uid
 );
 
 
 
 
-/*
-CREATE REFERRAL LINK
-*/
+// REFERRAL LINK
 
 referralURL =
-"https://apexmarketinvestmenthubinfo-png.github.io/Apex-market-investment-hub/?ref="
-+uid;
+window.location.origin +
+"/?ref="+uid;
 
 
 
@@ -541,30 +524,15 @@ referralURL;
 
 
 
-
-/*
-LIVE TEAM DATA
-*/
-
+// REALTIME REFERRALS
 
 onValue(
 ref(db,`users/${uid}/referrals`),
-(snapshot)=>{
+snap=>{
 
 
-const referrals =
-snapshot.val() || {};
-
-
-
-const list =
-document.getElementById(
-"referralsContainer"
-);
-
-
-
-list.innerHTML="";
+let referrals =
+snap.val() || {};
 
 
 
@@ -573,16 +541,24 @@ let invited=0;
 let deposits=0;
 
 
+const box =
+document.getElementById(
+"referralsContainer"
+);
 
-Object.entries(referrals)
-.forEach(([key,value])=>{
+
+box.innerHTML="";
+
+
+
+Object.values(referrals)
+.forEach(user=>{
 
 
 invited++;
 
 
-
-if(value.deposited === true){
+if(user.deposited === true){
 
 deposits++;
 
@@ -590,21 +566,23 @@ deposits++;
 
 
 
-list.innerHTML += `
+box.innerHTML += `
 
 <div class="referral-row">
 
+
 <div class="referral-name">
 
-${value.name || "Anonymous"}
+${user.name || "User"}
 
 </div>
 
 
+
 <div class="referral-status">
 
-${value.deposited ? 
-"Deposited" :
+${user.deposited ?
+"Deposited":
 "Pending"}
 
 </div>
@@ -621,20 +599,17 @@ ${value.deposited ?
 
 
 
-
 if(invited===0){
 
-list.innerHTML =
+box.innerHTML=`
 
-`
 <div class="empty">
 No referral yet
 </div>
+
 `;
 
 }
-
-
 
 
 
@@ -653,6 +628,7 @@ deposits;
 
 
 });
+
 
 
 
@@ -700,15 +676,18 @@ toast.classList.remove("show");
 
 
 
-}catch(err){
+}
 
-console.log(err);
+catch(e){
+
+console.log(e);
 
 }
 
 
-
 };
+
+
 
 </script>
 
