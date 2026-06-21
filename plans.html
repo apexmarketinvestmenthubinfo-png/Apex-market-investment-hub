@@ -371,7 +371,6 @@ onAuthStateChanged
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 
-
 const firebaseConfig = {
 
 apiKey:"AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
@@ -391,7 +390,6 @@ appId:"1:96469134780:web:b1b443b0467083f843cfb9",
 measurementId:"G-NB3LXMPGTV"
 
 };
-
 
 
 const app = initializeApp(firebaseConfig);
@@ -418,72 +416,41 @@ const plans=[
 ];
 
 
-let uid=null;
-
-let currentInvestments={};
-
+let uid="";
+let investments={};
 
 
-function cleanNumber(value){
 
-if(typeof value==="string"){
-value=value.replace(/[^0-9.]/g,"");
-}
+function money(x){
 
-let n=parseFloat(value);
-
-return isNaN(n)?0:n;
+return Number(x||0).toLocaleString();
 
 }
 
 
 
+function popup(msg){
 
-function notify(text){
+let box=document.createElement("div");
 
-let old = document.getElementById("notify");
+box.innerHTML=msg;
 
-if(old){
-old.remove();
-}
-
-
-let box = document.createElement("div");
-
-box.id="notify";
-
-box.innerHTML = text;
-
-
-box.style.cssText = `
+box.style.cssText=`
 
 position:fixed;
 top:50%;
 left:50%;
 transform:translate(-50%,-50%);
 
-width:80%;
-max-width:320px;
-
+background:#0066ff;
 padding:25px;
-
-border-radius:25px;
-
-background:
-linear-gradient(135deg,#001f3f,#0066ff);
+border-radius:20px;
 
 color:white;
-
 font-weight:700;
 
-text-align:center;
-
-font-size:16px;
-
-box-shadow:
-0 0 40px #00f7ff;
-
 z-index:99999;
+box-shadow:0 0 30px #00f7ff;
 
 `;
 
@@ -494,18 +461,17 @@ setTimeout(()=>{
 
 box.remove();
 
-},2500);
-
+},2000);
 
 }
 
 
 
 
-function format(ms){
+function timer(ms){
 
 if(ms<=0)
-return "00:00:00";
+return "Ready";
 
 
 let sec=Math.floor(ms/1000);
@@ -517,7 +483,7 @@ let m=Math.floor((sec%3600)/60);
 let s=sec%60;
 
 
-return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+return `${h}h ${m}m ${s}s`;
 
 }
 
@@ -531,7 +497,6 @@ onAuthStateChanged(auth,user=>{
 if(!user){
 
 location="login.html";
-
 return;
 
 }
@@ -546,75 +511,35 @@ ref(db,`users/${uid}`),
 snap=>{
 
 
-let data=snap.val() || {};
+let data=snap.val()||{};
 
 
 
-// BALANCE REALTIME
-
-let balance = cleanNumber(data.balance);
-
-
-
-// DEPOSIT REALTIME FIX
-
-let deposit = cleanNumber(
-data.deposit ??
-data.totalDeposit ??
-data.deposits ??
-0
-);
+document.getElementById("mainBalance")
+.innerHTML =
+"KSh "+money(data.balance);
 
 
 
-// INVESTMENTS
-
-currentInvestments =
-data.investments || {};
+investments=data.investments||{};
 
 
 
 let profit=0;
 
 
-
-Object.values(currentInvestments)
+Object.values(investments)
 .forEach(i=>{
 
-
-if(i){
-
-profit += cleanNumber(i.totalProfit);
-
-}
-
+profit += Number(i.totalProfit||0);
 
 });
 
 
 
-
-
-document.getElementById("mainBalance").innerHTML =
-"KSh " + balance.toLocaleString();
-
-
-
-document.getElementById("totalProfit").innerHTML =
-"KSh " + profit.toLocaleString();
-
-
-
-let dep =
-document.getElementById("totalDeposit");
-
-
-if(dep){
-
-dep.innerHTML =
-"KSh " + deposit.toLocaleString();
-
-}
+document.getElementById("totalProfit")
+.innerHTML =
+"KSh "+money(profit);
 
 
 
@@ -644,9 +569,7 @@ box.innerHTML="";
 plans.forEach((p,i)=>{
 
 
-let inv =
-currentInvestments["plan_"+i];
-
+let inv=investments["plan_"+i];
 
 
 let active =
@@ -655,26 +578,19 @@ inv.status==="running";
 
 
 
-let cycle=0;
-
-let maturity=0;
-
-
-
-if(active){
-
-cycle =
-(inv.lastProfit+259200000)-Date.now();
+let unlock =
+active &&
+(Date.now()-inv.start < 259200000);
 
 
-maturity =
-(inv.start+1814400000)-Date.now();
 
-}
+let profit =
+p.amount*0.5;
 
 
 
 box.innerHTML += `
+
 
 <div class="plan">
 
@@ -683,27 +599,33 @@ box.innerHTML += `
 
 
 <p>
-Investment:
-KSh ${p.amount.toLocaleString()}
+Price:
+<b>
+KSh ${money(p.amount)}
+</b>
 </p>
 
 
 <p>
-ROI: 50%
+Profit after 72hrs:
+<b style="color:#00ff88">
+KSh ${money(profit)}
+</b>
 </p>
+
+
+<p>
+After 21 days:
+<b>
+KSh ${money(p.amount+(profit*7))}
+</b>
+</p>
+
 
 
 <p>
 Status:
-${active?"ACTIVE":"LOCKED"}
-</p>
-
-
-<p style="color:#00ff88">
-
-Profit:
-KSh ${(p.amount*0.5).toLocaleString()}
-
+${active?"ACTIVE":"AVAILABLE"}
 </p>
 
 
@@ -711,47 +633,44 @@ KSh ${(p.amount*0.5).toLocaleString()}
 ${active ? `
 
 <p>
-Next Profit:
+72hrs unlock:
 
-<span id="c${i}">
-${format(cycle)}
+<span id="t${i}">
+${timer(
+(inv.start+259200000)-Date.now()
+)}
 </span>
 
 </p>
-
-
-<p>
-
-Maturity:
-
-<span id="m${i}">
-${format(maturity)}
-</span>
-
-</p>
-
-`:
 
 `
-
-<p>
-Maturity:
-21 Days After Activation
-</p>
-
-`}
+:
+""
+}
 
 
 
-<button onclick="invest(${i})"
-${active?"disabled":""}>
 
-${active?"Invested":"Invest Now"}
+<button
+
+onclick="invest(${i})"
+
+${unlock?"disabled":""}
+
+>
+
+
+${active ? 
+(unlock?"Invested":"Available again")
+:
+"Invest Now"}
 
 </button>
 
 
+
 </div>
+
 
 `;
 
@@ -766,99 +685,54 @@ ${active?"Invested":"Invest Now"}
 
 
 
-setInterval(()=>{
-
-
-Object.keys(currentInvestments)
-.forEach(key=>{
-
-
-let inv=currentInvestments[key];
-
-
-if(!inv ||
-inv.status!=="running")
-return;
-
-
-
-let i=key.replace("plan_","");
-
-
-
-let c=document.getElementById("c"+i);
-
-let m=document.getElementById("m"+i);
-
-
-
-if(c){
-
-c.innerHTML =
-format(
-(inv.lastProfit+259200000)-Date.now()
-);
-
-}
-
-
-
-if(m){
-
-m.innerHTML =
-format(
-(inv.start+1814400000)-Date.now()
-);
-
-}
-
-
-
-});
-
-
-},1000);
-
-
-
-
-
-
-
 window.invest = async function(i){
 
-let plan = plans[i];
+
+let plan=plans[i];
 
 
-let snap = await get(
+let snap =
+await get(
 ref(db,`users/${uid}`)
 );
 
 
-let user = snap.val() || {};
+let user=snap.val()||{};
 
 
 
-let balance = cleanNumber(user.balance);
+let balance =
+Number(user.balance||0);
+
+
 
 
 
 if(balance < plan.amount){
 
-notify("❌ Insufficient balance");
+popup("Insufficient balance");
 
 return;
 
 }
+
 
 
 
 
 if(user.investments?.["plan_"+i]){
 
-notify("⚠️ Already invested");
+
+let inv=user.investments["plan_"+i];
+
+
+if(Date.now()-inv.start < 259200000){
+
+popup("Plan still locked");
 
 return;
+
+}
 
 }
 
@@ -866,34 +740,36 @@ return;
 
 
 
-let investment = {
-
-plan: plan.name,
-
-amount: plan.amount,
-
-status:"running",
-
-roi:50,
-
-start:Date.now(),
-
-lastProfit:Date.now(),
-
-totalProfit:0
-
-};
-
+let now=Date.now();
 
 
 
 
 await set(
 
-ref(db,
-`users/${uid}/investments/plan_${i}`),
+ref(
+db,
+`users/${uid}/investments/plan_${i}`
+),
 
-investment
+{
+
+plan:plan.name,
+
+amount:plan.amount,
+
+status:"running",
+
+roi:50,
+
+start:now,
+
+lastProfit:now,
+
+totalProfit:0
+
+}
+
 
 );
 
@@ -907,7 +783,8 @@ ref(db,`users/${uid}`),
 
 {
 
-balance: balance - plan.amount
+balance:
+balance-plan.amount
 
 }
 
@@ -916,10 +793,53 @@ balance: balance - plan.amount
 
 
 
-notify("✅ Invested successfully");
+
+popup("Invested success");
 
 
 };
+
+
+
+
+
+
+setInterval(()=>{
+
+
+Object.keys(investments)
+.forEach(key=>{
+
+
+let inv=investments[key];
+
+
+if(!inv || inv.status!=="running")
+return;
+
+
+
+let i=key.replace("plan_","");
+
+let el=document.getElementById("t"+i);
+
+
+
+if(el){
+
+el.innerHTML =
+timer(
+(inv.start+259200000)-Date.now()
+);
+
+}
+
+
+});
+
+
+},1000);
+
 
 
 
@@ -934,50 +854,45 @@ if(!uid)return;
 
 
 let snap =
-await get(ref(db,`users/${uid}`));
+await get(
+ref(db,`users/${uid}`)
+);
 
 
 
-let user=snap.val() || {};
+let data=snap.val()||{};
 
-let investments =
-user.investments || {};
 
+
+let invs=data.investments||{};
 
 
 let changed=false;
 
-let profit=0;
+
+
+for(let k in invs){
+
+
+let inv=invs[k];
 
 
 
-for(let k in investments){
-
-
-let inv=investments[k];
-
-
-
-if(!inv ||
-inv.status!=="running")
-continue;
-
-
-
-
-if(Date.now()-inv.lastProfit >= 259200000){
+if(
+inv &&
+inv.status==="running" &&
+Date.now()-inv.lastProfit>=259200000
+){
 
 
 inv.totalProfit =
-cleanNumber(inv.totalProfit)
+Number(inv.totalProfit||0)
 +
-(cleanNumber(inv.amount)*0.5);
+(Number(inv.amount)*0.5);
 
 
 
-inv.lastProfit =
-Date.now();
-
+inv.lastProfit=Date.now();
 
 
 changed=true;
@@ -986,12 +901,8 @@ changed=true;
 }
 
 
-
-profit += cleanNumber(inv.totalProfit);
-
-
-
 }
+
 
 
 
@@ -1000,13 +911,12 @@ if(changed){
 
 
 await update(
+
 ref(db,`users/${uid}`),
 
 {
 
-investments,
-
-profit
+investments:invs
 
 }
 
