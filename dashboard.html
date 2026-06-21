@@ -662,6 +662,13 @@ document.getElementById("totalProfit").innerHTML =
 "KSh "+profit.toLocaleString();
 
 
+
+
+        document.getElementById("totalDeposit").innerHTML =
+        "KSh " + totalDeposit.toLocaleString();
+
+    }
+);
 onValue(
     ref(db,`transactions/${user.uid}`),
     txSnap=>{
@@ -682,14 +689,6 @@ onValue(
             }
 
         });
-
-
-        document.getElementById("totalDeposit").innerHTML =
-        "KSh " + totalDeposit.toLocaleString();
-
-    }
-);
-
 displayPlans(data.investments || {});
 
 
