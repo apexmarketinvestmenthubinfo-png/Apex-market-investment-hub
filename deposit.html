@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deposit • Apex Market Investment Hub</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    background:#050816;
+    color:#ffffff;
+    min-height:100vh;
+    padding:20px 15px 40px;
+}
+
+/* HEADER */
+
+.header{
+    margin-bottom:25px;
+}
+
+.header h1{
+    font-size:26px;
+    font-weight:700;
+    color:#ffffff;
+}
+
+.header p{
+    margin-top:6px;
+    color:#aeb7d0;
+    font-size:14px;
+}
+
+/* CARDS */
+
+.card{
+    position:relative;
+    overflow:hidden;
+
+    background:rgba(255,255,255,.04);
+    backdrop-filter:blur(25px);
+
+    border:1px solid rgba(255,255,255,.08);
+
+    border-radius:22px;
+
+    padding:20px;
+
+    margin-bottom:18px;
+
+    box-shadow:
+        0 10px 35px rgba(0,0,0,.45),
+        inset 0 1px 1px rgba(255,255,255,.05);
+}
+
+.card::before{
+    content:"";
+    position:absolute;
+    inset:0;
+
+    border-radius:22px;
+    padding:1px;
+
+    background:linear-gradient(
+        135deg,
+        rgba(0,247,255,.7),
+        rgba(0,102,255,.4)
+    );
+
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+
+    -webkit-mask-composite:xor;
+    mask-composite:exclude;
+}
+
+.card > *{
+    position:relative;
+    z-index:2;
+}
+
+.card-title{
+    font-size:17px;
+    font-weight:600;
+    margin-bottom:18px;
+    color:#ffffff;
+}
+
+/* PAYMENT DETAILS */
+
+.detail-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    padding:14px 0;
+
+    border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+.detail-row:last-child{
+    border-bottom:none;
+}
+
+.label{
+    color:#9ca8c8;
+    font-size:14px;
+}
+
+.value{
+    font-weight:600;
+    font-size:15px;
+}
+
+.copy-btn{
+    margin-left:10px;
+
+    border:none;
+
+    padding:6px 12px;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    background:rgba(0,247,255,.12);
+
+    color:#00f7ff;
+
+    font-size:12px;
+    font-weight:600;
+}
+
+.copy-btn:hover{
+    background:rgba(0,247,255,.2);
+}
+
+.minimum{
+    margin-top:18px;
+
+    padding:14px;
+
+    border-radius:14px;
+
+    background:rgba(255,213,79,.08);
+
+    border:1px solid rgba(255,213,79,.18);
+
+    color:#ffd54f;
+
+    font-size:14px;
+    font-weight:600;
+}
+
+/* FORM */
+
+label{
+    display:block;
+
+    margin-bottom:10px;
+
+    color:#c7d1e6;
+
+    font-size:14px;
+}
+
+input[type="number"],
+input[type="file"]{
+    width:100%;
+
+    padding:15px;
+
+    border-radius:14px;
+
+    border:1px solid rgba(255,255,255,.08);
+
+    background:rgba(255,255,255,.05);
+
+    color:#ffffff;
+
+    outline:none;
+}
+
+input::placeholder{
+    color:#8892b0;
+}
+
+/* BUTTON */
+
+button.submit-btn{
+    width:100%;
+
+    padding:16px;
+
+    border:none;
+
+    border-radius:16px;
+
+    cursor:pointer;
+
+    font-size:15px;
+    font-weight:700;
+
+    color:#ffffff;
+
+    background:linear-gradient(
+        90deg,
+        #00f7ff,
+        #0066ff
+    );
+
+    box-shadow:
+        0 0 20px rgba(0,247,255,.25);
+}
+
+button.submit-btn:disabled{
+    opacity:.7;
+}
+
+/* NOTICE */
+
+.notice{
+    font-size:13px;
+    color:#aeb7d0;
+    line-height:1.6;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>Deposit Funds</h1>
+    <p>Apex Market Investment Hub</p>
+</div>
+
+<!-- PAYMENT INSTRUCTIONS -->
+
+<div class="card">
+
+    <div class="card-title">
+        Payment Instructions
+    </div>
+
+    <div class="detail-row">
+        <span class="label">Paybill Number</span>
+
+        <div>
+            <span class="value">247247</span>
+
+            <button class="copy-btn"
+            onclick="copyText('247247')">
+                Copy
+            </button>
+        </div>
+    </div>
+
+    <div class="detail-row">
+        <span class="label">Account Number</span>
+
+        <div>
+            <span class="value">280683</span>
+
+            <button class="copy-btn"
+            onclick="copyText('280683')">
+                Copy
+            </button>
+        </div>
+    </div>
+
+    <div class="detail-row">
+        <span class="label">Account Name</span>
+
+        <span class="value">
+            KUTENZ ENTERPRISE
+        </span>
+    </div>
+
+    <div class="minimum">
+        Minimum Deposit Amount: KSh 1,000
+    </div>
+
+</div>
+
+<!-- AMOUNT -->
+
+<div class="card">
+
+    <div class="card-title">
+        Deposit Amount
+    </div>
+
+    <label>
+        Enter the amount deposited
+    </label>
+
+    <input
+        type="number"
+        id="depositAmount"
+        placeholder="Minimum KSh 1,000">
+
+</div>
+
+<!-- PROOF -->
+
+<div class="card">
+
+    <div class="card-title">
+        Transaction Confirmation
+    </div>
+
+    <label>
+        Upload transaction screenshot
+    </label>
+
+    <input
+        type="file"
+        id="depositProof"
+        accept="image/*">
+
+</div>
+
+<!-- NOTICE -->
+
+<div class="card">
+
+    <div class="notice">
+        After submission, your deposit request will appear in your transaction history with a Pending status until reviewed and approved.
+    </div>
+
+</div>
+
+<!-- SUBMIT -->
+
+<div class="card">
+
+    <button
+        class="submit-btn"
+        id="submitDeposit">
+
+        Submit Deposit
+
+    </button>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+    getDatabase,
+    ref,
+    push,
+    update
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import {
+    getAuth,
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
+  authDomain: "apex-market-investment-h-643fc.firebaseapp.com",
+  databaseURL: "https://apex-market-investment-h-643fc-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "apex-market-investment-h-643fc",
+  storageBucket: "apex-market-investment-h-643fc.firebasestorage.app",
+  messagingSenderId: "96469134780",
+  appId: "1:96469134780:web:b1b443b0467083f843cfb9",
+  measurementId: "G-NB3LXMPGTV"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const auth = getAuth(app);
+
+let currentUser = null;
+
+function showNotification(message) {
+    const el = document.createElement("div");
+
+    el.style.cssText = `
+        position: fixed;
+        top: 25px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(9,19,38,.96);
+        color: white;
+        padding: 14px 24px;
+        border-radius: 16px;
+        z-index: 99999;
+        font-weight: 600;
+    `;
+
+    el.textContent = message;
+
+    document.body.appendChild(el);
+
+    setTimeout(() => {
+        el.remove();
+    }, 2500);
+}
+
+window.copyText = function(text) {
+    navigator.clipboard.writeText(text);
+    showNotification("Copied Successfully");
+};
+
+onAuthStateChanged(auth, (user) => {
+
+    if (!user) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    currentUser = user;
+});
+
+const btn = document.getElementById("submitDeposit");
+
+btn.addEventListener("click", async () => {
+
+    if (!currentUser) {
+        showNotification("Please wait...");
+        return;
+    }
+
+    const amount = Number(
+        document.getElementById("depositAmount").value
+    );
+
+    if (!amount || amount < 1000) {
+        showNotification("Minimum deposit is KSh 1,000");
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerText = "Processing...";
+
+    try {
+
+const txRef = await push(
+    ref(db, `transactions/${currentUser.uid}`)
+);
+
+await update(txRef, {
+    type: "deposit",
+    amount: amount,
+    method: "M-Pesa",
+    status: "pending",
+    createdAt: Date.now()
+});
+
+
+// update total deposit
+await update(
+    ref(db, `users/${currentUser.uid}`),
+    {
+        totalDeposit: amount
+    }
+);
+
+showNotification("Deposit submitted successfully");
+
+// Redirect immediately after Firebase confirms the save
+window.location.replace("transaction.html");
+
+        setTimeout(() => {
+            window.location.href = "transaction.html";
+        }, 1500);
+
+    } catch (error) {
+
+        console.error(error);
+
+        showNotification("Failed to submit deposit");
+
+        btn.disabled = false;
+        btn.innerText = "Submit Deposit";
+    }
+});
+</script>
+
+</body>
+</html>
