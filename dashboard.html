@@ -1,0 +1,826 @@
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+<meta charset="UTF-8">  
+<meta name="viewport" content="width=device-width, initial-scale=1.0">  
+<title>APEX MARKET INVESTMENT HUB</title>  
+  
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">  
+  
+<style>  
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}  
+body{background:#050816;color:#fff;padding-bottom:90px;overflow-x:hidden;}  
+  
+.header{  
+padding:20px;text-align:center;font-size:22px;font-weight:700;  
+background:rgba(255,255,255,.05);  
+backdrop-filter:blur(20px);  
+border-bottom:1px solid rgba(255,255,255,.1);  
+}  
+  
+.ticker{  
+background:#091326;padding:12px 0;overflow:hidden;white-space:nowrap;  
+}  
+  
+.ticker span{  
+display:inline-block;padding-left:100%;  
+animation:scroll 30s linear infinite;  
+color:#00f7ff;  
+}  
+  
+@keyframes scroll{  
+0%{transform:translateX(0);}  
+100%{transform:translateX(-100%);}  
+}  
+  
+.container{padding:15px;}  
+  
+.balance-card{  
+    background:rgba(255,255,255,0.04);  
+    backdrop-filter:blur(25px);  
+    border:1px solid rgba(255,255,255,0.08);  
+    border-radius:28px;  
+    padding:20px;  
+    margin-bottom:25px;  
+    box-shadow:  
+        0 10px 40px rgba(0,0,0,.45),  
+        inset 0 1px 1px rgba(255,255,255,.06);  
+}  
+  
+.top-balance{  
+    display:grid;  
+    grid-template-columns:repeat(2,1fr);  
+    gap:15px;  
+}  
+  
+.box,  
+.deposit{  
+    position:relative;  
+    overflow:hidden;  
+    text-align:center;  
+    padding:22px 15px;  
+    border-radius:22px;  
+    background:rgba(255,255,255,0.05);  
+    backdrop-filter:blur(20px);  
+    border:1px solid rgba(255,255,255,0.08);  
+}  
+  
+.box::before,  
+.deposit::before{  
+    content:"";  
+    position:absolute;  
+    inset:0;  
+    border-radius:22px;  
+    padding:1px;  
+    background:linear-gradient(  
+        135deg,  
+        rgba(0,247,255,.8),  
+        rgba(0,102,255,.4),  
+        rgba(0,255,136,.5)  
+    );  
+    -webkit-mask:  
+        linear-gradient(#fff 0 0) content-box,  
+        linear-gradient(#fff 0 0);  
+    -webkit-mask-composite:xor;  
+    mask-composite:exclude;  
+}  
+  
+.box::after,  
+.deposit::after{  
+    content:"";  
+    position:absolute;  
+    width:140px;  
+    height:140px;  
+    border-radius:50%;  
+    background:rgba(0,247,255,.12);  
+    top:-60px;  
+    right:-60px;  
+    filter:blur(35px);  
+}  
+  
+.box h3,  
+.deposit h3{  
+    position:relative;  
+    z-index:2;  
+    font-size:14px;  
+    color:#b8c1d9;  
+    margin-bottom:12px;  
+    font-weight:500;  
+}  
+  
+.box h2,  
+.deposit h2{  
+    position:relative;  
+    z-index:2;  
+    font-size:34px;  
+    font-weight:700;  
+    letter-spacing:0.5px;  
+}  
+  
+#mainBalance{  
+    color:#00f7ff;  
+    text-shadow:  
+        0 0 12px rgba(0,247,255,.6),  
+        0 0 25px rgba(0,247,255,.3);  
+}  
+  
+#totalProfit{  
+    color:#00ff88;  
+    text-shadow:  
+        0 0 12px rgba(0,255,136,.6),  
+        0 0 25px rgba(0,255,136,.3);  
+}  
+  
+#totalDeposit{  
+    color:#ffd54f;  
+    text-shadow:  
+        0 0 12px rgba(255,213,79,.6),  
+        0 0 25px rgba(255,213,79,.3);  
+}  
+  
+.deposit{  
+    margin-top:18px;  
+}  
+.quick-actions{  
+    display:grid;  
+    grid-template-columns:repeat(3,1fr);  
+    gap:12px;  
+    margin-top:18px;  
+}  
+  
+.quick-card{  
+    position:relative;  
+    overflow:hidden;  
+  
+    text-decoration:none;  
+    text-align:center;  
+  
+    padding:16px 10px;  
+  
+    border-radius:20px;  
+  
+    background:rgba(255,255,255,.05);  
+    backdrop-filter:blur(20px);  
+  
+    border:1px solid rgba(255,255,255,.08);  
+  
+    box-shadow:  
+        0 10px 25px rgba(0,0,0,.35);  
+  
+    transition:.3s ease;  
+}  
+  
+.quick-card:hover{  
+    transform:translateY(-3px);  
+}  
+  
+.quick-card::before{  
+    content:"";  
+    position:absolute;  
+    inset:0;  
+  
+    border-radius:20px;  
+    padding:1px;  
+  
+    background:linear-gradient(  
+        135deg,  
+        rgba(0,247,255,.9),  
+        rgba(0,102,255,.5)  
+    );  
+  
+    -webkit-mask:  
+        linear-gradient(#fff 0 0) content-box,  
+        linear-gradient(#fff 0 0);  
+  
+    -webkit-mask-composite:xor;  
+    mask-composite:exclude;  
+}  
+  
+.quick-icon{  
+    font-size:24px;  
+    margin-bottom:8px;  
+    position:relative;  
+    z-index:2;  
+}  
+  
+.quick-title{  
+    color:#fff;  
+    font-size:14px;  
+    font-weight:600;  
+    position:relative;  
+    z-index:2;  
+}  
+  
+.withdraw-card::before{  
+    background:linear-gradient(  
+        135deg,  
+        #00ff88,  
+        #00c853  
+    );  
+}  
+  
+.company-card::before{  
+    background:linear-gradient(  
+        135deg,  
+        #ff7b00,  
+        #ff006e  
+    );  
+}  
+.withdraw-card::before{  
+    background:linear-gradient(  
+        135deg,  
+        #00ff88,  
+        #00c853  
+    );  
+}  
+  
+.company-card::before{  
+    background:linear-gradient(  
+        135deg,  
+        #ff7b00,  
+        #ff006e  
+    );  
+}  
+.bottom-nav{  
+    position:fixed;  
+    bottom:0;  
+    left:0;  
+    right:0;  
+    height:72px;  
+  
+    display:flex;  
+    justify-content:space-evenly;  
+    align-items:center;  
+  
+    padding:0 8px;  
+  
+    background:rgba(9,19,38,.95);  
+    backdrop-filter:blur(25px);  
+  
+    border-top:1px solid rgba(255,255,255,.08);  
+  
+    box-shadow:  
+        0 -8px 30px rgba(0,0,0,.45);  
+  
+    z-index:999;  
+}  
+  
+.nav-btn{  
+    flex:1;  
+  
+    display:flex;  
+    flex-direction:row;      /* Horizontal */  
+    align-items:center;  
+    justify-content:center;  
+    gap:6px;  
+  
+    text-decoration:none;  
+    color:#9ba7c7;  
+  
+    font-size:12px;  
+    font-weight:600;  
+  
+    transition:.3s ease;  
+}  
+  
+.nav-icon{  
+    font-size:20px;  
+    line-height:1;  
+}  
+  
+.nav-btn:hover,  
+.active-nav{  
+    color:#00f7ff;  
+}  
+  
+.nav-btn:hover .nav-icon,  
+.active-nav .nav-icon{  
+    text-shadow:  
+        0 0 10px rgba(0,247,255,.8),  
+        0 0 20px rgba(0,247,255,.5);  
+}  
+  
+..quick-btn{  
+    flex:1;  
+    text-align:center;  
+    padding:12px;  
+    border-radius:12px;  
+    text-decoration:none;  
+    color:#fff;  
+    background:linear-gradient(90deg,#00f7ff,#0066ff);  
+    font-weight:600;  
+}  
+  
+.section-title{  
+    text-align:center;  
+    margin:22px 0 16px;  
+    font-size:28px;  
+    font-weight:700;  
+}  
+  
+.plans{  
+    display:flex;  
+    flex-direction:column;  
+    gap:18px;  
+}  
+  
+.plan{  
+    position:relative;  
+    overflow:hidden;  
+  
+    background:rgba(255,255,255,0.05);  
+    backdrop-filter:blur(20px);  
+  
+    border:1px solid rgba(255,255,255,0.08);  
+  
+    border-radius:20px;  
+  
+    padding:16px;  
+  
+    box-shadow:  
+        0 8px 24px rgba(0,0,0,.35),  
+        inset 0 1px 1px rgba(255,255,255,.06);  
+}  
+  
+.plan::before{  
+    content:"";  
+    position:absolute;  
+    inset:0;  
+    border-radius:24px;  
+    padding:1px;  
+    background:linear-gradient(  
+        135deg,  
+        rgba(0,247,255,.9),  
+        rgba(0,102,255,.5),  
+        rgba(0,255,136,.6)  
+    );  
+  
+    -webkit-mask:  
+        linear-gradient(#fff 0 0) content-box,  
+        linear-gradient(#fff 0 0);  
+  
+    -webkit-mask-composite:xor;  
+    mask-composite:exclude;  
+}  
+  
+.plan::after{  
+    content:"";  
+    position:absolute;  
+    width:160px;  
+    height:160px;  
+    border-radius:50%;  
+    background:rgba(0,247,255,.12);  
+    top:-80px;  
+    right:-80px;  
+    filter:blur(45px);  
+}  
+  
+.plan h3{  
+    position:relative;  
+    z-index:2;  
+  
+    color:#fff;  
+  
+    font-size:18px;  
+    margin-bottom:8px;  
+}  
+  
+.plan p{  
+    position:relative;  
+    z-index:2;  
+  
+    color:#cfd7e6;  
+  
+    margin:4px 0;  
+  
+    font-size:13px;  
+}  
+  
+.plan button{  
+    position:relative;  
+    z-index:2;  
+  
+    width:100%;  
+  
+    margin-top:12px;  
+  
+    padding:12px;  
+  
+    border:none;  
+  
+    border-radius:14px;  
+  
+    background:linear-gradient(  
+        90deg,  
+        #00f7ff,  
+        #0066ff  
+    );  
+  
+    color:#fff;  
+  
+    font-size:14px;  
+    font-weight:700;  
+  
+    cursor:pointer;  
+  
+    box-shadow:  
+        0 0 15px rgba(0,247,255,.35);  
+}  
+  
+  
+</style>  
+</head>  
+  
+<body>  
+  
+<div class="header">APEX MARKET INVESTMENT HUB</div>  
+  
+<div class="ticker">  
+<span>🚀 Secure Investment Platform • Real Time Dashboard • 50% ROI System • 24/7 Support</span>  
+</div>  
+  
+<!-- HOME -->  
+<div id="home" class="page active">  
+  
+<div class="container">  
+  
+<div class="balance-card">  
+  
+<div class="top-balance">  
+  
+<div class="box">  
+<h3>Main Balance</h3>  
+<h2 id="mainBalance">KSh 0.00</h2>  
+</div>  
+  
+<div class="box">  
+<h3>Total Profit (50%)</h3>  
+<h2 id="totalProfit">KSh 0.00</h2>  
+</div>  
+  
+</div>  
+  
+<div class="deposit">  
+    <h3>Total Deposit</h3>  
+    <h2 id="totalDeposit">KSh 0.00</h2>  
+</div>  
+  
+<!-- Quick Actions -->  
+  
+<div class="quick-actions">  
+  
+    <a href="deposit.html" class="quick-card deposit-card">  
+        <div class="quick-icon">💰</div>  
+        <div class="quick-title">Deposit</div>  
+    </a>  
+  
+    <a href="withdraw.html" class="quick-card withdraw-card">  
+        <div class="quick-icon">💳</div>  
+        <div class="quick-title">Withdraw</div>  
+    </a>  
+  
+    <a href="transaction.html" class="quick-card transaction-card">  
+        <div class="quick-icon">🔰</div>  
+        <div class="quick-title">Transaction</div>  
+    </a>  
+  
+</div>  
+  
+  
+</div>  
+  
+  
+<h2 class="section-title">Investment Plans</h2>  
+  
+<div class="plans">  
+  
+<div class="plan"><h3>Starter Plan</h3><p>Return: 50%</p><button class="invest-btn" data-plan="Starter Plan">Invest Now</button></div>  
+<div class="plan"><h3>Bronze Plan</h3><p>Return: 50%</p><button class="invest-btn" data-plan="Bronze Plan">Invest Now</button></div>  
+<div class="plan"><h3>Silver Plan</h3><p>Return: 50%</p><button class="invest-btn" data-plan="Silver Plan">Invest Now</button></div>  
+<div class="plan"><h3>Gold Plan</h3><p>Return: 50%</p><button class="invest-btn" data-plan="Gold Plan">Invest Now</button></div>  
+<div class="plan"><h3>Premium Plan</h3><p>Return: 50%</p><button class="invest-btn" data-plan="Premium Plan">Invest Now</button></div>  
+<div class="plan"><h3>Elite Plan</h3><p>Return: 50%</p><button class="invest-btn" data-plan="Elite Plan">Invest Now</button></div>  
+<div class="plan"><h3>Diamond Plan</h3><p>Return: 50%</p><button class="invest-btn" data-plan="Diamond Plan">Invest Now</button></div>  
+<div class="plan"><h3>VIP Plan</h3><p>Return: 50%</p><button class="invest-btn" data-plan="VIP Plan">Invest Now</button></div>  
+<div class="plan"><h3>Executive Plan</h3><p>Return: 50%</p><button class="invest-btn" data-plan="Executive Plan">Invest Now</button></div>  
+<div class="plan"><h3>Ultimate Plan</h3><p>Return: 50%</p><button class="invest-btn" data-plan="Ultimate Plan">Invest Now</button></div>  
+  
+</div>  
+  
+</div>  
+</div>  
+  
+<!-- NAV -->  
+<div class="bottom-nav">  
+  
+    <a href="dashboard.html" class="nav-btn active-nav">  
+        <span class="nav-icon">⌂</span>  
+        <span>Home</span>  
+    </a>  
+  
+    <a href="tasks.html" class="nav-btn">  
+        <span class="nav-icon">✓</span>  
+        <span>Tasks</span>  
+    </a>  
+  
+    <a href="plans.html" class="nav-btn">  
+        <span class="nav-icon">◈</span>  
+        <span>Plans</span>  
+    </a>  
+  
+    <a href="team.html" class="nav-btn">  
+        <span class="nav-icon">◉</span>  
+        <span>Team</span>  
+    </a>  
+  
+    <a href="profile.html" class="nav-btn">  
+        <span class="nav-icon">◌</span>  
+        <span>Profile</span>  
+    </a>  
+  
+</div>  
+  
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+getDatabase,
+ref,
+onValue
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+import {
+getAuth,
+onAuthStateChanged
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+
+
+const firebaseConfig = {
+
+apiKey:"AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
+
+authDomain:"apex-market-investment-h-643fc.firebaseapp.com",
+
+databaseURL:"https://apex-market-investment-h-643fc-default-rtdb.europe-west1.firebasedatabase.app",
+
+projectId:"apex-market-investment-h-643fc",
+
+storageBucket:"apex-market-investment-h-643fc.firebasestorage.app",
+
+messagingSenderId:"96469134780",
+
+appId:"1:96469134780:web:b1b443b0467083f843cfb9",
+
+measurementId:"G-NB3LXMPGTV"
+
+};
+
+
+
+const app = initializeApp(firebaseConfig);
+
+const db = getDatabase(app);
+
+const auth = getAuth(app);
+
+
+
+const plans=[
+
+{name:"Starter Plan",price:1000},
+{name:"Bronze Plan",price:2500},
+{name:"Silver Plan",price:5000},
+{name:"Gold Plan",price:10000},
+{name:"Premium Plan",price:20000},
+{name:"Elite Plan",price:30000},
+{name:"Diamond Plan",price:50000},
+{name:"VIP Plan",price:75000},
+{name:"Executive Plan",price:100000},
+{name:"Ultimate Plan",price:200000}
+
+];
+
+
+
+
+onAuthStateChanged(auth,user=>{
+
+
+if(!user){
+
+location="login.html";
+return;
+
+}
+
+
+
+onValue(
+ref(db,`users/${user.uid}`),
+snap=>{
+
+
+const data=snap.val() || {};
+
+
+
+let balance =
+Number(data.balance || 0);
+
+
+document.getElementById("mainBalance").innerHTML =
+"KSh "+balance.toLocaleString();
+
+
+
+
+
+let profit=0;
+
+
+Object.values(data.investments || {})
+.forEach(inv=>{
+
+
+if(inv){
+
+profit += Number(inv.totalProfit || 0);
+
+}
+
+
+});
+
+
+
+document.getElementById("totalProfit").innerHTML =
+"KSh "+profit.toLocaleString();
+
+
+onValue(
+    ref(db,`transactions/${user.uid}`),
+    txSnap=>{
+
+        let totalDeposit = 0;
+
+        const transactions = txSnap.val() || {};
+
+        Object.values(transactions).forEach(tx=>{
+
+            if(
+              tx.type === "deposit" &&
+              tx.status === "approved"
+            ){
+
+                totalDeposit += Number(tx.amount || 0);
+
+            }
+
+        });
+
+
+        document.getElementById("totalDeposit").innerHTML =
+        "KSh " + totalDeposit.toLocaleString();
+
+    }
+);
+
+displayPlans(data.investments || {});
+
+
+
+});
+
+
+});
+
+
+
+
+
+
+
+function displayPlans(investments){
+
+
+const box =
+document.querySelector(".plans");
+
+
+box.innerHTML="";
+
+
+
+plans.forEach((plan,index)=>{
+
+
+const inv =
+investments["plan_"+index];
+
+
+
+let active =
+inv &&
+inv.status==="running";
+
+
+
+let completed =
+inv &&
+inv.status==="completed";
+
+
+
+let profit =
+plan.price * 0.5;
+
+
+
+let after72 =
+active
+? "KSh "+profit.toLocaleString()
+: "Locked";
+
+
+
+let days21 =
+active || completed
+? "Completed after 21 Days"
+: "Not Started";
+
+
+
+
+
+box.innerHTML += `
+
+
+<div class="plan">
+
+
+<h3>${plan.name}</h3>
+
+
+<p>
+Price:
+KSh ${plan.price.toLocaleString()}
+</p>
+
+
+<p>
+Profit in 72hrs:
+<span style="color:#00ff88">
+
+${after72}
+
+</span>
+</p>
+
+
+
+<p>
+Maturity:
+${days21}
+</p>
+
+
+
+<p>
+
+Status:
+
+<span style="color:
+${active?'#00ff88':'#ffcc00'}">
+
+${active?'ACTIVE':'AVAILABLE'}
+
+</span>
+
+</p>
+
+
+</div>
+
+
+`;
+
+
+
+});
+
+
+
+}
+
+
+
+</script>
+  
+</body>  
+</html>  
+  
