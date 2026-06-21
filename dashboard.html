@@ -541,216 +541,258 @@ color:#00f7ff;
 </div>  
   
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
 import {
 getDatabase,
 ref,
-onValue,
-update
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+onValue
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
 import {
 getAuth,
 onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+}
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+
 
 const firebaseConfig = {
-apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
-authDomain: "apex-market-investment-h-643fc.firebaseapp.com",
-databaseURL: "https://apex-market-investment-h-643fc-default-rtdb.europe-west1.firebasedatabase.app",
-projectId: "apex-market-investment-h-643fc",
-storageBucket: "apex-market-investment-h-643fc.firebasestorage.app",
-messagingSenderId: "96469134780",
-appId: "1:96469134780:web:b1b443b0467083f843cfb9",
-measurementId: "G-NB3LXMPGTV"
+
+apiKey:"AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
+
+authDomain:"apex-market-investment-h-643fc.firebaseapp.com",
+
+databaseURL:"https://apex-market-investment-h-643fc-default-rtdb.europe-west1.firebasedatabase.app",
+
+projectId:"apex-market-investment-h-643fc",
+
+storageBucket:"apex-market-investment-h-643fc.firebasestorage.app",
+
+messagingSenderId:"96469134780",
+
+appId:"1:96469134780:web:b1b443b0467083f843cfb9",
+
+measurementId:"G-NB3LXMPGTV"
+
 };
 
+
+
 const app = initializeApp(firebaseConfig);
+
 const db = getDatabase(app);
+
 const auth = getAuth(app);
 
-let userBalance = 0;
 
-const plans = [
-{ name:"Starter Plan", amount:1000 },
-{ name:"Bronze Plan", amount:2500 },
-{ name:"Silver Plan", amount:5000 },
-{ name:"Gold Plan", amount:10000 },
-{ name:"Premium Plan", amount:20000 },
-{ name:"Elite Plan", amount:30000 },
-{ name:"Diamond Plan", amount:50000 },
-{ name:"VIP Plan", amount:75000 },
-{ name:"Executive Plan", amount:100000 },
-{ name:"Ultimate Plan", amount:200000 }
+
+const plans=[
+
+{name:"Starter Plan",price:1000},
+{name:"Bronze Plan",price:2500},
+{name:"Silver Plan",price:5000},
+{name:"Gold Plan",price:10000},
+{name:"Premium Plan",price:20000},
+{name:"Elite Plan",price:30000},
+{name:"Diamond Plan",price:50000},
+{name:"VIP Plan",price:75000},
+{name:"Executive Plan",price:100000},
+{name:"Ultimate Plan",price:200000}
+
 ];
 
-function notify(message){
-alert(message);
-}
-
-onAuthStateChanged(auth,(user)=>{
-
-if(!user) return;
-
-const userRef = ref(db,`users/${user.uid}`);
-
-onValue(userRef,(snap)=>{
-
-const data = snap.val() || {};
-
-userBalance = Number(data.balance || 0);
-
-document.getElementById("mainBalance").textContent =
-"KSh " + userBalance.toLocaleString();
-
-
-// FIXED TOTAL DEPOSIT
-let depositValue = data.deposit;
-
-if(typeof depositValue === "string"){
-    depositValue = depositValue.replace(/[^0-9.]/g,"");
-}
-
-depositValue = parseFloat(depositValue);
-
-if(isNaN(depositValue)){
-    depositValue = 0;
-}
-
-document.getElementById("totalDeposit").textContent =
-"KSh " + depositValue.toLocaleString();
 
 
 
-const investments = data.investments || {};
+onAuthStateChanged(auth,user=>{
 
-let totalProfit = 0;
 
-Object.values(investments).forEach(item=>{
+if(!user){
 
-if(item && item.status === "running"){
-
-let amount = item.amount;
-
-if(typeof amount === "string"){
-amount = amount.replace(/[^0-9.]/g,"");
-}
-
-amount = parseFloat(amount);
-
-if(!isNaN(amount)){
-totalProfit += amount * 0.5;
-}
+location="login.html";
+return;
 
 }
+
+
+
+onValue(
+ref(db,`users/${user.uid}`),
+snap=>{
+
+
+const data=snap.val() || {};
+
+
+
+let balance =
+Number(data.balance || 0);
+
+
+document.getElementById("mainBalance").innerHTML =
+"KSh "+balance.toLocaleString();
+
+
+
+
+
+let profit=0;
+
+
+Object.values(data.investments || {})
+.forEach(inv=>{
+
+
+if(inv){
+
+profit += Number(inv.totalProfit || 0);
+
+}
+
 
 });
 
 
-document.getElementById("totalProfit").textContent =
-"KSh " + totalProfit.toLocaleString();
+
+document.getElementById("totalProfit").innerHTML =
+"KSh "+profit.toLocaleString();
 
 
-renderPlans(user.uid, investments);
+
+
+displayPlans(data.investments || {});
+
+
 
 });
 
+
 });
 
-function renderPlans(uid, investments){
 
-const container = document.querySelector(".plans");
 
-container.innerHTML = "";
+
+
+
+
+function displayPlans(investments){
+
+
+const box =
+document.querySelector(".plans");
+
+
+box.innerHTML="";
+
+
 
 plans.forEach((plan,index)=>{
 
-const invested = investments[`plan_${index}`];
 
-const active =
-invested &&
-invested.status === "running";
+const inv =
+investments["plan_"+index];
 
-container.innerHTML += `
-<div class="plan"
-style="
-border:1px solid ${
+
+
+let active =
+inv &&
+inv.status==="running";
+
+
+
+let completed =
+inv &&
+inv.status==="completed";
+
+
+
+let profit =
+plan.price * 0.5;
+
+
+
+let after72 =
 active
-? '#00ff88'
-: 'rgba(255,255,255,.08)'
-};
+? "KSh "+profit.toLocaleString()
+: "Locked";
 
-box-shadow:${
-active
-? '0 0 25px rgba(0,255,136,.35)'
-: '0 0 20px rgba(0,247,255,.10)'
-};
-">
 
-<div style="
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:12px;
-">
 
-<button
-disabled
-style="
-width:auto;
-padding:8px 18px;
-margin:0;
-border-radius:30px;
-background:${
-active ? '#00ff88' : '#444'
-};
-font-size:13px;
-cursor:default;
-">
-Plan ${index + 1}
-</button>
+let days21 =
+active || completed
+? "Completed after 21 Days"
+: "Not Started";
 
-<span style="
-font-size:12px;
-font-weight:700;
-color:${
-active ? '#00ff88' : '#ffcc00'
-};
-">
-${active ? 'ACTIVE' : 'LOCKED'}
-</span>
 
-</div>
+
+
+
+box.innerHTML += `
+
+
+<div class="plan">
+
 
 <h3>${plan.name}</h3>
 
-<p><strong>Price:</strong> KSh ${plan.amount.toLocaleString()}</p>
 
 <p>
-<strong>Status:</strong>
-${active ? 'Active' : 'Locked'}
+Price:
+KSh ${plan.price.toLocaleString()}
 </p>
+
 
 <p>
-<strong>ROI:</strong> 50%
+Profit in 72hrs:
+<span style="color:#00ff88">
+
+${after72}
+
+</span>
 </p>
 
-${
-active
-?
-`<p style="color:#00ff88">
-<strong>Invested:</strong>
-KSh ${Number(invested.amount).toLocaleString()}
-</p>`
-:
-''
-}
+
+
+<p>
+Maturity:
+${days21}
+</p>
+
+
+
+<p>
+
+Status:
+
+<span style="color:
+${active?'#00ff88':'#ffcc00'}">
+
+${active?'ACTIVE':'AVAILABLE'}
+
+</span>
+
+</p>
+
 
 </div>
+
+
 `;
+
+
 
 });
 
+
+
 }
+
+
+
 </script>
   
 </body>  
