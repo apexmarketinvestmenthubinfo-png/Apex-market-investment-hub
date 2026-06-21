@@ -669,9 +669,10 @@ document.getElementById("totalProfit").innerHTML =
 
 
 
+document.getElementById("totalProfit").innerHTML =
+"KSh "+profit.toLocaleString();
 
-        document.getElementById("totalDeposit").innerHTML =
-        "KSh " + totalDeposit.toLocaleString();
+
 
 onValue(
     ref(db,`transactions/${user.uid}`),
@@ -684,8 +685,7 @@ onValue(
         Object.values(transactions).forEach(tx=>{
 
             if(
-              tx.type === "deposit" &&
-              tx.status === "approved"
+              tx.type === "deposit"
             ){
 
                 totalDeposit += Number(tx.amount || 0);
@@ -694,8 +694,13 @@ onValue(
 
         });
 
+
+        document.getElementById("totalDeposit").innerHTML =
+        "KSh " + totalDeposit.toLocaleString();
+
     }
-  });
+);
+        
 displayPlans(data.investments || {});
 
 
