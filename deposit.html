@@ -448,16 +448,16 @@ btn.addEventListener("click", async () => {
 
     try {
 
-        await push(
-            ref(db, `users/${currentUser.uid}/transactions`),
-            {
-                type: "deposit",
-                amount: amount,
-                method: "M-Pesa",
-                status: "pending",
-                createdAt: Date.now()
-            }
-        );
+await push(
+    ref(db, `transactions/${currentUser.uid}`),
+    {
+        type: "deposit",
+        amount: amount,
+        method: "M-Pesa",
+        status: "pending",
+        createdAt: Date.now()
+    }
+);
 
 showNotification("Deposit submitted successfully");
 
