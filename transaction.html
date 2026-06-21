@@ -168,38 +168,50 @@ footer {
 <!-- FIREBASE -->
 <script type="module">
 
-import { initializeApp } 
+import { initializeApp }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
-    getDatabase,
-    ref,
-    onValue
+getDatabase,
+ref,
+onValue
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 import {
-    getAuth,
-    onAuthStateChanged
+getAuth,
+onAuthStateChanged
 }
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 
-// FIREBASE CONFIG
-
 const firebaseConfig = {
-  apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
-  authDomain: "apex-market-investment-h-643fc.firebaseapp.com",
-  databaseURL: "https://apex-market-investment-h-643fc-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "apex-market-investment-h-643fc",
-  storageBucket: "apex-market-investment-h-643fc.firebasestorage.app",
-  messagingSenderId: "96469134780",
-  appId: "1:96469134780:web:b1b443b0467083f843cfb9",
-  measurementId: "G-NB3LXMPGTV"
+
+apiKey: "AIzaSyC-d_LdGleI1U1NEWLjz7FPz7gPycVOB_4",
+
+authDomain:
+"apex-market-investment-h-643fc.firebaseapp.com",
+
+databaseURL:
+"https://apex-market-investment-h-643fc-default-rtdb.europe-west1.firebasedatabase.app",
+
+projectId:
+"apex-market-investment-h-643fc",
+
+storageBucket:
+"apex-market-investment-h-643fc.firebasestorage.app",
+
+messagingSenderId:
+"96469134780",
+
+appId:
+"1:96469134780:web:b1b443b0467083f843cfb9",
+
+measurementId:
+"G-NB3LXMPGTV"
+
 };
 
-
-// INIT
 
 const app = initializeApp(firebaseConfig);
 
@@ -208,90 +220,56 @@ const db = getDatabase(app);
 const auth = getAuth(app);
 
 
-let allTransactions = [];
 
-
-// AUTH CHECK
-
-onAuthStateChanged(auth, (user)=>{
-
-
-    if(!user){
-
-        window.location.href="login.html";
-
-        return;
-    }
+let allTransactions=[];
 
 
 
-    const transactionsRef = ref(
-        db,
-        `users/${user.uid}/transactions`
-    );
+onAuthStateChanged(auth,user=>{
+
+
+if(!user){
+
+location="login.html";
+
+return;
+
+}
+
+
+const uid=user.uid;
 
 
 
-    // REAL TIME DATABASE LISTENER
+// READ REALTIME TRANSACTIONS
 
-    onValue(
-        transactionsRef,
-
-        (snapshot)=>{
-
-
-            const data = snapshot.val();
+onValue(
+ref(db,`transactions/${uid}`),
+snap=>{
 
 
-
-            if(!data){
-
-                allTransactions = [];
-
-                display([]);
-
-                return;
-            }
+let data=snap.val() || {};
 
 
+allTransactions = Object.values(data)
+.map(tx=>({
 
-            allTransactions = Object.entries(data).map(
-                ([id,value])=>({
+...tx,
 
-                    id:id,
+type: tx.type || "withdraw",
 
-                    ...value
+createdAt:
+tx.createdAt || Date.now()
 
-                })
-            );
+}));
 
 
 
-            display(allTransactions);
+display(allTransactions);
 
 
+});
 
-        },
-
-        (error)=>{
-
-            console.error(
-                "Firebase read error:",
-                error
-            );
-
-
-            document.getElementById("txBody").innerHTML =
-            `
-            <tr>
-                <td colspan="5">
-                    Failed loading transactions
-                </td>
-            </tr>
-            `;
-
-        }
-    );
 
 
 });
@@ -299,159 +277,172 @@ onAuthStateChanged(auth, (user)=>{
 
 
 
-// DISPLAY TABLE
+
 
 function display(list){
 
 
-    const body =
-    document.getElementById("txBody");
+const body =
+document.getElementById("txBody");
 
 
-    body.innerHTML="";
-
-
-
-    if(list.length===0){
-
-        body.innerHTML=
-        `
-        <tr>
-            <td colspan="5">
-                No transactions found
-            </td>
-        </tr>
-        `;
-
-        return;
-
-    }
+body.innerHTML="";
 
 
 
-    list.sort(
-        (a,b)=>
-        (b.createdAt || 0) -
-        (a.createdAt || 0)
-    );
+if(list.length===0){
 
 
+body.innerHTML=`
 
+<tr>
 
-    list.forEach(tx=>{
+<td colspan="5">
+No transactions found
+</td>
 
+</tr>
 
-        const type =
-        (tx.type || "unknown").toLowerCase();
+`;
 
-
-        const status =
-        (tx.status || "pending").toLowerCase();
-
-
-
-        body.innerHTML +=
-        `
-        <tr>
-
-            <td>
-                <span class="type ${type}">
-                    ${type}
-                </span>
-            </td>
-
-
-            <td>
-                KSH ${Number(tx.amount || 0).toLocaleString()}
-            </td>
-
-
-            <td>
-                ${tx.method || "-"}
-            </td>
-
-
-            <td>
-
-                <span class="status ${status}">
-                    ${status}
-                </span>
-
-            </td>
-
-
-            <td>
-
-                ${
-                tx.createdAt
-                ?
-                new Date(tx.createdAt)
-                .toLocaleString()
-                :
-                "-"
-                }
-
-            </td>
-
-
-        </tr>
-        `;
-
-    });
+return;
 
 }
 
 
 
-// FILTER FUNCTION
+list.sort((a,b)=>
+b.createdAt-a.createdAt
+);
+
+
+
+list.forEach(tx=>{
+
+
+let type =
+(tx.type||"withdraw").toLowerCase();
+
+
+
+let status =
+(tx.status||"pending").toLowerCase();
+
+
+
+body.innerHTML +=`
+
+<tr>
+
+
+<td>
+
+<span class="type ${type}">
+${type}
+</span>
+
+</td>
+
+
+
+<td>
+
+KSH 
+${Number(tx.amount||0)
+.toLocaleString()}
+
+</td>
+
+
+
+<td>
+
+${tx.method || "-"}
+
+</td>
+
+
+
+<td>
+
+<span class="status ${status}">
+${status}
+</span>
+
+</td>
+
+
+
+<td>
+
+${new Date(tx.createdAt)
+.toLocaleString()}
+
+</td>
+
+
+
+</tr>
+
+`;
+
+
+});
+
+
+}
+
+
+
+
 
 window.filterData=function(type){
 
 
-    if(type==="all"){
+if(type==="all"){
 
-        display(allTransactions);
+display(allTransactions);
 
-        return;
+return;
 
-    }
-
-
-
-    display(
-
-        allTransactions.filter(
-            tx =>
-            (tx.type || "").toLowerCase()
-            === type.toLowerCase()
-        )
-
-    );
-
-};
+}
 
 
 
-// BUTTON EVENTS
+display(
+
+allTransactions.filter(tx=>
+
+(tx.type||"")
+.toLowerCase()
+===type.toLowerCase()
+
+)
+
+);
+
+
+}
+
+
+
 
 document
 .querySelectorAll(".filter-btn")
 .forEach(btn=>{
 
 
-    btn.addEventListener(
-        "click",
-        ()=>{
+btn.onclick=()=>{
 
-            filterData(
-                btn.innerText.toLowerCase()
-            );
+filterData(
+btn.innerText.toLowerCase()
+);
 
-        }
-    );
+};
 
 
 });
+
 
 
 </script>
